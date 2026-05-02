@@ -12,7 +12,8 @@
   --blue:#4a7fd4;--blue-light:#6b9be8;--blue-glow:rgba(74,127,212,0.3);
   --green:#3db87a;--green-glow:rgba(61,184,122,0.25);
   --red:#e05555;--red-glow:rgba(224,85,85,0.25);
-  --gold:#f0b429;--text:#e8edf5;--text-mid:#8fa3c0;--text-muted:#4d6080;--radius:14px;
+  --gold:#f0b429;--gold-glow:rgba(240,180,41,0.25);
+  --text:#e8edf5;--text-mid:#8fa3c0;--text-muted:#4d6080;--radius:14px;
 }
 body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;font-weight:400;min-height:100vh;overflow-x:hidden;font-size:18px}
 
@@ -34,6 +35,8 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .lesson-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 14px;cursor:pointer;transition:all .2s;text-align:center}
 .lesson-card:hover:not(.locked){border-color:var(--blue);background:var(--surface2);transform:translateY(-2px)}
 .lesson-card.locked{opacity:.35;cursor:default}
+.lesson-card.pinyin-card{border-color:var(--border);background:var(--surface)}
+.lesson-card.pinyin-card:hover{border-color:var(--blue);background:var(--surface2);transform:translateY(-2px)}
 .lesson-card .d-num{font-size:13px;font-family:monospace;color:var(--blue-light);margin-bottom:6px;letter-spacing:1px}
 .lesson-card .d-title{font-size:14px;font-weight:500;line-height:1.4}
 .portal-credit{margin-top:32px;font-size:12px;color:var(--text-muted);text-align:center;line-height:2}
@@ -49,6 +52,8 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .modes-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:460px}
 .mode-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 14px;cursor:pointer;transition:all .2s;text-align:center;color:var(--text)}
 .mode-btn:hover{border-color:var(--blue);background:var(--surface2);transform:translateY(-2px)}
+.mode-btn.tone-btn{background:var(--surface);border-color:var(--border)}
+.mode-btn.tone-btn:hover{background:var(--surface2);border-color:var(--blue);transform:translateY(-2px)}
 .mode-icon{font-size:36px;margin-bottom:10px}
 .mode-name{font-size:20px;font-weight:700;margin-bottom:0}
 .mode-desc{display:none}
@@ -96,16 +101,31 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 .mm-stats{display:flex;justify-content:space-between;font-size:14px;color:var(--text-mid);margin-bottom:16px}
 
-/* ── TONE QUIZ ── */
-.tq-char-box{background:#1a3a6e;border:3px solid var(--gold);border-radius:20px;padding:32px 24px;text-align:center;margin-bottom:16px}
+/* ── TONE QUIZ (gold theme) ── */
+.tq-char-box{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:32px 24px;text-align:center;margin-bottom:16px}
 .tq-char{font-family:'Noto Serif TC',serif;font-size:68px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:4px}
 .tq-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .tq-btn{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 10px;font-size:17px;color:var(--text);cursor:pointer;transition:all .15s;text-align:center;font-family:'Noto Sans TC',sans-serif;letter-spacing:1px}
-.tq-btn:hover:not(:disabled){border-color:var(--blue);background:var(--surface2)}
+.tq-btn:hover:not(:disabled){border-color:var(--gold);background:rgba(240,180,41,0.08)}
 .tq-btn.correct{background:var(--green-glow);border-color:var(--green);color:#7de8b0}
 .tq-btn.wrong{background:var(--red-glow);border-color:var(--red);color:#ff8a8a}
-.tq-submit{background:var(--blue);color:#fff;border:none;border-radius:12px;padding:15px;width:100%;font-size:16px;cursor:pointer;font-family:'Noto Sans TC',sans-serif}
+.tq-submit{background:var(--gold);color:#1a1000;border:none;border-radius:12px;padding:15px;width:100%;font-size:16px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-weight:700}
 .tq-submit:disabled{opacity:.4;cursor:default}
+
+/* ── NUMBER DICTATION (inside tone quiz screen) ── */
+.nd-card{background:rgba(240,180,41,0.08);border:2px solid var(--gold);border-radius:20px;padding:32px 24px;text-align:center;margin-bottom:18px;cursor:pointer;position:relative}
+.nd-question{font-size:22px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:4px}
+.nd-hint{font-size:12px;color:var(--text-muted);letter-spacing:2px}
+.nd-answer{font-size:28px;font-weight:700;color:var(--text);display:none;margin-top:12px}
+.nd-pinyin{font-size:16px;color:var(--blue-light);margin-top:6px;display:none}
+.nd-sound-row{display:flex;justify-content:center;gap:12px;margin-bottom:16px}
+.nd-btn-row{display:flex;gap:10px;margin-bottom:10px}
+.nd-btn{background:rgba(240,180,41,0.12);border:1px solid var(--gold);color:var(--gold);border-radius:10px;padding:12px 18px;font-size:15px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;flex:1;transition:all .15s}
+.nd-btn:hover{background:rgba(240,180,41,0.25)}
+.nd-counter{font-size:12px;color:var(--text-muted);text-align:center;letter-spacing:1px;margin-bottom:10px}
+.nd-mode-tabs{display:flex;gap:10px;margin-bottom:20px}
+.nd-tab{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text-mid);font-size:14px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;text-align:center;transition:all .15s}
+.nd-tab.active{border-color:var(--gold);background:rgba(240,180,41,0.1);color:var(--gold)}
 
 /* ── DIALOGUE ── */
 .df-prompt{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;font-size:19px;color:var(--text);margin-bottom:16px;line-height:1.8;text-align:center}
@@ -151,6 +171,25 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .result-retry{background:var(--blue);color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;cursor:pointer;font-family:'Noto Sans TC',sans-serif}
 .result-home{background:var(--surface);color:var(--text-mid);border:1px solid var(--border);border-radius:12px;padding:15px;font-size:16px;cursor:pointer;font-family:'Noto Sans TC',sans-serif}
 
+/* ── PINYIN CHART ── */
+#pinyin-chart{background:var(--bg);overflow:auto}
+.py-chart-wrap{padding:20px 10px;max-width:100%;overflow-x:auto}
+.py-table{border-collapse:collapse;min-width:700px;font-size:13px}
+.py-table th,.py-table td{border:1px solid var(--border);padding:6px 8px;text-align:center;min-width:42px}
+.py-table thead th{background:#0d3a4a;color:#4dd8f0;font-weight:600;font-size:12px;letter-spacing:.5px}
+.py-table tbody td:first-child{background:#0d3a4a;color:#4dd8f0;font-weight:600;font-size:12px}
+.py-cell{cursor:pointer;border-radius:6px;padding:4px 2px;transition:background .15s;position:relative}
+.py-cell:hover{background:rgba(74,127,212,.25)}
+.py-cell.empty{cursor:default;color:transparent}
+/* tone popup */
+.tone-popup{position:fixed;background:var(--surface2);border:2px solid var(--gold);border-radius:16px;padding:18px 22px;z-index:999;box-shadow:0 8px 40px rgba(0,0,0,.6);min-width:220px;display:none}
+.tone-popup h3{font-size:18px;color:var(--gold);margin-bottom:12px;text-align:center}
+.tone-popup .tone-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.tone-pill{background:var(--surface);border:1px solid var(--border);border-radius:30px;padding:8px 16px;font-size:16px;cursor:pointer;color:var(--text);transition:all .15s;letter-spacing:1px}
+.tone-pill:hover{border-color:var(--blue);background:var(--blue-glow);color:var(--blue-light)}
+.tone-popup-close{position:absolute;top:8px;right:12px;background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer}
+.py-legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font-size:12px;color:var(--text-muted);margin-bottom:12px;padding:0 10px}
+
 .q-num{font-size:12px;color:var(--text-muted);letter-spacing:2px;margin-bottom:14px}
 @keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
 .pop{animation:pop .25s cubic-bezier(.34,1.56,.64,1)}
@@ -173,7 +212,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
     <p>點擊課次開始練習</p>
   </div>
   <div class="lessons-grid" id="lessons-grid"></div>
-  <div class="portal-credit">D1～D22　共 22 課</div>
+  <div class="portal-credit">漢語拼音表 ＋ D1～D22　共 22 課</div>
 </div>
 
 <!-- LESSON HOME -->
@@ -192,7 +231,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 <div class="screen" id="flashcards">
   <div class="game-header">
     <button class="back-btn" onclick="backToLesson()">←</button>
-    <span class="game-title">🃏 單字卡</span>
+    <span class="game-title">🃏 詞語卡</span>
     <div class="progress-bar"><div class="progress-fill" id="fc-progress"></div></div>
   </div>
   <div class="game-body">
@@ -235,20 +274,48 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
   </div>
 </div>
 
-<!-- TONE QUIZ -->
+<!-- TONE QUIZ + NUMBER DICTATION -->
 <div class="screen" id="tonequiz">
   <div class="game-header">
     <button class="back-btn" onclick="backToLesson()">←</button>
-    <span class="game-title">🎵 聲調練習</span>
-    <div class="progress-bar"><div class="progress-fill" id="tq-progress"></div></div>
+    <span class="game-title" style="color:var(--gold)">🎵 聲調＆聽寫</span>
+    <div class="progress-bar"><div class="progress-fill" id="tq-progress" style="background:var(--gold)"></div></div>
     <div class="score-badge" id="tq-score-badge">0分</div>
   </div>
   <div class="game-body">
-    <div class="q-num" id="tq-q-num"></div>
-    <div class="tq-char-box"><div class="tq-char" id="tq-char"></div></div>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;text-align:center">選出正確的拼音聲調</p>
-    <div class="tq-grid" id="tq-grid"></div>
-    <button class="tq-submit" id="tq-submit" onclick="tqSubmit()" disabled>確認 ✓</button>
+    <!-- mode tabs -->
+    <div class="nd-mode-tabs" id="tq-mode-tabs">
+      <button class="nd-tab active" onclick="tqSetMode('tone')">聲調選擇</button>
+      <button class="nd-tab" onclick="tqSetMode('number')">數字聽寫</button>
+    </div>
+
+    <!-- TONE section -->
+    <div id="tq-tone-section">
+      <div class="q-num" id="tq-q-num"></div>
+      <div class="tq-char-box"><div class="tq-char" id="tq-char"></div></div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;text-align:center">選出正確的拼音聲調</p>
+      <div class="tq-grid" id="tq-grid"></div>
+      <button class="tq-submit" id="tq-submit" onclick="tqSubmit()" disabled>確認 ✓</button>
+    </div>
+
+    <!-- NUMBER DICTATION section -->
+    <div id="tq-number-section" style="display:none">
+      <div class="nd-counter" id="nd-counter"></div>
+      <div class="nd-card" id="nd-card" onclick="ndReveal()">
+        <div class="nd-question" id="nd-question">（　？　）</div>
+        <div class="nd-hint" id="nd-hint">🔊 點擊播放</div>
+        <div class="nd-answer" id="nd-answer"></div>
+        <div class="nd-pinyin" id="nd-pinyin"></div>
+      </div>
+      <div class="nd-sound-row">
+        <button class="fc-sound-btn" id="nd-sound-btn" onclick="ndSpeak()">🔊</button>
+      </div>
+      <div class="nd-btn-row">
+        <button class="nd-btn" onclick="ndPrev()">← 上一題</button>
+        <button class="nd-btn" onclick="ndNext()">下一題 →</button>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);text-align:center;line-height:1.7;margin-top:6px">第二次開始練習，題目會隨機出現（包含含５和９的數字）</p>
+    </div>
   </div>
 </div>
 
@@ -258,13 +325,26 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
     <button class="back-btn" onclick="backToLesson()">←</button>
     <span class="game-title">💬 對話練習</span>
     <div class="progress-bar"><div class="progress-fill" id="df-progress"></div></div>
-    <div class="score-badge" id="df-score-badge">0分</div>
   </div>
   <div class="game-body">
-    <div class="q-num" id="df-q-num"></div>
-    <div class="df-prompt" id="df-prompt"></div>
-    <div class="df-choices" id="df-choices"></div>
-    <div class="df-feedback" id="df-feedback"></div>
+    <div class="fc-counter" id="df-q-num"></div>
+    <div class="fc-wrap">
+      <div class="fc-card" id="df-card" onclick="dfFlip()">
+        <div class="fc-front">
+          <div class="fc-hint">點擊翻轉看參考回答</div>
+          <div class="fc-char" id="df-q" style="font-size:24px;line-height:1.5"></div>
+        </div>
+        <div class="fc-back">
+          <div class="fc-hint" style="color:var(--green)">參考回答</div>
+          <div class="fc-meaning" id="df-ans" style="font-size:20px;color:var(--text)"></div>
+          <div class="fc-example" id="df-tip"></div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-controls">
+      <button class="fc-btn" onclick="dfPrev()">← 上一題</button>
+      <button class="fc-btn next" onclick="dfNext()">下一題 →</button>
+    </div>
   </div>
 </div>
 
@@ -272,7 +352,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 <div class="screen" id="sentence">
   <div class="game-header">
     <button class="back-btn" onclick="backToLesson()">←</button>
-    <span class="game-title">🧱 句子拼圖</span>
+    <span class="game-title">🧱 句子重組</span>
     <div class="score-badge" id="s2-score-badge">0 / 0</div>
   </div>
   <div class="game-body">
@@ -308,10 +388,69 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
   </div>
 </div>
 
+<!-- PINYIN CHART SCREEN -->
+<div class="screen" id="pinyin-chart">
+  <div class="game-header">
+    <button class="back-btn" onclick="showPortal()">←</button>
+    <span class="game-title" style="color:var(--text)">📊 漢語拼音表</span>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;padding:12px;gap:8px">
+    <p style="font-size:12px;color:var(--text-muted);text-align:center">點擊格子聽聲調發音（Yoyo Chinese）</p>
+    <iframe
+      src="https://yoyochinese.com/chinese-learning-tools/Mandarin-Chinese-pronunciation-lesson/pinyin-chart-table"
+      style="width:100%;flex:1;border:none;border-radius:10px;background:#fff;min-height:70vh"
+      title="漢語拼音表"
+    ></iframe>
+    <p style="font-size:11px;color:var(--text-muted);text-align:center">無法顯示時請點：<a href="https://yoyochinese.com/chinese-learning-tools/Mandarin-Chinese-pronunciation-lesson/pinyin-chart-table" target="_blank" style="color:var(--blue-light)">開啟拼音表</a></p>
+  </div>
+</div>
+
 <script>
 // ════════════════════════════════════════════════════════
 // 課程資料庫  ── 新增課只要在這裡加一個物件 ──
 // ════════════════════════════════════════════════════════
+
+// Number data for D3 dictation
+const D3_FIXED_NUMBERS = [95,15,47,57,62,26,12,35,96,99,17];
+const D3_FIXED_PHONES  = ['080-38652879','090-57612943','03-82459955','02-43795517'];
+
+function numToPinyin(n){
+  const ones=['líng','yī','èr','sān','sì','wǔ','liù','qī','bā','jiǔ'];
+  const teens=['shí','shí yī','shí èr','shí sān','shí sì','shí wǔ','shí liù','shí qī','shí bā','shí jiǔ'];
+  if(n===0) return 'líng';
+  if(n<10) return ones[n];
+  if(n<20) return teens[n-10];
+  const tens=Math.floor(n/10), unit=n%10;
+  let s=ones[tens]+(tens>0?' shí':'shí');
+  if(unit>0) s+=' '+ones[unit];
+  return s;
+}
+function numToChar(n){ return numToCharFixed(n); }
+function numToCharFixed(n){
+  const ones=['零','一','二','三','四','五','六','七','八','九'];
+  if(n===0) return '零';
+  if(n<10) return ones[n];
+  if(n===10) return '十';
+  const tens=Math.floor(n/10),unit=n%10;
+  const tStr = tens===1?'十':ones[tens]+'十';
+  return tStr+(unit>0?ones[unit]:'');
+}
+function phoneDigitsToPinyin(s){
+  const map={'0':'líng','1':'yī','2':'èr','3':'sān','4':'sì','5':'wǔ','6':'liù','7':'qī','8':'bā','9':'jiǔ','-':' - '};
+  return s.split('').map(c=>map[c]||c).join(' ');
+}
+
+function generateRandomNumbers(){
+  // pool with emphasis on 5 and 9
+  const pool=[];
+  for(let i=0;i<=100;i++) pool.push(i);
+  // extra 5/9 emphasis: shuffle then filter 12 numbers with at least 4 containing 5 or 9
+  const with59 = pool.filter(n=>String(n).includes('5')||String(n).includes('9'));
+  const without = pool.filter(n=>!String(n).includes('5')&&!String(n).includes('9'));
+  const chosen=[...shuffle(with59).slice(0,6),...shuffle(without).slice(0,5)];
+  return shuffle(chosen);
+}
+
 const LESSONS = [
 
 // ── D1 ──────────────────────────────────────────────────
@@ -397,13 +536,13 @@ const LESSONS = [
     {prompt:'「謝謝」怎麼用？\n請給我例句。',correct:'謝謝你！',   opts:['再見！','謝謝你！','對不起！','沒關係！'],       explain:'請給我例句 → 謝謝你！謝謝老師！'},
   ],
   sentenceData:[
-    {prompt:'自我介紹：張老師的開場',  answer:'大家好！我姓張，請叫我張老師。',
+    {prompt:'自我介紹',  answer:'大家好！我姓張，請叫我張老師。',
      tiles:[{cn:'大家好',py:'dà jiā hǎo'},{cn:'！',py:''},{cn:'我',py:'wǒ'},{cn:'姓張',py:'xìng Zhāng'},{cn:'，',py:''},{cn:'請叫我',py:'qǐng jiào wǒ'},{cn:'張老師',py:'Zhāng lǎo shī'},{cn:'。',py:''}]},
     {prompt:'問名字',                  answer:'你叫什麼名字？',
      tiles:[{cn:'你',py:'nǐ'},{cn:'叫',py:'jiào'},{cn:'什麼',py:'shén me'},{cn:'名字',py:'míng zi'},{cn:'？',py:''}]},
-    {prompt:'介紹自己（名字）',        answer:'我叫田中美香。',
+    {prompt:'說自己名字',        answer:'我叫田中美香。',
      tiles:[{cn:'我',py:'wǒ'},{cn:'叫',py:'jiào'},{cn:'田中美香',py:'Tián zhōng měi xiāng'},{cn:'。',py:''}]},
-    {prompt:'請別人怎麼稱呼自己',      answer:'請叫我美香就可以了。',
+    {prompt:'請別人稱呼自己',      answer:'請叫我美香就可以了。',
      tiles:[{cn:'請叫我',py:'qǐng jiào wǒ'},{cn:'美香',py:'měi xiāng'},{cn:'就可以了',py:'jiù kě yǐ le'},{cn:'。',py:''}]},
     {prompt:'道謝與回應',              answer:'謝謝你！不客氣！',
      tiles:[{cn:'謝謝你',py:'xiè xie nǐ'},{cn:'！',py:''},{cn:'不客氣',py:'bú kè qi'},{cn:'！',py:''}]},
@@ -483,24 +622,142 @@ const LESSONS = [
     {prompt:'對方問你喜歡什麼後，\n你想反問對方？',           correct:'你呢？',               opts:['你好嗎？','你呢？','你貴姓？','你是做什麼的？'],               explain:'省略式問句 → 〜呢？'},
   ],
   sentenceData:[
-    {prompt:'問對方怎麼稱呼（最常用）', answer:'你怎麼稱呼？',
+    {prompt:'問對方稱呼',   answer:'你怎麼稱呼？',
      tiles:[{cn:'你',py:'nǐ'},{cn:'怎麼',py:'zěn me'},{cn:'稱呼',py:'chēng hū'},{cn:'？',py:''}]},
-    {prompt:'問職業',                   answer:'你是做什麼的？',
+    {prompt:'問職業',       answer:'你是做什麼的？',
      tiles:[{cn:'你',py:'nǐ'},{cn:'是',py:'shì'},{cn:'做什麼的',py:'zuò shén me de'},{cn:'？',py:''}]},
-    {prompt:'我們都喜歡旅行',           answer:'我們都喜歡旅行。',
+    {prompt:'我們都喜歡',   answer:'我們都喜歡旅行。',
      tiles:[{cn:'我們',py:'wǒ men'},{cn:'都',py:'dōu'},{cn:'喜歡',py:'xǐ huān'},{cn:'旅行',py:'lǚ xíng'},{cn:'。',py:''}]},
-    {prompt:'我喜歡咖啡，你呢？',       answer:'我喜歡咖啡，你呢？',
+    {prompt:'喜歡反問',     answer:'我喜歡咖啡，你呢？',
      tiles:[{cn:'我',py:'wǒ'},{cn:'喜歡',py:'xǐ huān'},{cn:'咖啡',py:'kā fēi'},{cn:'，',py:''},{cn:'你呢',py:'nǐ ne'},{cn:'？',py:''}]},
-    {prompt:'她不喜歡跑步',             answer:'她不喜歡跑步。',
+    {prompt:'她不喜歡',     answer:'她不喜歡跑步。',
      tiles:[{cn:'她',py:'tā'},{cn:'不',py:'bù'},{cn:'喜歡',py:'xǐ huān'},{cn:'跑步',py:'pǎo bù'},{cn:'。',py:''}]},
-    {prompt:'初次見面的禮貌語',         answer:'初次見面，請多多指教。',
+    {prompt:'初次見面',     answer:'初次見面，請多多指教。',
      tiles:[{cn:'初次見面',py:'chū cì jiàn miàn'},{cn:'，',py:''},{cn:'請',py:'qǐng'},{cn:'多多指教',py:'duō duō zhǐ jiào'},{cn:'。',py:''}]},
   ],
 },
 
-// ── D3～D22 佔位（之後逐課加入）────────────────────────
-...Array.from({length:20},(_,i)=>({
-  id:`D${i+3}`, title:`第 ${i+3} 課`, subtitle:'即將推出',
+// ── D3 ──────────────────────────────────────────────────
+{
+  id:'D3', title:'國籍・出身地・天氣', subtitle:'數字 0–100',
+  info:'國籍・出身地・天氣・數字　｜　詞語卡 49 張・句子重組 10 組・聲調＆數字聽寫',
+  vocab:[
+    // 疑問詞・基本
+    {char:'哪裡',     pinyin:'nǎ lǐ',       meaning:'どこ',                 example:'你是哪裡人？'},
+    {char:'哪國人',   pinyin:'nǎ guó rén',  meaning:'何人・どの国の人',     example:'她是哪國人？'},
+    {char:'知道',     pinyin:'zhī dào',     meaning:'知っている',           example:'我知道了，謝謝！'},
+    {char:'怎麼樣',   pinyin:'zěn me yàng', meaning:'どうですか？（状態）', example:'今天天氣怎麼樣？'},
+    // 國籍
+    {char:'日本',     pinyin:'rì běn',      meaning:'日本',                 example:'我是日本人。'},
+    {char:'美國',     pinyin:'měi guó',     meaning:'アメリカ',             example:'他是美國人。'},
+    {char:'韓國',     pinyin:'hán guó',     meaning:'韓国',                 example:'她是韓國人嗎？'},
+    {char:'越南',     pinyin:'yuè nán',     meaning:'ベトナム',             example:'她來自越南。'},
+    {char:'中國',     pinyin:'zhōng guó',   meaning:'中国',                 example:'我來自中國。'},
+    {char:'印尼',     pinyin:'yìn ní',      meaning:'インドネシア',         example:'我媽媽是印尼人。'},
+    {char:'台灣',     pinyin:'tái wān',     meaning:'台湾',                 example:'我住在台灣。'},
+    // 天氣
+    {char:'天氣',     pinyin:'tiān qì',     meaning:'天気',                 example:'今天天氣怎麼樣？'},
+    {char:'晴天',     pinyin:'qíng tiān',   meaning:'晴れ',                 example:'今天晴天，很好！'},
+    {char:'多雲',     pinyin:'duō yún',     meaning:'曇り',                 example:'今天多雲，不太熱。'},
+    {char:'陰天',     pinyin:'yīn tiān',    meaning:'曇天・どんより',       example:'今天陰天，有點冷。'},
+    {char:'打雷',     pinyin:'dǎ léi',      meaning:'雷が鳴る',             example:'昨天打雷了！'},
+    {char:'下雪',     pinyin:'xià xuě',     meaning:'雪が降る',             example:'冬天會下雪。'},
+    {char:'下雨',     pinyin:'xià yǔ',      meaning:'雨が降る',             example:'今天下雨了。'},
+    {char:'大風',     pinyin:'dà fēng',     meaning:'強風',                 example:'今天大風，小心！'},
+    // 數字 0–20（各一張）
+    {char:'0',     pinyin:'líng',        meaning:'ゼロ',             example:'我的號碼有零。'},
+    {char:'1',     pinyin:'yī',          meaning:'いち',             example:'一個人。'},
+    {char:'2',     pinyin:'èr',          meaning:'に',               example:'二月。'},
+    {char:'3',     pinyin:'sān',         meaning:'さん',             example:'三個蘋果。'},
+    {char:'4',     pinyin:'sì',          meaning:'し',               example:'四個人。'},
+    {char:'5',     pinyin:'wǔ',          meaning:'ご',               example:'五月五日。'},
+    {char:'6',     pinyin:'liù',         meaning:'ろく',             example:'六月。'},
+    {char:'7',     pinyin:'qī',          meaning:'しち',             example:'七天。'},
+    {char:'8',     pinyin:'bā',          meaning:'はち',             example:'八月。'},
+    {char:'9',     pinyin:'jiǔ',         meaning:'きゅう',           example:'九個月。'},
+    {char:'10',    pinyin:'shí',         meaning:'じゅう',          example:'十點。'},
+    {char:'11',  pinyin:'shí yī',      meaning:'11',                   example:'十一月。'},
+    {char:'12',  pinyin:'shí èr',      meaning:'12',                   example:'十二月。'},
+    {char:'13',  pinyin:'shí sān',     meaning:'13',                   example:''},
+    {char:'14',  pinyin:'shí sì',      meaning:'14',                   example:''},
+    {char:'15',  pinyin:'shí wǔ',      meaning:'15',                   example:''},
+    {char:'16',  pinyin:'shí liù',     meaning:'16',                   example:''},
+    {char:'17',  pinyin:'shí qī',      meaning:'17',                   example:''},
+    {char:'18',  pinyin:'shí bā',      meaning:'18',                   example:''},
+    {char:'19',  pinyin:'shí jiǔ',     meaning:'19',                   example:''},
+    {char:'20',  pinyin:'èr shí',      meaning:'20',                   example:'二十歲。'},
+  ],
+  mmPairs:[
+    {a:'晴天',  b:'qíng tiān'},
+    {a:'下雨',  b:'xià yǔ'},
+    {a:'下雪',  b:'xià xuě'},
+    {a:'大風',  b:'dà fēng'},
+    {a:'日本',  b:'rì běn'},
+    {a:'印尼',  b:'yìn ní'},
+    {a:'哪裡',  b:'nǎ lǐ'},
+    {a:'知道',  b:'zhī dào'},
+  ],
+  toneData:[
+    {char:'日本', correct:'rì běn',    opts:['rī běn','rí běn','rǐ běn','rì běn']},
+    {char:'韓國', correct:'hán guó',   opts:['hān guó','hán guó','hǎn guó','hàn guó']},
+    {char:'越南', correct:'yuè nán',   opts:['yuē nán','yué nán','yuě nán','yuè nán']},
+    {char:'印尼', correct:'yìn ní',    opts:['yīn ní','yín ní','yǐn ní','yìn ní']},
+    {char:'天氣', correct:'tiān qì',   opts:['tiān qī','tiān qí','tiān qǐ','tiān qì']},
+    {char:'晴天', correct:'qíng tiān', opts:['qīng tiān','qíng tiān','qǐng tiān','qìng tiān']},
+    {char:'下雪', correct:'xià xuě',   opts:['xià xuē','xià xué','xià xuě','xià xuè']},
+    {char:'下雨', correct:'xià yǔ',    opts:['xià yū','xià yú','xià yǔ','xià yù']},
+    {char:'大風', correct:'dà fēng',   opts:['dā fēng','dá fēng','dǎ fēng','dà fēng']},
+    {char:'打雷', correct:'dǎ léi',    opts:['dā léi','dá léi','dǎ léi','dà léi']},
+    {char:'知道', correct:'zhī dào',   opts:['zhī dāo','zhī dáo','zhī dǎo','zhī dào']},
+    {char:'怎麼樣',correct:'zěn me yàng',opts:['zēn me yàng','zén me yàng','zěn me yàng','zèn me yàng']},
+    {char:'哪裡', correct:'nǎ lǐ',     opts:['nā lǐ','ná lǐ','nǎ lǐ','nà lǐ']},
+    {char:'今天', correct:'jīn tiān',  opts:['jìn tiān','jín tiān','jīn tiān','jǐn tiān']},
+    {char:'中國', correct:'zhōng guó', opts:['zhōng guǒ','zhōng guó','zhōng guò','zhōng guo']},
+    {char:'你好', correct:'nǐ hǎo',    opts:['nī hǎo','ní hǎo','nǐ hǎo','nì hǎo']},
+    {char:'謝謝', correct:'xiè xie',   opts:['xiē xie','xié xie','xiě xie','xiè xie']},
+    {char:'再見', correct:'zài jiàn',  opts:['zāi jiàn','zái jiàn','zǎi jiàn','zài jiàn']},
+    {char:'喜歡', correct:'xǐ huān',   opts:['xī huān','xí huān','xǐ huān','xì huān']},
+    {char:'問題', correct:'wèn tí',    opts:['wēn tí','wén tí','wěn tí','wèn tí']},
+  ],
+  // D3 has number dictation – signal with flag
+  hasNumberDictation: true,
+  dialogueData:[
+    {prompt:'我是台灣人，你呢？', answer:'我是日本人。／我是＿＿人。', explain:'自己的國籍'},
+    {prompt:'你住在哪裡？', answer:'我住在東京。／我住在＿＿。', explain:'居住地'},
+    {prompt:'你是哪裡人？', answer:'我是北海道人。／我來自＿＿。', explain:'出身地'},
+    {prompt:'她是哪國人？', answer:'她是印尼人。／她是日本人。', explain:'介紹他人國籍'},
+    {prompt:'今天天氣怎麼樣？', answer:'今天下雨。／今天打雷。／今天晴天。', explain:'描述天氣'},
+    {prompt:'日本人喜歡什麼數字？', answer:'7（七）', explain:'文化：日本的幸運數字'},
+    {prompt:'台灣人喜歡什麼數字？', answer:'6（六）、8（八）', explain:'文化：台灣的幸運數字'},
+    {prompt:'日本人和台灣人都不喜歡什麼數字？', answer:'4（四）──因為發音像「死」', explain:'文化：忌諱數字'},
+  ],
+  sentenceData:[
+    {prompt:'問國籍',           answer:'她是哪國人？',
+     tiles:[{cn:'她',py:'tā'},{cn:'是',py:'shì'},{cn:'哪國人',py:'nǎ guó rén'},{cn:'？',py:''}]},
+    {prompt:'問出身地',         answer:'你是哪裡人？',
+     tiles:[{cn:'你',py:'nǐ'},{cn:'是',py:'shì'},{cn:'哪裡人',py:'nǎ lǐ rén'},{cn:'？',py:''}]},
+    {prompt:'確認國籍',         answer:'你是日本人嗎？',
+     tiles:[{cn:'你',py:'nǐ'},{cn:'是',py:'shì'},{cn:'日本人',py:'rì běn rén'},{cn:'嗎',py:'ma'},{cn:'？',py:''}]},
+    {prompt:'說出身地',         answer:'我來自北海道。',
+     tiles:[{cn:'我',py:'wǒ'},{cn:'來自',py:'lái zì'},{cn:'北海道',py:'Běi hǎi dào'},{cn:'。',py:''}]},
+    {prompt:'說居住地',         answer:'我住在東京。',
+     tiles:[{cn:'我',py:'wǒ'},{cn:'住在',py:'zhù zài'},{cn:'東京',py:'Dōng jīng'},{cn:'。',py:''}]},
+    {prompt:'問天氣',           answer:'今天天氣怎麼樣？',
+     tiles:[{cn:'今天',py:'jīn tiān'},{cn:'天氣',py:'tiān qì'},{cn:'怎麼樣',py:'zěn me yàng'},{cn:'？',py:''}]},
+    {prompt:'介紹家人',         answer:'我媽媽是印尼人。',
+     tiles:[{cn:'我媽媽',py:'wǒ mā ma'},{cn:'是',py:'shì'},{cn:'印尼人',py:'yìn ní rén'},{cn:'。',py:''}]},
+    {prompt:'介紹老師',         answer:'我們老師是日本人。',
+     tiles:[{cn:'我們老師',py:'wǒ men lǎo shī'},{cn:'是',py:'shì'},{cn:'日本人',py:'rì běn rén'},{cn:'。',py:''}]},
+    {prompt:'說今天天氣',       answer:'今天晴天。',
+     tiles:[{cn:'今天',py:'jīn tiān'},{cn:'晴天',py:'qíng tiān'},{cn:'。',py:''}]},
+    {prompt:'問喜歡的數字',     answer:'你喜歡什麼數字？',
+     tiles:[{cn:'你',py:'nǐ'},{cn:'喜歡',py:'xǐ huān'},{cn:'什麼',py:'shén me'},{cn:'數字',py:'shù zì'},{cn:'？',py:''}]},
+  ],
+},
+
+// ── D4～D22 佔位 ────────────────────────
+...Array.from({length:19},(_,i)=>({
+  id:`D${i+4}`, title:`第 ${i+4} 課`, subtitle:'即將推出',
   info:'', vocab:[], mmPairs:[], toneData:[], dialogueData:[], sentenceData:[], locked:true
 })),
 
@@ -518,6 +775,14 @@ let currentMode   = null;
 function buildPortal(){
   const grid = document.getElementById('lessons-grid');
   grid.innerHTML = '';
+
+  // Pinyin chart card (before D1)
+  const pyCard = document.createElement('div');
+  pyCard.className = 'lesson-card pinyin-card';
+  pyCard.innerHTML = `<div class="d-num" style="color:var(--blue-light)">📊</div><div class="d-title" style="color:var(--text);font-weight:700">漢語拼音表<br><span style="font-size:12px;color:var(--text-muted)">點擊聽聲調</span></div>`;
+  pyCard.onclick = () => openPinyinChart();
+  grid.appendChild(pyCard);
+
   LESSONS.forEach(l => {
     const div = document.createElement('div');
     div.className = 'lesson-card' + (l.locked ? ' locked' : '');
@@ -537,18 +802,21 @@ function openLesson(id){
   const modes = document.getElementById('lh-modes');
   modes.innerHTML = '';
   const btns = [
-    {icon:'🃏', name:'單字卡',   desc:'詞語記憶卡＋發音', fn:'startFlashcards()', show: L.vocab.length > 0},
-    {icon:'🧩', name:'配對遊戲', desc:'中文配對練習',     fn:'startMemory()',     show: L.mmPairs.length > 0},
-    {icon:'🎵', name:'聲調練習', desc:'20個聲調組合',     fn:'startToneQuiz()',   show: L.toneData.length > 0},
-    {icon:'💬', name:'對話練習', desc:'禮貌對話填空',     fn:'startDialogue()',   show: L.dialogueData.length > 0},
-    {icon:'🧱', name:'句子拼圖', desc:'詞卡重組句子',     fn:'startSentence()',   show: L.sentenceData.length > 0},
+    {icon:'🃏', name:'詞語卡',    desc:'詞語記憶卡＋發音', fn:'startFlashcards()', show: L.vocab.length > 0,   tone:false},
+    {icon:'🧩', name:'配對遊戲',  desc:'中文配對練習',     fn:'startMemory()',     show: L.mmPairs.length > 0, tone:false},
+    {icon:'🎵', name:'聲調＆聽寫',desc:'聲調＆數字聽寫',   fn:'startToneQuiz()',   show: L.toneData.length > 0 || L.hasNumberDictation, tone:true},
+    {icon:'💬', name:'對話練習',  desc:'禮貌對話填空',     fn:'startDialogue()',   show: L.dialogueData.length > 0, tone:false},
+    {icon:'🧱', name:'句子重組',  desc:'詞卡重組句子',     fn:'startSentence()',   show: L.sentenceData.length > 0, tone:false},
   ].filter(b => b.show);
 
   btns.forEach((b,i) => {
     const div = document.createElement('div');
-    div.className = 'mode-btn';
+    div.className = 'mode-btn' + (b.tone ? ' tone-btn' : '');
     if (btns.length % 2 === 1 && i === btns.length - 1) div.style.gridColumn = '1/-1';
-    div.innerHTML = `<div class="mode-icon">${b.icon}</div><div class="mode-name">${b.name}</div><div class="mode-desc">${b.desc}</div>`;
+    const modeIcon = b.tone
+      ? `<div class="mode-icon" style="font-size:32px;margin-bottom:10px;color:var(--gold);line-height:1">♩♪</div>`
+      : `<div class="mode-icon">${b.icon}</div>`;
+    div.innerHTML = modeIcon + `<div class="mode-name">${b.name}</div>`;
     div.onclick = new Function(b.fn);
     modes.appendChild(div);
   });
@@ -610,7 +878,10 @@ function renderFC(){
 function speakWord(){
   const btn = document.getElementById('fc-sound-btn');
   btn.classList.add('playing');
-  speak(fcVocab[fcIdx].char);
+  // If char is a pure number, speak the Chinese pinyin reading via the meaning field isn't great
+  // Instead speak the char directly – zh-TW TTS reads arabic numerals in Chinese
+  const ch = fcVocab[fcIdx].char;
+  speak(ch);
   setTimeout(() => btn.classList.remove('playing'), 1400);
 }
 function flipCard(){ document.getElementById('fc-card').classList.toggle('flipped') }
@@ -662,11 +933,36 @@ function mmUpdateStats(){
 }
 
 // ════════════════════════════════════════════════════════
-// TONE QUIZ
+// TONE QUIZ + NUMBER DICTATION
 // ════════════════════════════════════════════════════════
 let tqIdx=0, tqScore=0, tqSelected=null, tqList=[];
-function startToneQuiz(){ tqIdx=0; tqScore=0; tqSelected=null; tqList=shuffle(currentLesson.toneData); showScreen('tonequiz'); renderTQ() }
+let tqCurrentMode='tone'; // 'tone' or 'number'
+let d3PlayCount=0; // track if it's the first run for D3 numbers
+
+function startToneQuiz(){
+  tqIdx=0; tqScore=0; tqSelected=null;
+  tqList = shuffle(currentLesson.toneData || []);
+  tqCurrentMode = 'tone';
+  // Show tabs only if lesson has both
+  const hasTone = (currentLesson.toneData||[]).length > 0;
+  const hasNum  = !!currentLesson.hasNumberDictation;
+  document.getElementById('tq-mode-tabs').style.display = (hasTone && hasNum) ? 'flex' : 'none';
+  tqSetMode(hasTone ? 'tone' : 'number');
+  showScreen('tonequiz');
+}
+
+function tqSetMode(mode){
+  tqCurrentMode = mode;
+  document.querySelectorAll('.nd-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nd-tab')[mode==='tone'?0:1].classList.add('active');
+  document.getElementById('tq-tone-section').style.display   = mode==='tone'   ? 'block':'none';
+  document.getElementById('tq-number-section').style.display = mode==='number' ? 'block':'none';
+  if(mode==='tone') renderTQ();
+  if(mode==='number') initND();
+}
+
 function renderTQ(){
+  if(!tqList.length) return;
   if (tqIdx >= tqList.length){ showResult('tonequiz', tqScore, tqList.length, '聲調練習完成！'); return }
   tqSelected = null;
   const q = tqList[tqIdx];
@@ -697,41 +993,111 @@ function tqSubmit(){
   submit.onclick = () => { tqIdx++; submit.onclick = tqSubmit; renderTQ() };
 }
 
+// ── NUMBER DICTATION ──
+let ndList=[], ndIdx=0, ndRevealed=false, ndIsFirstRun=true;
+
+function buildNDList(isFirst){
+  const items=[];
+  if(isFirst){
+    D3_FIXED_NUMBERS.forEach(n => items.push({type:'num', value:n}));
+    D3_FIXED_PHONES.forEach(p => items.push({type:'phone', value:p}));
+  } else {
+    generateRandomNumbers().forEach(n => items.push({type:'num', value:n}));
+    // also add 4 random phone-like numbers for variety
+    const phones=[
+      '090-'+Math.floor(10000000+Math.random()*89999999),
+      '080-'+Math.floor(10000000+Math.random()*89999999),
+      '03-'+Math.floor(10000000+Math.random()*89999999),
+    ];
+    phones.forEach(p=>items.push({type:'phone',value:p}));
+  }
+  return items;
+}
+
+function initND(){
+  ndIsFirstRun = (d3PlayCount === 0);
+  ndList = buildNDList(ndIsFirstRun);
+  ndIdx=0; ndRevealed=false;
+  renderND();
+}
+
+function renderND(){
+  const item = ndList[ndIdx];
+  ndRevealed=false;
+  document.getElementById('nd-counter').textContent=`第 ${ndIdx+1} 題 / 共 ${ndList.length} 題`;
+  document.getElementById('nd-question').textContent='（　？　）';
+  document.getElementById('nd-hint').textContent='🔊 點擊播放';
+  document.getElementById('nd-answer').style.display='none';
+  document.getElementById('nd-pinyin').style.display='none';
+  document.getElementById('nd-card').style.cursor='pointer';
+  // auto play
+  setTimeout(()=>ndSpeak(),400);
+}
+
+function ndSpeak(){
+  const item=ndList[ndIdx];
+  const btn=document.getElementById('nd-sound-btn');
+  btn.classList.add('playing');
+  let txt='';
+  if(item.type==='num') txt=numToCharFixed(item.value);
+  else txt=item.value.replace(/-/g,' ');
+  speak(txt);
+  setTimeout(()=>btn.classList.remove('playing'),1800);
+}
+
+function ndReveal(){
+  if(ndRevealed) return;
+  ndRevealed=true;
+  const item=ndList[ndIdx];
+  const ansEl=document.getElementById('nd-answer');
+  const pyEl=document.getElementById('nd-pinyin');
+  let ansText='', pyText='';
+  if(item.type==='num'){
+    ansText=String(item.value);
+    pyText=numToCharFixed(item.value)+'　'+numToPinyin(item.value);
+  } else {
+    ansText=item.value;
+    pyText=phoneDigitsToPinyin(item.value);
+  }
+  ansEl.textContent=ansText; ansEl.style.display='block';
+  pyEl.textContent=pyText;  pyEl.style.display='block';
+  document.getElementById('nd-question').textContent='答案：';
+  document.getElementById('nd-hint').textContent='點擊卡片可繼續';
+  document.getElementById('nd-card').style.cursor='default';
+}
+
+function ndNext(){
+  if(ndIdx < ndList.length-1){ ndIdx++; renderND(); }
+  else {
+    d3PlayCount++;
+    // finished – rebuild with random for next time
+    alert('🎉 聽寫完成！再試一次會出現隨機數字。');
+    ndIsFirstRun=false;
+    ndList=buildNDList(false);
+    ndIdx=0; renderND();
+  }
+}
+function ndPrev(){ if(ndIdx>0){ ndIdx--; renderND(); } }
+
 // ════════════════════════════════════════════════════════
 // DIALOGUE
 // ════════════════════════════════════════════════════════
-let dfIdx=0, dfScore=0, dfList=[];
-function startDialogue(){ dfIdx=0; dfScore=0; dfList=shuffle(currentLesson.dialogueData); showScreen('dialogue'); renderDF() }
+let dfIdx=0, dfList=[];
+function startDialogue(){ dfIdx=0; dfList=currentLesson.dialogueData; showScreen('dialogue'); renderDF() }
 function renderDF(){
-  if (dfIdx >= dfList.length){ showResult('dialogue', dfScore, dfList.length, '對話練習完成！'); return }
   const q = dfList[dfIdx];
-  document.getElementById('df-q-num').textContent = `第 ${dfIdx+1} 題 / 共 ${dfList.length} 題`;
-  document.getElementById('df-progress').style.width = `${dfIdx/dfList.length*100}%`;
-  document.getElementById('df-score-badge').textContent = `${dfScore}分`;
-  const fb = document.getElementById('df-feedback'); fb.style.display = 'none'; fb.className = 'df-feedback';
-  document.getElementById('df-prompt').innerHTML = `<span class="df-label">選出正確的回應</span>${q.prompt.replace(/\n/g,'<br>')}`;
-  const el = document.getElementById('df-choices'); el.innerHTML = '';
-  shuffle(q.opts).forEach(opt => {
-    const btn = document.createElement('button'); btn.className = 'df-choice'; btn.textContent = opt;
-    btn.onclick = () => dfCheck(btn, opt, q); el.appendChild(btn);
-  });
+  document.getElementById('df-q-num').textContent = `${dfIdx+1} / ${dfList.length}`;
+  document.getElementById('df-progress').style.width = `${(dfIdx+1)/dfList.length*100}%`;
+  document.getElementById('df-q').textContent = q.prompt;
+  document.getElementById('df-ans').textContent = q.answer;
+  document.getElementById('df-tip').textContent = q.explain ? '💡 ' + q.explain : '';
+  const card = document.getElementById('df-card');
+  card.classList.remove('flipped'); card.classList.add('pop');
+  setTimeout(()=>card.classList.remove('pop'),300);
 }
-function dfCheck(btn, selected, q){
-  document.querySelectorAll('.df-choice').forEach(b => b.classList.add('disabled'));
-  const fb = document.getElementById('df-feedback'); fb.style.display = 'block';
-  if (selected === q.correct){
-    btn.classList.add('correct'); dfScore++;
-    fb.className = 'df-feedback correct';
-    fb.innerHTML = `✓ 正確！<br><small>${q.explain}</small>`;
-  } else {
-    btn.classList.add('wrong');
-    document.querySelectorAll('.df-choice').forEach(b => { if (b.textContent === q.correct) b.classList.add('correct') });
-    fb.className = 'df-feedback wrong';
-    fb.innerHTML = `✗ 正確答案：${q.correct}<br><small>${q.explain}</small>`;
-  }
-  document.getElementById('df-score-badge').textContent = `${dfScore}分`;
-  setTimeout(() => { dfIdx++; renderDF() }, 2000);
-}
+function dfFlip(){ document.getElementById('df-card').classList.toggle('flipped'); }
+function dfNext(){ if(dfIdx < dfList.length-1){ dfIdx++; renderDF(); } }
+function dfPrev(){ if(dfIdx > 0){ dfIdx--; renderDF(); } }
 
 // ════════════════════════════════════════════════════════
 // SENTENCE
@@ -739,7 +1105,7 @@ function dfCheck(btn, selected, q){
 let s2Idx=0, s2Score=0, s2Answered=false, s2Selected=[], s2Current=null;
 function startSentence(){ s2Idx=0; s2Score=0; showScreen('sentence'); renderS2() }
 function renderS2(){
-  if (s2Idx >= currentLesson.sentenceData.length){ showResult('sentence', s2Score, currentLesson.sentenceData.length, '拼圖全部完成！'); return }
+  if (s2Idx >= currentLesson.sentenceData.length){ showResult('sentence', s2Score, currentLesson.sentenceData.length, '重組全部完成！'); return }
   s2Answered=false; s2Selected=[]; s2Current=currentLesson.sentenceData[s2Idx];
   document.getElementById('s2-q-num').textContent = `第 ${s2Idx+1} 題 / 共 ${currentLesson.sentenceData.length} 題`;
   document.getElementById('s2-prompt').textContent = s2Current.prompt;
@@ -785,6 +1151,175 @@ function s2Check(){
   }
   setTimeout(() => { s2Idx++; renderS2() }, 2200);
 }
+
+// ════════════════════════════════════════════════════════
+// PINYIN CHART
+// ════════════════════════════════════════════════════════
+function openPinyinChart(){
+  window.open('https://yoyochinese.com/chinese-learning-tools/Mandarin-Chinese-pronunciation-lesson/pinyin-chart-table','_blank');
+}
+
+// Finals (rows) and Initials (columns)
+const PY_INITIALS = ['','b','p','m','f','d','t','n','l','g','k','h','j','q','x','z','c','s','zh','ch','sh','r'];
+const PY_FINALS = [
+  'a','o','e','i','u','ü',
+  'ai','ei','ao','ou',
+  'an','en','ang','eng','er',
+  'ia','iao','ie','iu','ian','in','iang','ing','iong',
+  'ua','uo','uai','ui','uan','un','uang','ueng',
+  'üe','üan','ün',
+];
+
+// Valid combinations: a complete (but simplified) table
+// Key: final, value: set of valid initials ('' means standalone)
+const PY_VALID = {
+  'a':  ['','b','p','m','f','d','t','n','l','g','k','h','zh','ch','sh','r','z','c','s'],
+  'o':  ['','b','p','m','f'],
+  'e':  ['','d','t','n','l','g','k','h','zh','ch','sh','r','z','c','s'],
+  'i':  ['','b','p','m','d','t','n','l','j','q','x','zh','ch','sh','r','z','c','s'],
+  'u':  ['','b','p','m','f','d','t','n','l','g','k','h','j','q','x','zh','ch','sh','r','z','c','s'],
+  'ü':  ['','n','l','j','q','x'],
+  'ai': ['','b','p','m','d','t','n','l','g','k','h','zh','ch','sh','z','c','s'],
+  'ei': ['','b','p','m','d','t','n','l','g','k','h','zh','sh','z','c','s'],
+  'ao': ['','b','p','m','d','t','n','l','g','k','h','zh','ch','sh','r','z','c','s'],
+  'ou': ['','p','m','d','t','n','l','g','k','h','zh','ch','sh','r','z','c','s'],
+  'an': ['','b','p','m','f','d','t','n','l','g','k','h','zh','ch','sh','r','z','c','s'],
+  'en': ['','b','p','m','f','d','t','n','g','k','h','zh','ch','sh','r','z','c','s'],
+  'ang':['','b','p','m','f','d','t','n','l','g','k','h','zh','ch','sh','r','z','c','s'],
+  'eng':['','b','p','m','f','d','t','n','l','g','k','h','zh','ch','sh','r','z','c','s'],
+  'er': [''],
+  'ia': ['','l','j','q','x'],
+  'iao':['','b','p','m','d','t','n','l','j','q','x'],
+  'ie': ['','b','p','m','d','t','n','l','j','q','x'],
+  'iu': ['','l','n','j','q','x'],
+  'ian':['','b','p','m','d','t','n','l','j','q','x'],
+  'in': ['','b','p','m','l','n','j','q','x'],
+  'iang':['','l','n','j','q','x'],
+  'ing':['','b','p','m','d','t','n','l','j','q','x'],
+  'iong':['','j','q','x'],
+  'ua': ['','g','k','h','zh','ch','sh','r'],
+  'uo': ['','d','t','n','l','g','k','h','zh','ch','sh','r','z','c','s'],
+  'uai':['','g','k','h','zh','ch','sh'],
+  'ui': ['','d','t','g','k','h','zh','ch','sh','r','z','c','s'],
+  'uan':['','d','t','n','l','g','k','h','j','q','x','zh','ch','sh','r','z','c','s'],
+  'un': ['','d','t','l','g','k','h','j','q','x','zh','ch','sh','r','z','c','s'],
+  'uang':['','g','k','h','zh','ch','sh'],
+  'ueng':[''],
+  'üe': ['','n','l','j','q','x'],
+  'üan':['','j','q','x'],
+  'ün': ['','j','q','x'],
+};
+
+// For display: when initial is '', the syllable is displayed differently
+const STANDALONE_MAP = {
+  'a':'a','o':'o','e':'e','i':'yi','u':'wu','ü':'yu',
+  'ai':'ai','ei':'ei','ao':'ao','ou':'ou',
+  'an':'an','en':'en','ang':'ang','eng':'eng','er':'er',
+  'ia':'ya','iao':'yao','ie':'ye','iu':'you','ian':'yan','in':'yin','iang':'yang','ing':'ying','iong':'yong',
+  'ua':'wa','uo':'wo','uai':'wai','ui':'wei','uan':'wan','un':'wen','uang':'wang','ueng':'weng',
+  'üe':'yue','üan':'yuan','ün':'yun',
+};
+
+function getSyllable(initial, final){
+  if(!initial) return STANDALONE_MAP[final] || final;
+  // ü after j,q,x → u in writing
+  let f = final;
+  if(['j','q','x'].includes(initial) && (f==='ü' || f==='üe'||f==='üan'||f==='ün')){
+    f = f.replace('ü','u');
+  }
+  return initial+f;
+}
+
+const TONES_MAP = {
+  'a':['ā','á','ǎ','à'],'o':['ō','ó','ǒ','ò'],'e':['ē','é','ě','è'],
+  'i':['ī','í','ǐ','ì'],'u':['ū','ú','ǔ','ù'],'ü':['ǖ','ǘ','ǚ','ǜ'],
+};
+function applyTone(syllable, tone){
+  // tone 0 = neutral (no mark)
+  if(tone===0) return syllable;
+  // find the main vowel to apply tone mark
+  const order=['a','o','e','ü','u','i'];
+  for(const v of order){
+    if(syllable.includes(v)){
+      const marks = TONES_MAP[v];
+      if(!marks) return syllable;
+      return syllable.replace(v, marks[tone-1]);
+    }
+  }
+  return syllable;
+}
+
+function buildPinyinChart(){
+  const container = document.getElementById('py-chart-container');
+  // Build a simplified grid: rows = finals groupings, cols = subset of initials
+  // Use a more compact layout: group finals, show only relevant initials
+
+  const COLS = ['','b','p','m','f','d','t','n','l','g','k','h','j','q','x','z','c','s','zh','ch','sh','r'];
+  const ROWS = [
+    {label:'a', finals:['a','o','e','i','u','ü']},
+    {label:'ai/ei', finals:['ai','ei','ao','ou']},
+    {label:'an/en', finals:['an','en','ang','eng','er']},
+    {label:'ia', finals:['ia','iao','ie','iu','ian','in','iang','ing','iong']},
+    {label:'ua', finals:['ua','uo','uai','ui','uan','un','uang']},
+    {label:'ü', finals:['üe','üan','ün']},
+  ];
+
+  let html = `<table class="py-table"><thead><tr><th></th>`;
+  COLS.forEach(c => html+=`<th>${c||'（单独）'}</th>`);
+  html+='</tr></thead><tbody>';
+
+  ROWS.forEach(group => {
+    group.finals.forEach(final => {
+      html+=`<tr><td style="font-weight:600;color:var(--gold);font-size:12px">${final}</td>`;
+      COLS.forEach(initial => {
+        const valid = PY_VALID[final] && PY_VALID[final].includes(initial);
+        if(valid){
+          const syl = getSyllable(initial, final);
+          html+=`<td class="py-cell" onclick="openTonePopup('${syl}','${initial}','${final}')">${syl}</td>`;
+        } else {
+          html+=`<td class="py-cell empty">·</td>`;
+        }
+      });
+      html+='</tr>';
+    });
+  });
+  html+='</tbody></table>';
+  container.innerHTML=html;
+}
+
+function openTonePopup(syl, initial, final){
+  const popup = document.getElementById('tone-popup');
+  document.getElementById('tp-syllable').textContent = syl;
+  const row = document.getElementById('tp-tones');
+  row.innerHTML='';
+  // neutral tone
+  const neutral = document.createElement('button');
+  neutral.className='tone-pill'; neutral.textContent=syl;
+  neutral.title='輕聲（neutral）';
+  neutral.onclick=()=>{ speak(syl); };
+  row.appendChild(neutral);
+  // tones 1–4
+  [1,2,3,4].forEach(t=>{
+    const btn=document.createElement('button');
+    btn.className='tone-pill';
+    const toned=applyTone(syl,t);
+    btn.textContent=toned;
+    btn.onclick=()=>{ speak(toned); };
+    row.appendChild(btn);
+  });
+  // position popup
+  popup.style.display='block';
+  popup.style.left='50%'; popup.style.top='50%';
+  popup.style.transform='translate(-50%,-50%)';
+}
+function closeTonePopup(){ document.getElementById('tone-popup').style.display='none'; }
+// Close popup on outside click
+document.addEventListener('click',e=>{
+  const p=document.getElementById('tone-popup');
+  if(p && p.style.display==='block' && !p.contains(e.target) && !e.target.classList.contains('py-cell')){
+    p.style.display='none';
+  }
+});
 
 // ════════════════════════════════════════════════════════
 // INIT
