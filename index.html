@@ -428,24 +428,26 @@ function numToCharFixed(n){
     return (t===1?'十':_ones[t]+'十')+(u?_ones[u]:'');
   }
   if(n<1000){
+    // 百位的2讀「兩」
     const h=Math.floor(n/100),rest=n%100;
-    let s=_ones[h]+'百';
+    let s=(h===2?'兩':_ones[h])+'百';
     if(rest===0) return s;
     if(rest<10) s+='零';
     s+=numToCharFixed(rest);
     return s;
   }
   if(n<10000){
+    // 千位的2讀「兩」
     const q=Math.floor(n/1000),rest=n%1000;
-    let s=_ones[q]+'千';
+    let s=(q===2?'兩':_ones[q])+'千';
     if(rest===0) return s;
     if(rest<100) s+='零';
     s+=numToCharFixed(rest);
     return s;
   }
-  // 萬
+  // 萬位的2讀「兩」
   const w=Math.floor(n/10000),rest=n%10000;
-  let s=_ones[w]+'萬';
+  let s=(w===2?'兩':_ones[w])+'萬';
   if(rest===0) return s;
   if(rest<1000) s+='零';
   s+=numToCharFixed(rest);
@@ -461,21 +463,24 @@ function numToPinyin(n){
     return (t===1?'shí':_onesPy[t]+' shí')+(u?' '+_onesPy[u]:'');
   }
   if(n<1000){
+    // 百位的2讀「兩 liǎng」
     const h=Math.floor(n/100),rest=n%100;
-    let s=_onesPy[h]+' bǎi';
+    let s=(h===2?'liǎng':_onesPy[h])+' bǎi';
     if(rest===0) return s;
     if(rest<10) s+=' líng';
     return s+' '+numToPinyin(rest);
   }
   if(n<10000){
+    // 千位的2讀「兩 liǎng」
     const q=Math.floor(n/1000),rest=n%1000;
-    let s=_onesPy[q]+' qiān';
+    let s=(q===2?'liǎng':_onesPy[q])+' qiān';
     if(rest===0) return s;
     if(rest<100) s+=' líng';
     return s+' '+numToPinyin(rest);
   }
+  // 萬位的2讀「兩 liǎng」
   const w=Math.floor(n/10000),rest=n%10000;
-  let s=_onesPy[w]+' wàn';
+  let s=(w===2?'liǎng':_onesPy[w])+' wàn';
   if(rest===0) return s;
   if(rest<1000) s+=' líng';
   return s+' '+numToPinyin(rest);
