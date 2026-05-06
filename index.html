@@ -50,7 +50,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .lesson-title span{color:var(--blue-light)}
 .lesson-info{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;width:100%;max-width:460px;margin-bottom:22px;font-size:14px;color:var(--text-mid);line-height:1.8}
 .modes-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:460px}
-.mode-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 14px;cursor:pointer;transition:all .2s;text-align:center;color:var(--text)}
+.mode-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 14px;cursor:pointer;transition:all .2s;text-align:center;color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center}
 .mode-btn:hover{border-color:var(--blue);background:var(--surface2);transform:translateY(-2px)}
 .mode-btn.tone-btn{background:var(--surface);border-color:var(--border)}
 .mode-btn.tone-btn:hover{background:var(--surface2);border-color:var(--blue);transform:translateY(-2px)}
@@ -191,6 +191,9 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .py-legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font-size:12px;color:var(--text-muted);margin-bottom:12px;padding:0 10px}
 
 .q-num{font-size:12px;color:var(--text-muted);letter-spacing:2px;margin-bottom:14px}
+/* ── EMOJI MEMORY ── */
+.mm-tile-emoji{font-size:32px;line-height:1}
+.mm-tile-cn{font-size:16px;font-weight:600;margin-top:2px}
 @keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
 .pop{animation:pop .25s cubic-bezier(.34,1.56,.64,1)}
 </style>
@@ -201,7 +204,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 <div class="site-header">
   <div>
     <div class="site-title">派遣前台灣華語研修</div>
-    <div class="site-sub">解麗琪老師 &amp; 張月珍老師　使用 AI 製作</div>
+    <div class="site-sub" style="color:#ffffff;font-weight:500">解麗琪老師 &amp; 張月珍老師　使用 AI 製作</div>
   </div>
 </div>
 
@@ -410,41 +413,96 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 // 課程資料庫  ── 新增課只要在這裡加一個物件 ──
 // ════════════════════════════════════════════════════════
 
-// Number data for D3 dictation
+// ── Number helpers ──
 const D3_FIXED_NUMBERS = [95,15,47,57,62,26,12,35,96,99,17];
 const D3_FIXED_PHONES  = ['080-38652879','090-57612943','03-82459955','02-43795517'];
 
-function numToPinyin(n){
-  const ones=['líng','yī','èr','sān','sì','wǔ','liù','qī','bā','jiǔ'];
-  const teens=['shí','shí yī','shí èr','shí sān','shí sì','shí wǔ','shí liù','shí qī','shí bā','shí jiǔ'];
-  if(n===0) return 'líng';
-  if(n<10) return ones[n];
-  if(n<20) return teens[n-10];
-  const tens=Math.floor(n/10), unit=n%10;
-  let s=ones[tens]+(tens>0?' shí':'shí');
-  if(unit>0) s+=' '+ones[unit];
+const _ones=['零','一','二','三','四','五','六','七','八','九'];
+const _onesPy=['líng','yī','èr','sān','sì','wǔ','liù','qī','bā','jiǔ'];
+
+function numToCharFixed(n){
+  if(n===0) return '零';
+  if(n<10) return _ones[n];
+  if(n<100){
+    const t=Math.floor(n/10),u=n%10;
+    return (t===1?'十':_ones[t]+'十')+(u?_ones[u]:'');
+  }
+  if(n<1000){
+    const h=Math.floor(n/100),rest=n%100;
+    let s=_ones[h]+'百';
+    if(rest===0) return s;
+    if(rest<10) s+='零';
+    s+=numToCharFixed(rest);
+    return s;
+  }
+  if(n<10000){
+    const q=Math.floor(n/1000),rest=n%1000;
+    let s=_ones[q]+'千';
+    if(rest===0) return s;
+    if(rest<100) s+='零';
+    s+=numToCharFixed(rest);
+    return s;
+  }
+  // 萬
+  const w=Math.floor(n/10000),rest=n%10000;
+  let s=_ones[w]+'萬';
+  if(rest===0) return s;
+  if(rest<1000) s+='零';
+  s+=numToCharFixed(rest);
   return s;
 }
 function numToChar(n){ return numToCharFixed(n); }
-function numToCharFixed(n){
-  const ones=['零','一','二','三','四','五','六','七','八','九'];
-  if(n===0) return '零';
-  if(n<10) return ones[n];
-  if(n===10) return '十';
-  const tens=Math.floor(n/10),unit=n%10;
-  const tStr = tens===1?'十':ones[tens]+'十';
-  return tStr+(unit>0?ones[unit]:'');
+
+function numToPinyin(n){
+  if(n===0) return 'líng';
+  if(n<10) return _onesPy[n];
+  if(n<100){
+    const t=Math.floor(n/10),u=n%10;
+    return (t===1?'shí':_onesPy[t]+' shí')+(u?' '+_onesPy[u]:'');
+  }
+  if(n<1000){
+    const h=Math.floor(n/100),rest=n%100;
+    let s=_onesPy[h]+' bǎi';
+    if(rest===0) return s;
+    if(rest<10) s+=' líng';
+    return s+' '+numToPinyin(rest);
+  }
+  if(n<10000){
+    const q=Math.floor(n/1000),rest=n%1000;
+    let s=_onesPy[q]+' qiān';
+    if(rest===0) return s;
+    if(rest<100) s+=' líng';
+    return s+' '+numToPinyin(rest);
+  }
+  const w=Math.floor(n/10000),rest=n%10000;
+  let s=_onesPy[w]+' wàn';
+  if(rest===0) return s;
+  if(rest<1000) s+=' líng';
+  return s+' '+numToPinyin(rest);
 }
+
 function phoneDigitsToPinyin(s){
   const map={'0':'líng','1':'yī','2':'èr','3':'sān','4':'sì','5':'wǔ','6':'liù','7':'qī','8':'bā','9':'jiǔ','-':' - '};
-  return s.split('').map(c=>map[c]||c).join(' ');
+  return s.split('').map(ch=>map[ch]||ch).join(' ');
+}
+
+// D4 big numbers: 3 hundreds, 3 thousands, 3 ten-thousands (emphasise 5/9)
+function generateD4BigNumbers(){
+  function randWith59(min,max){
+    let n; let tries=0;
+    do{ n=min+Math.floor(Math.random()*(max-min+1)); tries++; }
+    while(tries<20 && !String(n).includes('5') && !String(n).includes('9'));
+    return n;
+  }
+  const hundreds = [randWith59(100,999), randWith59(100,999), 100+Math.floor(Math.random()*900)];
+  const thousands= [randWith59(1000,9999),randWith59(1000,9999),1000+Math.floor(Math.random()*9000)];
+  const tenthous = [randWith59(10000,99999),randWith59(10000,99999),10000+Math.floor(Math.random()*90000)];
+  return shuffle([...hundreds,...thousands,...tenthous]);
 }
 
 function generateRandomNumbers(){
-  // pool with emphasis on 5 and 9
   const pool=[];
   for(let i=0;i<=100;i++) pool.push(i);
-  // extra 5/9 emphasis: shuffle then filter 12 numbers with at least 4 containing 5 or 9
   const with59 = pool.filter(n=>String(n).includes('5')||String(n).includes('9'));
   const without = pool.filter(n=>!String(n).includes('5')&&!String(n).includes('9'));
   const chosen=[...shuffle(with59).slice(0,6),...shuffle(without).slice(0,5)];
@@ -756,8 +814,120 @@ const LESSONS = [
 },
 
 // ── D4～D22 佔位 ────────────────────────
-...Array.from({length:19},(_,i)=>({
-  id:`D${i+4}`, title:`第 ${i+4} 課`, subtitle:'即將推出',
+{
+  id:'D4', title:'日期時間・日常活動', subtitle:'問句式打招呼・邀約',
+  info:'日期・時間・日常活動・打招呼・邀約　｜　詞語 40 個・對話 12 組・聲調＆數字聽寫',
+  vocab:[
+    // 動詞
+    {char:'有',      pinyin:'yǒu',        meaning:'ある・いる・持っている', example:'你有狗嗎？'},
+    {char:'要',      pinyin:'yào',        meaning:'〜したい・必要',         example:'你要不要去跳舞？'},
+    {char:'去',      pinyin:'qù',         meaning:'行く',                   example:'你去哪？'},
+    {char:'跳舞',    pinyin:'tiào wǔ',    meaning:'ダンスする',             example:'她星期一跳舞。'},
+    {char:'唱歌',    pinyin:'chàng gē',   meaning:'歌う',                   example:'我喜歡唱歌。'},
+    {char:'聽音樂',  pinyin:'tīng yīn yuè',meaning:'音楽を聴く',           example:'我平常聽音樂。'},
+    {char:'讀書',    pinyin:'dú shū',     meaning:'本を読む・勉強する',     example:'我週末讀書。'},
+    {char:'做作業',  pinyin:'zuò zuò yè', meaning:'宿題をする',             example:'學生在做作業。'},
+    {char:'騎車',    pinyin:'qí chē',     meaning:'自転車に乗る',           example:'我騎車去學校。'},
+    {char:'打球',    pinyin:'dǎ qiú',     meaning:'ボールで遊ぶ',           example:'週末打球，好嗎？'},
+    {char:'游泳',    pinyin:'yóu yǒng',   meaning:'泳ぐ',                   example:'我喜歡游泳。'},
+    {char:'健身',    pinyin:'jiàn shēn',  meaning:'ジムで運動する',         example:'她週末健身。'},
+    {char:'買東西',  pinyin:'mǎi dōng xi',meaning:'買い物する',             example:'我去超市買東西。'},
+    {char:'吃飯',    pinyin:'chī fàn',    meaning:'ご飯を食べる',           example:'你在哪裡吃飯？'},
+    {char:'做飯',    pinyin:'zuò fàn',    meaning:'料理する',               example:'我週末在家做飯。'},
+    {char:'睡覺',    pinyin:'shuì jiào',  meaning:'寝る',                   example:'你幾點睡覺？'},
+    {char:'見面',    pinyin:'jiàn miàn',  meaning:'会う',                   example:'我們去見面，好嗎？'},
+    {char:'回家',    pinyin:'huí jiā',    meaning:'家に帰る',               example:'你幾點回家？'},
+    // 地點
+    {char:'學校',    pinyin:'xué xiào',   meaning:'学校',                   example:'我在學校教書。'},
+    {char:'公園',    pinyin:'gōng yuán',  meaning:'公園',                   example:'我在公園跑步。'},
+    {char:'圖書館',  pinyin:'tú shū guǎn',meaning:'図書館',                 example:'我去圖書館讀書。'},
+    {char:'夜市',    pinyin:'yè shì',     meaning:'夜市',                   example:'我們去夜市，好嗎？'},
+    {char:'咖啡店',  pinyin:'kā fēi diàn',meaning:'カフェ',                 example:'我在咖啡店工作。'},
+    {char:'車站',    pinyin:'chē zhàn',   meaning:'駅',                     example:'我在車站等你。'},
+    {char:'餐廳',    pinyin:'cān tīng',   meaning:'レストラン',             example:'我們去餐廳吃飯。'},
+    {char:'電影院',  pinyin:'diàn yǐng yuàn',meaning:'映画館',             example:'你要去電影院嗎？'},
+    {char:'超市',    pinyin:'chāo shì',   meaning:'スーパー',               example:'我去超市買東西。'},
+    {char:'超商',    pinyin:'chāo shāng', meaning:'コンビニ',               example:'我去全家。'},
+    {char:'外面',    pinyin:'wài miàn',   meaning:'外・外側',               example:'我平常在外面吃。'},
+    // 時間
+    {char:'早上',    pinyin:'zǎo shàng',  meaning:'朝',                     example:'早上七點起床。'},
+    {char:'上午',    pinyin:'shàng wǔ',   meaning:'午前',                   example:'上午十點上課。'},
+    {char:'中午',    pinyin:'zhōng wǔ',   meaning:'昼',                     example:'中午一起吃飯？'},
+    {char:'下午',    pinyin:'xià wǔ',     meaning:'午後',                   example:'下午兩點見面。'},
+    {char:'晚上',    pinyin:'wǎn shàng',  meaning:'夜',                     example:'晚上你做什麼？'},
+    {char:'週末',    pinyin:'zhōu mò',    meaning:'週末',                   example:'週末你喜歡做什麼？'},
+    {char:'每天',    pinyin:'měi tiān',   meaning:'毎日',                   example:'你每天做飯嗎？'},
+    {char:'平常',    pinyin:'píng cháng', meaning:'普段・いつも',           example:'你平常晚上做什麼？'},
+    {char:'最近',    pinyin:'zuì jìn',    meaning:'最近',                   example:'你最近怎麼樣？'},
+    {char:'有空',    pinyin:'yǒu kòng',   meaning:'時間がある・暇',         example:'你今天有空嗎？'},
+  ],
+  // 配對：含圖示配漢字
+  mmPairs:[
+    {a:'🏊', b:'游泳', emoji:true},
+    {a:'🍚', b:'吃飯', emoji:true},
+    {a:'😴', b:'睡覺', emoji:true},
+    {a:'⚽', b:'打球', emoji:true},
+    {a:'📚', b:'圖書館', emoji:true},
+    {a:'🛒', b:'超市', emoji:true},
+    {a:'💃', b:'跳舞', emoji:true},
+    {a:'🏋️', b:'健身', emoji:true},
+  ],
+  hasNumberDictation: true,
+  toneData:[
+    // 一不變調
+    {char:'一人',   correct:'yì rén',   opts:['yī rén','yí rén','yǐ rén','yì rén']},
+    {char:'一千',   correct:'yì qiān',  opts:['yī qiān','yí qiān','yǐ qiān','yì qiān']},
+    {char:'一萬',   correct:'yí wàn',   opts:['yī wàn','yí wàn','yǐ wàn','yì wàn']},
+    {char:'一晚',   correct:'yì wǎn',   opts:['yī wǎn','yí wǎn','yǐ wǎn','yì wǎn']},
+    {char:'一百',   correct:'yì bǎi',   opts:['yī bǎi','yí bǎi','yǐ bǎi','yì bǎi']},
+    {char:'不要',   correct:'bú yào',   opts:['bū yào','bú yào','bǔ yào','bù yào']},
+    {char:'不對',   correct:'bú duì',   opts:['bū duì','bú duì','bǔ duì','bù duì']},
+    {char:'不在',   correct:'bù zài',   opts:['bū zài','bú zài','bǔ zài','bù zài']},
+    {char:'一個',   correct:'yí gè',    opts:['yī gè','yí gè','yǐ gè','yì gè']},
+    // 本課詞彙
+    {char:'游泳',   correct:'yóu yǒng', opts:['yōu yǒng','yóu yǒng','yǒu yǒng','yòu yǒng']},
+    {char:'睡覺',   correct:'shuì jiào',opts:['shuī jiào','shuí jiào','shuǐ jiào','shuì jiào']},
+    {char:'週末',   correct:'zhōu mò',  opts:['zhōu mō','zhōu mó','zhōu mǒ','zhōu mò']},
+    {char:'超市',   correct:'chāo shì', opts:['chāo shī','chāo shí','chāo shǐ','chāo shì']},
+    {char:'圖書館', correct:'tú shū guǎn',opts:['tū shū guǎn','tú shū guǎn','tǔ shū guǎn','tù shū guǎn']},
+    {char:'健身',   correct:'jiàn shēn',opts:['jiàn shēn','jiàn shén','jiàn shěn','jiàn shèn']},
+    {char:'平常',   correct:'píng cháng',opts:['pīng cháng','píng cháng','pǐng cháng','pìng cháng']},
+    {char:'電影院', correct:'diàn yǐng yuàn',opts:['diàn yīng yuàn','diàn yíng yuàn','diàn yǐng yuàn','diàn yìng yuàn']},
+    {char:'餐廳',   correct:'cān tīng', opts:['cān tīng','cān tíng','cān tǐng','cān tìng']},
+    {char:'有空',   correct:'yǒu kòng', opts:['yōu kòng','yóu kòng','yǒu kòng','yòu kòng']},
+  ],
+  dialogueData:[
+    {prompt:'你有狗嗎？',                                    answer:'我沒有狗。／我有一隻狗。',              explain:'有～嗎？→ 有。／我沒有。'},
+    {prompt:'你今天要上課嗎？',                              answer:'要，今天上課。／不，今天沒有課。',       explain:'要～嗎？→ 要。／不，沒有。'},
+    {prompt:'（打招呼）\n你說：「小林老師！去哪？」\n對方說？', answer:'王老師好！我出去一下，你呢？',         explain:'問句式打招呼 → 稱呼（好）！出去一下，你呢？'},
+    {prompt:'現在幾點？',                                    answer:'現在＿＿點＿＿分。',                    explain:'幾點幾分？→ 現在三點半。'},
+    {prompt:'你在哪裡教日語？',                              answer:'我在台北教日語。',                      explain:'在＋地點＋動詞'},
+    {prompt:'你要不要去跳舞？',                              answer:'好啊！我要去。／不好意思，我沒空。',     explain:'要不要～？→ 好啊！／不好意思，沒空。'},
+    {prompt:'你每天做飯嗎？',                                answer:'對，我每天做飯。／不，我平常在外面吃。',explain:'每天～嗎？→ 對 / 不'},
+    {prompt:'你平常在外面吃飯嗎？',                          answer:'是啊，我平常在外面吃。／不，我在家做飯。',explain:'平常在哪裡吃？'},
+    {prompt:'你平常晚上做什麼？',                            answer:'我平常晚上看電視。／我平常晚上健身。',  explain:'平常晚上做什麼？→ 描述習慣'},
+    {prompt:'你週末喜歡做什麼呢？',                          answer:'我週末喜歡跳舞。／我週末喜歡去夜市。',  explain:'週末喜歡做什麼呢？→ 興趣'},
+    {prompt:'我說「回來了？」\n你說？',                      answer:'回來了！',                              explain:'回來了？→ 回來了！（互說，表示打招呼）'},
+    {prompt:'你幾點睡覺？幾點起床？',                        answer:'我＿＿點睡覺，＿＿點起床。',            explain:'幾點睡覺／起床？→ 說出時間'},
+  ],
+  sentenceData:[
+    {prompt:'問有沒有',        answer:'你有空嗎？',
+     tiles:[{cn:'你',py:'nǐ'},{cn:'有空',py:'yǒu kòng'},{cn:'嗎',py:'ma'},{cn:'？',py:''}]},
+    {prompt:'邀請去超市',      answer:'我們去超市，好嗎？',
+     tiles:[{cn:'我們',py:'wǒ men'},{cn:'去',py:'qù'},{cn:'超市',py:'chāo shì'},{cn:'，',py:''},{cn:'好嗎',py:'hǎo ma'},{cn:'？',py:''}]},
+    {prompt:'問正在做什麼',    answer:'你在做什麼？',
+     tiles:[{cn:'你',py:'nǐ'},{cn:'在',py:'zài'},{cn:'做什麼',py:'zuò shén me'},{cn:'？',py:''}]},
+    {prompt:'說平常習慣',      answer:'我平常晚上看電視。',
+     tiles:[{cn:'我',py:'wǒ'},{cn:'平常',py:'píng cháng'},{cn:'晚上',py:'wǎn shàng'},{cn:'看電視',py:'kàn diàn shì'},{cn:'。',py:''}]},
+    {prompt:'說週末活動',      answer:'我週末在家做飯。',
+     tiles:[{cn:'我',py:'wǒ'},{cn:'週末',py:'zhōu mò'},{cn:'在家',py:'zài jiā'},{cn:'做飯',py:'zuò fàn'},{cn:'。',py:''}]},
+    {prompt:'正反疑問句',      answer:'你要不要去跳舞？',
+     tiles:[{cn:'你',py:'nǐ'},{cn:'要不要',py:'yào bú yào'},{cn:'去',py:'qù'},{cn:'跳舞',py:'tiào wǔ'},{cn:'？',py:''}]},
+  ],
+},
+
+...Array.from({length:18},(_,i)=>({
+  id:`D${i+5}`, title:`第 ${i+5} 課`, subtitle:'即將推出',
   info:'', vocab:[], mmPairs:[], toneData:[], dialogueData:[], sentenceData:[], locked:true
 })),
 
@@ -897,13 +1067,19 @@ function startMemory(){
   clearInterval(mmInterval); showScreen('memory');
   const tiles = [];
   currentLesson.mmPairs.forEach((p,i) => {
-    tiles.push({id:i, side:'a', text:p.a});
-    tiles.push({id:i, side:'b', text:p.b});
+    tiles.push({id:i, side:'a', text:p.a, isEmoji: !!p.emoji});
+    tiles.push({id:i, side:'b', text:p.b, isEmoji: false});
   });
   const grid = document.getElementById('mm-grid'); grid.innerHTML = '';
   shuffle(tiles).forEach(t => {
     const div = document.createElement('div'); div.className = 'mm-tile';
-    div.innerHTML = `<div class="mm-tile-inner">${t.text}</div>`;
+    // emoji tiles: bigger emoji
+    const isEmoji = t.isEmoji;
+    if(isEmoji){
+      div.innerHTML = `<div class="mm-tile-inner"><div class="mm-tile-emoji">${t.text}</div></div>`;
+    } else {
+      div.innerHTML = `<div class="mm-tile-inner">${t.text}</div>`;
+    }
     div.onclick = () => mmClick(div, t); grid.appendChild(div);
   });
   mmInterval = setInterval(() => { mmTimer++; document.getElementById('mm-timer').textContent = `⏱ ${mmTimer}s` }, 1000);
@@ -998,12 +1174,18 @@ let ndList=[], ndIdx=0, ndRevealed=false, ndIsFirstRun=true;
 
 function buildNDList(isFirst){
   const items=[];
+  const isD4 = currentLesson && currentLesson.id==='D4';
+  if(isD4){
+    // D4: 百/千/萬 大數字
+    generateD4BigNumbers().forEach(n=>items.push({type:'num',value:n}));
+    return items;
+  }
+  // D3: 原邏輯
   if(isFirst){
     D3_FIXED_NUMBERS.forEach(n => items.push({type:'num', value:n}));
     D3_FIXED_PHONES.forEach(p => items.push({type:'phone', value:p}));
   } else {
     generateRandomNumbers().forEach(n => items.push({type:'num', value:n}));
-    // also add 4 random phone-like numbers for variety
     const phones=[
       '090-'+Math.floor(10000000+Math.random()*89999999),
       '080-'+Math.floor(10000000+Math.random()*89999999),
