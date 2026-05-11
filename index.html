@@ -1278,7 +1278,7 @@ function renderDF(){
   document.getElementById('df-q').textContent = q.prompt;
   const dfAns = document.getElementById('df-ans');
   dfAns.textContent = q.answer;
-  dfAns.style.fontSize = (currentLesson.id === 'D3') ? '24px' : '60px';
+  dfAns.style.fontSize = (currentLesson.id === 'D3' || currentLesson.id === 'D4') ? '24px' : '60px';
   document.getElementById('df-tip').textContent = q.explain ? '💡 ' + q.explain : '';
   const card = document.getElementById('df-card');
   card.classList.remove('flipped'); card.classList.add('pop');
