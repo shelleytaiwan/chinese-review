@@ -304,11 +304,23 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
     <!-- NUMBER DICTATION section -->
     <div id="tq-number-section" style="display:none">
       <div class="nd-counter" id="nd-counter"></div>
-      <div class="nd-card" id="nd-card" onclick="ndReveal()">
+      <div class="nd-card" id="nd-card">
         <div class="nd-question" id="nd-question">（　？　）</div>
-        <div class="nd-hint" id="nd-hint">🔊 點擊播放</div>
+        <div class="nd-hint" id="nd-hint">🔊 點擊播放後輸入答案</div>
         <div class="nd-answer" id="nd-answer"></div>
         <div class="nd-pinyin" id="nd-pinyin"></div>
+      </div>
+      <div id="nd-input-area" style="margin-bottom:14px">
+        <input id="nd-input" type="text" inputmode="numeric"
+          placeholder="輸入數字或電話號碼"
+          style="width:100%;padding:14px;font-size:22px;border-radius:12px;border:2px solid var(--gold);background:var(--surface2);color:var(--text);text-align:center;font-family:'Noto Sans TC',sans-serif;outline:none"
+          onkeydown="if(event.key==='Enter') ndCheck()"
+        />
+        <div id="nd-result" style="margin-top:10px;font-size:16px;text-align:center;min-height:24px"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <button class="nd-btn" onclick="ndCheck()" style="flex:2;background:var(--gold);color:#1a1000;border-color:var(--gold);font-weight:700">確認 ✓</button>
+        <button class="nd-btn" onclick="ndReveal()" style="flex:1">看答案</button>
       </div>
       <div class="nd-sound-row">
         <button class="fc-sound-btn" id="nd-sound-btn" onclick="ndSpeak()">🔊</button>
@@ -1213,12 +1225,15 @@ function renderND(){
   ndRevealed=false;
   document.getElementById('nd-counter').textContent=`第 ${ndIdx+1} 題 / 共 ${ndList.length} 題`;
   document.getElementById('nd-question').textContent='（　？　）';
-  document.getElementById('nd-hint').textContent='🔊 點擊播放';
+  document.getElementById('nd-hint').textContent='🔊 點擊播放後輸入答案';
   document.getElementById('nd-answer').style.display='none';
   document.getElementById('nd-pinyin').style.display='none';
-  document.getElementById('nd-card').style.cursor='pointer';
+  document.getElementById('nd-input').value='';
+  document.getElementById('nd-result').textContent='';
+  document.getElementById('nd-input').style.borderColor='var(--gold)';
   // auto play
   setTimeout(()=>ndSpeak(),400);
+  setTimeout(()=>document.getElementById('nd-input').focus(),600);
 }
 
 function ndSpeak(){
@@ -1251,6 +1266,32 @@ function ndReveal(){
   document.getElementById('nd-question').textContent='答案：';
   document.getElementById('nd-hint').textContent='點擊卡片可繼續';
   document.getElementById('nd-card').style.cursor='default';
+}
+
+function ndCheck(){
+  const item = ndList[ndIdx];
+  const input = document.getElementById('nd-input').value.trim();
+  const resultEl = document.getElementById('nd-result');
+  if(!input){ resultEl.textContent='請先輸入答案！'; return; }
+
+  let correct = '';
+  if(item.type==='num') correct = String(item.value);
+  else correct = item.value;
+
+  // normalize: remove spaces and dashes for phone comparison
+  const normalize = s => s.replace(/[\s\-－]/g,'');
+
+  if(normalize(input) === normalize(correct)){
+    resultEl.style.color='var(--green)';
+    resultEl.textContent='✅ 正確！';
+    document.getElementById('nd-input').style.borderColor='var(--green)';
+    ndReveal();
+  } else {
+    resultEl.style.color='var(--red)';
+    resultEl.textContent='❌ 再試一次！';
+    document.getElementById('nd-input').style.borderColor='var(--red)';
+    document.getElementById('nd-input').select();
+  }
 }
 
 function ndNext(){
