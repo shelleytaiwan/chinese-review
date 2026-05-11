@@ -79,7 +79,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .fc-char{font-family:'Noto Serif TC',serif;font-size:52px;font-weight:700;color:var(--text);margin-bottom:6px;text-align:center;line-height:1.2}
 .fc-pinyin{font-size:19px;color:var(--blue-light);margin-bottom:4px;letter-spacing:1px}
 .fc-meaning{font-size:17px;color:var(--text-mid);text-align:center}
-.fc-example{font-size:14px;color:var(--text-muted);margin-top:8px;text-align:center;line-height:1.7}
+.fc-example{font-size:24px;color:var(--text-muted);margin-top:8px;text-align:center;line-height:1.7}
 .fc-sound-row{display:flex;justify-content:center;margin-bottom:16px}
 .fc-sound-btn{background:var(--blue-glow);border:1px solid var(--blue);color:var(--blue-light);border-radius:50%;width:52px;height:52px;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .fc-sound-btn:hover{background:var(--blue);color:#fff}
@@ -334,12 +334,12 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
     <div class="fc-wrap">
       <div class="fc-card" id="df-card" onclick="dfFlip()">
         <div class="fc-front">
-          <div class="fc-hint">點擊翻轉看參考回答</div>
+          <div class="fc-hint" style="font-size:18px">點擊翻轉看參考回答</div>
           <div class="fc-char" id="df-q" style="font-size:24px;line-height:1.5"></div>
         </div>
         <div class="fc-back">
-          <div class="fc-hint" style="color:var(--green)">參考回答</div>
-          <div class="fc-meaning" id="df-ans" style="font-size:20px;color:var(--text)"></div>
+          <div class="fc-hint" style="color:var(--green);font-size:18px">參考回答</div>
+          <div class="fc-meaning" id="df-ans" style="font-size:60px;color:var(--text)"></div>
           <div class="fc-example" id="df-tip"></div>
         </div>
       </div>
