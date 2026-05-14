@@ -196,6 +196,45 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .mm-tile-cn{font-size:16px;font-weight:600;margin-top:2px}
 @keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
 .pop{animation:pop .25s cubic-bezier(.34,1.56,.64,1)}
+
+/* ── 課堂用語 FLASHCARD ── */
+.cl-fc-char{font-family:'Noto Serif TC',serif;font-size:38px;font-weight:700;color:var(--text);margin-bottom:8px;text-align:center;line-height:1.3}
+.cl-fc-pinyin{font-size:16px;color:var(--blue-light);margin-bottom:6px;letter-spacing:1px;text-align:center}
+.cl-fc-meaning{font-size:20px;color:var(--text-mid);text-align:center}
+
+/* ── 口說練習 SPEAKING PRACTICE ── */
+.sp-phrase-box{background:var(--surface2);border:2px solid var(--blue);border-radius:18px;padding:28px 20px;text-align:center;margin-bottom:20px}
+.sp-phrase-zh{font-family:'Noto Serif TC',serif;font-size:32px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.4}
+.sp-phrase-py{font-size:15px;color:var(--blue-light);letter-spacing:1px;margin-bottom:4px}
+.sp-phrase-jp{font-size:16px;color:var(--text-muted)}
+.sp-phrase-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px}
+.sp-nav-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text-mid);border-radius:10px;padding:8px 18px;font-size:15px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s}
+.sp-nav-btn:hover{border-color:var(--blue);color:var(--text)}
+.sp-phrase-count{font-size:13px;color:var(--text-muted);letter-spacing:1px}
+.sp-controls{display:flex;gap:12px;justify-content:center;margin-bottom:20px}
+.sp-mic-btn{background:var(--blue-glow);border:2px solid var(--blue);color:var(--blue-light);border-radius:50%;width:72px;height:72px;font-size:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.sp-mic-btn:hover{background:var(--blue);color:#fff}
+.sp-mic-btn.recording{background:var(--red-glow);border-color:var(--red);color:var(--red);animation:pulse .6s infinite alternate}
+.sp-submit-btn{background:var(--green);border:none;color:#fff;border-radius:14px;padding:0 24px;font-size:16px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-weight:700;transition:all .2s;opacity:.5;pointer-events:none}
+.sp-submit-btn.ready{opacity:1;pointer-events:auto}
+.sp-transcript-box{background:var(--surface);border:2px dashed var(--border);border-radius:14px;padding:18px;min-height:60px;margin-bottom:16px;font-size:22px;color:var(--text);text-align:center;position:relative;transition:border-color .2s}
+.sp-transcript-box.has-text{border-color:var(--blue)}
+.sp-transcript-placeholder{color:var(--text-muted);font-size:15px;letter-spacing:1px}
+.sp-clear-btn{background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;display:none;margin-bottom:16px}
+.sp-clear-btn.visible{display:inline-block}
+.sp-result-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;display:none}
+.sp-result-box.visible{display:block}
+.sp-score-row{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+.sp-score-circle{width:70px;height:70px;border-radius:50%;border:3px solid var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.sp-score-num{font-size:24px;font-weight:700;color:var(--blue-light)}
+.sp-score-max{font-size:11px;color:var(--text-muted)}
+.sp-score-comment{font-size:17px;color:var(--green);font-weight:500;line-height:1.5}
+.sp-tips{font-size:14px;color:var(--text-mid);line-height:1.9;padding-left:4px}
+.sp-tips li{margin-bottom:4px}
+.sp-loading{text-align:center;padding:20px;color:var(--text-muted);font-size:14px;display:none}
+.sp-loading.visible{display:block}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.sp-spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}
 </style>
 </head>
 <body>
@@ -215,7 +254,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
     <p>點擊課次開始練習</p>
   </div>
   <div class="lessons-grid" id="lessons-grid"></div>
-  <div class="portal-credit">漢語拼音表 ＋ D1～D22　共 22 課</div>
+  <div class="portal-credit">漢語拼音表 ＋ 課堂用語 ＋ D1～D5　｜　D6以後即將推出</div>
 </div>
 
 <!-- LESSON HOME -->
@@ -351,8 +390,8 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
         </div>
         <div class="fc-back">
           <div class="fc-hint" style="color:var(--green);font-size:18px">參考回答</div>
-          <div class="fc-meaning" id="df-ans" style="font-size:60px;color:var(--text)"></div>
-          <div class="fc-example" id="df-tip"></div>
+          <div class="fc-meaning" id="df-ans" style="font-size:36px;color:var(--text);margin-bottom:10px;line-height:1.5"></div>
+          <div class="fc-meaning" id="df-ans2" style="font-size:36px;color:var(--blue-light);line-height:1.5;display:none;padding-top:12px;border-top:1px solid var(--border)"></div>
         </div>
       </div>
     </div>
@@ -399,6 +438,156 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
     <div class="result-btns">
       <button class="result-retry" id="res-retry">再玩一次</button>
       <button class="result-home" onclick="backToLesson()">回課次首頁</button>
+    </div>
+  </div>
+</div>
+
+<!-- 課堂用語 FLASHCARDS -->
+<div class="screen" id="cl-flashcards">
+  <div class="game-header">
+    <button class="back-btn" onclick="backToCLHome()">←</button>
+    <span class="game-title">🃏 課堂用語・詞語卡</span>
+    <div class="progress-bar"><div class="progress-fill" id="cl-fc-progress"></div></div>
+  </div>
+  <div class="game-body">
+    <div class="fc-counter" id="cl-fc-counter"></div>
+    <div class="fc-wrap">
+      <div class="fc-card" id="cl-fc-card" onclick="clFlipCard()">
+        <div class="fc-front">
+          <div class="fc-hint">點擊翻轉</div>
+          <div class="cl-fc-char" id="cl-fc-char"></div>
+          <div class="cl-fc-pinyin" id="cl-fc-pinyin-front"></div>
+        </div>
+        <div class="fc-back">
+          <div class="cl-fc-char" id="cl-fc-char-back" style="font-size:30px;color:var(--blue-light)"></div>
+          <div class="cl-fc-meaning" id="cl-fc-meaning"></div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-sound-row"><button class="fc-sound-btn" id="cl-fc-sound-btn" onclick="clSpeakWord()">🔊</button></div>
+    <div class="fc-controls">
+      <button class="fc-btn" onclick="clFcPrev()">← 上一張</button>
+      <button class="fc-btn next" onclick="clFcNext()">下一張 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- 課堂用語 MEMORY -->
+<div class="screen" id="cl-memory">
+  <div class="game-header">
+    <button class="back-btn" onclick="backToCLHome()">←</button>
+    <span class="game-title">🧩 課堂用語・配對遊戲</span>
+    <div class="score-badge" id="cl-mm-score-badge">0 配對</div>
+  </div>
+  <div class="game-body">
+    <div class="mm-stats">
+      <span id="cl-mm-pairs">配對：0 / 0</span>
+      <span id="cl-mm-moves">步數：0</span>
+      <span id="cl-mm-timer">⏱ 0s</span>
+    </div>
+    <div id="cl-mm-round-label" style="font-size:12px;color:var(--gold);text-align:center;margin-bottom:8px;letter-spacing:1px"></div>
+    <div class="mm-grid" id="cl-mm-grid"></div>
+    <div style="text-align:center;margin-top:12px">
+      <button id="cl-mm-next-round" class="fc-btn next" onclick="clMMNextRound()" style="display:none">下一頁 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- 口說練習 SPEAKING PRACTICE -->
+<div class="screen" id="speaking-practice">
+  <div class="game-header">
+    <button class="back-btn" onclick="showScreen('sp-home')">←</button>
+    <span class="game-title">🎤 口說練習</span>
+  </div>
+  <div class="game-body" style="max-width:520px">
+
+    <!-- TABS -->
+    <div class="nd-mode-tabs" style="margin-bottom:20px">
+      <button class="nd-tab active" id="sp-tab-free" onclick="spSetTab('free')">🎤 自由錄音</button>
+      <button class="nd-tab" id="sp-tab-tts" onclick="spSetTab('tts')">📖 朗讀器</button>
+    </div>
+
+    <!-- ══ TAB A: 自由錄音 ══ -->
+    <div id="sp-panel-free">
+      <p style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:16px;line-height:1.7">
+        按麥克風，用中文說任何話。<br>AI 會把聽到的打出來，幫你知道發音清不清楚！
+      </p>
+      <!-- transcript display -->
+      <div class="sp-transcript-box" id="sp-transcript-box">
+        <span class="sp-transcript-placeholder" id="sp-transcript-placeholder">按 🎙️ 開始說中文⋯</span>
+        <span id="sp-transcript-text" style="display:none;font-size:24px;line-height:1.6"></span>
+      </div>
+      <!-- mic -->
+      <div style="display:flex;justify-content:center;margin-bottom:14px">
+        <button class="sp-mic-btn" id="sp-mic-btn" onclick="spToggleMic()">🎙️</button>
+      </div>
+      <div style="text-align:center;margin-bottom:16px">
+        <button class="sp-clear-btn" id="sp-clear-btn" onclick="spClear()">🗑 清除，重新錄音</button>
+      </div>
+      <!-- feedback box — shown after recognition ends -->
+      <div class="sp-result-box" id="sp-result-box" style="display:none">
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;letter-spacing:1px">🤖 AI 聽到的</div>
+        <div id="sp-heard" style="font-size:22px;color:var(--text);font-weight:600;margin-bottom:12px;line-height:1.5"></div>
+        <div id="sp-feedback-msg" style="font-size:15px;color:var(--green);line-height:1.8"></div>
+      </div>
+    </div>
+
+    <!-- ══ TAB B: 朗讀器 ══ -->
+    <div id="sp-panel-tts" style="display:none">
+      <p style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:16px;line-height:1.7">
+        在下面貼上或輸入中文，讓 AI 念出來，<br>然後你再模仿錄音看看！
+      </p>
+      <textarea id="sp-tts-input" placeholder="貼上中文文字，例如：&#10;大家好！我叫田中美香。&#10;我是日本人，我來自東京。&#10;我喜歡台灣的夜市！"
+        style="width:100%;min-height:120px;background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:16px;font-size:18px;color:var(--text);font-family:'Noto Sans TC',sans-serif;resize:vertical;line-height:1.7;outline:none;transition:border-color .2s"
+        oninput="this.style.borderColor='var(--blue)'"
+      ></textarea>
+      <div style="display:flex;gap:10px;margin-top:12px;margin-bottom:20px">
+        <button onclick="spTTSSpeak()" style="flex:1;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:14px;font-size:16px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-weight:700">🔊 念出來</button>
+        <button onclick="spTTSStop()" style="background:var(--surface2);color:var(--text-mid);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-size:16px;cursor:pointer;font-family:'Noto Sans TC',sans-serif">⏹ 停</button>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:16px">
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;text-align:center">聽完後，試著模仿說說看 👇</p>
+        <div class="sp-transcript-box" id="sp-tts-transcript-box">
+          <span class="sp-transcript-placeholder" id="sp-tts-placeholder">按 🎙️ 模仿錄音⋯</span>
+          <span id="sp-tts-transcript-text" style="display:none;font-size:22px;line-height:1.6"></span>
+        </div>
+        <div style="display:flex;justify-content:center;margin-bottom:10px">
+          <button class="sp-mic-btn" id="sp-tts-mic-btn" onclick="spTTSToggleMic()">🎙️</button>
+        </div>
+        <div style="text-align:center">
+          <button class="sp-clear-btn" id="sp-tts-clear-btn" onclick="spTTSClear()">🗑 清除</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 課堂用語 HOME -->
+<div class="screen" id="cl-home">
+  <div style="padding:28px 20px;display:flex;flex-direction:column;align-items:center;flex:1;background:radial-gradient(ellipse at 30% 20%,rgba(74,127,212,.12) 0%,transparent 60%),var(--bg)">
+    <div class="lesson-home-header">
+      <div class="lesson-badge" onclick="showPortal()">← 所有課次</div>
+      <h1 class="lesson-title">課堂用語</h1>
+    </div>
+    <div class="lesson-info">課堂常用詞語 24 句　｜　詞語卡・配對遊戲（3頁）</div>
+    <div class="modes-grid" style="max-width:460px;width:100%">
+      <div class="mode-btn" onclick="startCLFlashcards()"><div class="mode-icon">🃏</div><div class="mode-name">詞語卡</div></div>
+      <div class="mode-btn" onclick="startCLMemory()"><div class="mode-icon">🧩</div><div class="mode-name">配對遊戲</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 口說練習 HOME -->
+<div class="screen" id="sp-home">
+  <div style="padding:28px 20px;display:flex;flex-direction:column;align-items:center;flex:1;background:radial-gradient(ellipse at 30% 20%,rgba(74,127,212,.12) 0%,transparent 60%),var(--bg)">
+    <div class="lesson-home-header">
+      <div class="lesson-badge" onclick="showPortal()">← 所有課次</div>
+      <h1 class="lesson-title">口說練習</h1>
+    </div>
+    <div class="lesson-info">🎤 自由錄音練習・📖 朗讀器模仿練習<br><span style="font-size:13px;color:var(--text-mid)">不需要任何設定，直接開始！</span></div>
+    <div class="modes-grid" style="max-width:460px;width:100%">
+      <div class="mode-btn" onclick="startSpeakingPractice()" style="grid-column:1/-1"><div class="mode-icon">🎤</div><div class="mode-name">開始口說練習</div></div>
     </div>
   </div>
 </div>
@@ -943,8 +1132,179 @@ const LESSONS = [
   ],
 },
 
-...Array.from({length:18},(_,i)=>({
-  id:`D${i+5}`, title:`第 ${i+5} 課`, subtitle:'即將推出',
+// ── D5 ──────────────────────────────────────────────────
+{
+  id:'D5', title:'說感受・購物', subtitle:'形容詞・數量詞・購物對話',
+  info:'形容詞・程度副詞・數量詞・購物用語　｜　詞語 40 個・配對 4 頁・對話 30 組・聲調＆聽寫',
+  vocab:[
+    // 程度副詞
+    {char:'很',     pinyin:'hěn',         meaning:'とても',                   example:'台灣夜市很好玩！'},
+    {char:'非常',   pinyin:'fēi cháng',   meaning:'非常に',                   example:'珍珠奶茶非常好喝！'},
+    {char:'不太',   pinyin:'bù tài',      meaning:'あまり〜ない',             example:'我不太喜歡辣的。'},
+    {char:'太～了', pinyin:'tài～le',      meaning:'〜すぎる',                 example:'這件衣服太貴了！'},
+    {char:'超～的', pinyin:'chāo～de',     meaning:'めちゃ〜',                 example:'這個超好吃的！'},
+    {char:'～死了', pinyin:'～sǐ le',      meaning:'〜で死にそう（誇張）',     example:'今天熱死了！'},
+    {char:'最',     pinyin:'zuì',         meaning:'最も',                     example:'哪一件最便宜？'},
+    {char:'還好',   pinyin:'hái hǎo',     meaning:'まあまあ・普通',           example:'這件衣服還好，不太貴。'},
+    // 形容詞
+    {char:'好吃',   pinyin:'hǎo chī',     meaning:'おいしい',                 example:'台灣小吃很好吃！'},
+    {char:'好喝',   pinyin:'hǎo hē',      meaning:'おいしい（飲み物）',       example:'珍珠奶茶好喝嗎？'},
+    {char:'好玩',   pinyin:'hǎo wán',     meaning:'楽しい',                   example:'夜市好不好玩？'},
+    {char:'好看',   pinyin:'hǎo kàn',     meaning:'きれい・かっこいい',       example:'哪一件好看？'},
+    {char:'好用',   pinyin:'hǎo yòng',    meaning:'使いやすい',               example:'這個手機很好用。'},
+    {char:'漂亮',   pinyin:'piào liang',  meaning:'きれい（外見）',           example:'你的衣服很漂亮！'},
+    {char:'可愛',   pinyin:'kě ài',       meaning:'かわいい',                 example:'你的狗很可愛！'},
+    {char:'流行',   pinyin:'liú xíng',    meaning:'流行している',             example:'這是今年流行的顏色。'},
+    {char:'貴',     pinyin:'guì',         meaning:'高い（値段）',             example:'這件衣服太貴了！'},
+    {char:'便宜',   pinyin:'pián yi',     meaning:'安い',                     example:'這個很便宜，50塊！'},
+    {char:'大',     pinyin:'dà',          meaning:'大きい',                   example:'美國很大。'},
+    {char:'小',     pinyin:'xiǎo',        meaning:'小さい',                   example:'這件太小了。'},
+    {char:'熱',     pinyin:'rè',          meaning:'暑い・熱い',               example:'台灣夏天超熱的！'},
+    {char:'冷',     pinyin:'lěng',        meaning:'寒い・冷たい',             example:'冬天很冷。'},
+    {char:'忙',     pinyin:'máng',        meaning:'忙しい',                   example:'最近很忙！'},
+    {char:'累',     pinyin:'lèi',         meaning:'疲れた',                   example:'跑步很累。'},
+    // 購物動詞
+    {char:'想',     pinyin:'xiǎng',       meaning:'〜したい',                 example:'我想買這件。'},
+    {char:'要',     pinyin:'yào',         meaning:'〜が必要・〜する',         example:'我要這個。'},
+    {char:'覺得',   pinyin:'jué de',      meaning:'〜と思う・感じる',         example:'你覺得怎麼樣？'},
+    {char:'打折',   pinyin:'dǎ zhé',      meaning:'割引する',                 example:'有打折嗎？'},
+    {char:'講價',   pinyin:'jiǎng jià',   meaning:'値切る',                   example:'我不講價，最便宜多少？'},
+    {char:'刷卡',   pinyin:'shuā kǎ',     meaning:'カードで払う',             example:'可以刷卡嗎？'},
+    {char:'付現',   pinyin:'fù xiàn',     meaning:'現金で払う',               example:'我付現，謝謝。'},
+    {char:'換貨',   pinyin:'huàn huò',    meaning:'交換する',                 example:'這件可以換嗎？'},
+    // 購物名詞
+    {char:'發票',   pinyin:'fā piào',     meaning:'レシート・領収書',         example:'要發票嗎？'},
+    {char:'載具',   pinyin:'zài jù',      meaning:'電子レシート端末',         example:'有載具嗎？'},
+    {char:'新款',   pinyin:'xīn kuǎn',    meaning:'新モデル・新作',           example:'這是今年的新款。'},
+    {char:'零錢',   pinyin:'líng qián',   meaning:'小銭',                     example:'不好意思，沒有零錢。'},
+    // 數量詞
+    {char:'個',     pinyin:'gè',          meaning:'個（汎用量詞）',           example:'一個蘋果・兩個橘子'},
+    {char:'件',     pinyin:'jiàn',        meaning:'着・枚（衣類）',           example:'這件衣服多少錢？'},
+    {char:'杯',     pinyin:'bēi',         meaning:'杯（飲み物）',             example:'一杯咖啡多少錢？'},
+    {char:'碗',     pinyin:'wǎn',         meaning:'杯・椀（麺・飯）',         example:'一碗麵多少錢？'},
+    {char:'本',     pinyin:'běn',         meaning:'冊（本）',                 example:'這本書多少錢？'},
+    {char:'台',     pinyin:'tái',         meaning:'台（機器）',               example:'一台電腦多少錢？'},
+    {char:'張',     pinyin:'zhāng',       meaning:'枚（紙・カード）',         example:'一張紙・一張信用卡'},
+    {char:'片',     pinyin:'piàn',        meaning:'枚（薄いもの）',           example:'一片麵包・一片葉子'},
+    {char:'塊',     pinyin:'kuài',        meaning:'元（台湾元）',             example:'這個五十塊。'},
+    {char:'位',     pinyin:'wèi',         meaning:'名様（敬語）',             example:'請問幾位？'},
+  ],
+  mmPairs:[
+    // Page 1: 量詞配實物 (個/塊/片/張)
+    {a:'個',   b:'🍊 橘子、🍎 蘋果'},
+    {a:'塊',   b:'🎂 蛋糕'},
+    {a:'片',   b:'🍞 麵包、🍃 葉子'},
+    {a:'張',   b:'📄 紙、💳 卡、📋 講義'},
+    {a:'碗',   b:'🍚 飯、🍜 麵'},
+    {a:'杯',   b:'💧 水、🧃 果汁、☕ 咖啡'},
+    {a:'台',   b:'💻 電腦、📺 電視'},
+    {a:'本',   b:'📚 書'},
+    // Page 2: 量詞配日文
+    {a:'個 gè',    b:'個（汎用量詞）'},
+    {a:'件 jiàn',  b:'着・枚（衣類）'},
+    {a:'杯 bēi',   b:'杯（飲み物）'},
+    {a:'碗 wǎn',   b:'椀（麺・飯）'},
+    {a:'本 běn',   b:'冊（本）'},
+    {a:'台 tái',   b:'台（機器）'},
+    {a:'張 zhāng', b:'枚（紙・カード）'},
+    {a:'片 piàn',  b:'枚（薄いもの）'},
+    // Page 3: 形容詞配日文
+    {a:'好吃', b:'おいしい'},
+    {a:'好喝', b:'おいしい（飲物）'},
+    {a:'好玩', b:'楽しい'},
+    {a:'好看', b:'きれい・かっこいい'},
+    {a:'漂亮', b:'きれい（外見）'},
+    {a:'可愛', b:'かわいい'},
+    {a:'貴',   b:'高い（値段）'},
+    {a:'便宜', b:'安い'},
+    // Page 4: 購物用語配日文
+    {a:'打折',   b:'割引する'},
+    {a:'講價',   b:'値切る'},
+    {a:'刷卡',   b:'カードで払う'},
+    {a:'換貨',   b:'交換する'},
+    {a:'發票',   b:'レシート'},
+    {a:'載具',   b:'電子レシート端末'},
+    {a:'覺得',   b:'〜と思う・感じる'},
+    {a:'太～了', b:'〜すぎる'},
+  ],
+  hasNumberDictation: true,
+  priceDict:[55, 109, 458, 1095, 3085],
+  toneData:[
+    {char:'便宜',   correct:'pián yi',    opts:['pián yi','pián yí','piǎn yi','piàn yi']},
+    {char:'可愛',   correct:'kě ài',      opts:['kē ài','ké ài','kě ài','kè ài']},
+    {char:'漂亮',   correct:'piào liang', opts:['piāo liang','piáo liang','piǎo liang','piào liang']},
+    {char:'打折',   correct:'dǎ zhé',     opts:['dā zhé','dá zhé','dǎ zhé','dà zhé']},
+    {char:'刷卡',   correct:'shuā kǎ',    opts:['shuā kā','shuā ká','shuā kǎ','shuā kà']},
+    {char:'覺得',   correct:'jué de',     opts:['juē de','jué de','juě de','juè de']},
+    {char:'換貨',   correct:'huàn huò',   opts:['huān huò','huán huò','huǎn huò','huàn huò']},
+    {char:'發票',   correct:'fā piào',    opts:['fā piāo','fā piáo','fā piǎo','fā piào']},
+    {char:'流行',   correct:'liú xíng',   opts:['liū xíng','liú xíng','liǔ xíng','liù xíng']},
+    {char:'新款',   correct:'xīn kuǎn',   opts:['xīn kuān','xīn kuán','xīn kuǎn','xīn kuàn']},
+    {char:'非常',   correct:'fēi cháng',  opts:['fēi chāng','fēi cháng','fēi chǎng','fēi chàng']},
+    {char:'最近',   correct:'zuì jìn',    opts:['zuī jìn','zuí jìn','zuǐ jìn','zuì jìn']},
+    {char:'好吃',   correct:'hǎo chī',    opts:['hǎo chī','hǎo chí','hǎo chǐ','hǎo chì']},
+    {char:'累',     correct:'lèi',        opts:['lēi','léi','lěi','lèi']},
+    {char:'忙',     correct:'máng',       opts:['māng','máng','mǎng','màng']},
+    {char:'熱',     correct:'rè',         opts:['rē','ré','rě','rè']},
+    {char:'冷',     correct:'lěng',       opts:['lēng','léng','lěng','lèng']},
+    {char:'貴',     correct:'guì',        opts:['guī','guí','guǐ','guì']},
+    {char:'件',     correct:'jiàn',       opts:['jiān','jián','jiǎn','jiàn']},
+    {char:'塊',     correct:'kuài',       opts:['kuāi','kuái','kuǎi','kuài']},
+  ],
+  dialogueData:[
+    {prompt:'這叫什麼？',                           answer:'蘋果／橘子'},
+    {prompt:'這是什麼？',                           answer:'台灣的綠竹筍，日本沒有，很好吃哦！'},
+    {prompt:'多少錢？',                             answer:'１００塊。',          answer2:'一件３５０，三件１０００。'},
+    {prompt:'怎麼賣？',                             answer:'兩件９９０。',        answer2:'一個５０。'},
+    {prompt:'有打折嗎？',                           answer:'有，打八折。',        answer2:'抱歉，沒有。'},
+    {prompt:'可以刷卡嗎？',                         answer:'可以。',             answer2:'不好意思，只收現金哦。'},
+    {prompt:'你買的衣服太大了，\n你想換小的，怎麼說？', answer:'這件衣服可以換嗎？'},
+    {prompt:'要發票嗎？',                           answer:'要。',               answer2:'不用。'},
+    {prompt:'有沒有黑色的？',                       answer:'有。',               answer2:'不好意思，沒有。'},
+    {prompt:'哪一件好看？',                         answer:'這件。',             answer2:'都很好看。'},
+    {prompt:'你想問朋友的感受，怎麼問？',           answer:'你覺得怎麼樣？'},
+    {prompt:'臭豆腐好不好吃？',                     answer:'很好吃。',           answer2:'不好吃。'},
+    {prompt:'你覺得珍珠奶茶好喝嗎？',               answer:'很好喝。',           answer2:'太甜了。'},
+    {prompt:'有載具嗎？',                           answer:'沒有。',             answer2:'有，這裡。\n載具是什麼？'},
+    {prompt:'夜市好不好玩？',                       answer:'很好玩！',           answer2:'人太多了。'},
+    {prompt:'台灣熱不熱？',                         answer:'很熱。',             answer2:'夏天超熱的！'},
+    {prompt:'你上課累不累？',                       answer:'還好，不累。',       answer2:'今天很累。'},
+    {prompt:'最近忙不忙？',                         answer:'最近很忙。',         answer2:'還好。'},
+    {prompt:'你覺得怎麼樣？',                       answer:'很好。',             answer2:'不太好。'},
+    {prompt:'你想吃什麼？',                         answer:'今天想吃麵。',       answer2:'去吃麵吧！'},
+    {prompt:'你想喝什麼？',                         answer:'我要珍珠奶茶。',     answer2:'我想喝咖啡。'},
+    {prompt:'你要咖啡還是紅茶？',                   answer:'我要咖啡。',         answer2:'紅茶，謝謝。'},
+    {prompt:'自用還是送人？',                       answer:'自用。',             answer2:'送人。'},
+    {prompt:'你要大的還是小的？',                   answer:'大的。',             answer2:'我喜歡小的。'},
+    {prompt:'哪一件便宜？',                         answer:'這件便宜。'},
+    {prompt:'這件衣服貴不貴？',                     answer:'很貴。',             answer2:'不貴，很便宜。'},
+    {prompt:'你喜歡什麼顏色？',                     answer:'我喜歡藍色。'},
+    {prompt:'你不喜歡講價，可以怎麼說？',           answer:'有打折嗎？',         answer2:'我不講價，最便宜多少錢？'},
+    {prompt:'５％ off 是打幾折？',                  answer:'九五折。'},
+    {prompt:'打八折是多少％ off？',                 answer:'２０％ off。'},
+  ],
+  sentenceData:[
+    {prompt:'形容詞肯定句',   answer:'台灣夜市很好玩。',
+     tiles:[{cn:'台灣夜市',py:'tái wān yè shì'},{cn:'很',py:'hěn'},{cn:'好玩',py:'hǎo wán'},{cn:'。',py:''}]},
+    {prompt:'太～了',         answer:'這件衣服太貴了！',
+     tiles:[{cn:'這件衣服',py:'zhè jiàn yī fú'},{cn:'太',py:'tài'},{cn:'貴',py:'guì'},{cn:'了',py:'le'},{cn:'！',py:''}]},
+    {prompt:'問感受',         answer:'你覺得怎麼樣？',
+     tiles:[{cn:'你',py:'nǐ'},{cn:'覺得',py:'jué de'},{cn:'怎麼樣',py:'zěn me yàng'},{cn:'？',py:''}]},
+    {prompt:'正反疑問句',     answer:'臭豆腐好不好吃？',
+     tiles:[{cn:'臭豆腐',py:'chòu dòu fu'},{cn:'好不好吃',py:'hǎo bù hǎo chī'},{cn:'？',py:''}]},
+    {prompt:'選擇疑問句',     answer:'你要咖啡還是紅茶？',
+     tiles:[{cn:'你',py:'nǐ'},{cn:'要',py:'yào'},{cn:'咖啡',py:'kā fēi'},{cn:'還是',py:'hái shì'},{cn:'紅茶',py:'hóng chá'},{cn:'？',py:''}]},
+    {prompt:'問可不可以',     answer:'可以刷卡嗎？',
+     tiles:[{cn:'可以',py:'kě yǐ'},{cn:'刷卡',py:'shuā kǎ'},{cn:'嗎',py:'ma'},{cn:'？',py:''}]},
+    {prompt:'問有沒有',       answer:'有沒有黑色的？',
+     tiles:[{cn:'有沒有',py:'yǒu méi yǒu'},{cn:'黑色的',py:'hēi sè de'},{cn:'？',py:''}]},
+    {prompt:'的＋代名詞',     answer:'我要大的。',
+     tiles:[{cn:'我',py:'wǒ'},{cn:'要',py:'yào'},{cn:'大的',py:'dà de'},{cn:'。',py:''}]},
+  ],
+},
+
+...Array.from({length:17},(_,i)=>({
+  id:`D${i+6}`, title:`第 ${i+6} 課`, subtitle:'即將推出',
   info:'', vocab:[], mmPairs:[], toneData:[], dialogueData:[], sentenceData:[], locked:true
 })),
 
@@ -969,6 +1329,20 @@ function buildPortal(){
   pyCard.innerHTML = `<div class="d-num" style="color:var(--blue-light)">📊</div><div class="d-title" style="color:var(--text);font-weight:700">漢語拼音表<br><span style="font-size:12px;color:var(--text-muted)">點擊聽聲調</span></div>`;
   pyCard.onclick = () => openPinyinChart();
   grid.appendChild(pyCard);
+
+  // 課堂用語 card (between pinyin chart and D1)
+  const clCard = document.createElement('div');
+  clCard.className = 'lesson-card pinyin-card';
+  clCard.innerHTML = `<div class="d-num" style="color:var(--gold)">🗣️</div><div class="d-title" style="color:var(--text);font-weight:700">課堂用語<br><span style="font-size:12px;color:var(--text-muted)">詞語卡・配對遊戲</span></div>`;
+  clCard.onclick = () => openCLHome();
+  grid.appendChild(clCard);
+
+  // 口說練習 card
+  const spCard = document.createElement('div');
+  spCard.className = 'lesson-card pinyin-card';
+  spCard.innerHTML = `<div class="d-num" style="color:var(--green)">🎤</div><div class="d-title" style="color:var(--text);font-weight:700">口說練習<br><span style="font-size:12px;color:var(--text-muted)">AI 口說評分</span></div>`;
+  spCard.onclick = () => openSPHome();
+  grid.appendChild(spCard);
 
   LESSONS.forEach(l => {
     const div = document.createElement('div');
@@ -1079,30 +1453,48 @@ function fcPrev(){ if (fcIdx > 0){ fcIdx--; renderFC() } }
 // MEMORY
 // ════════════════════════════════════════════════════════
 let mmFlipped=[], mmMatched=0, mmMoves=0, mmTimer=0, mmInterval=null, mmLocked=false;
+let mmRound=0, mmRoundSize=8;
+
 function startMemory(){
+  mmRound=0;
+  const pairs=currentLesson.mmPairs;
+  // D5 has 32 pairs → 4 rounds of 8; others use all at once (capped at 8 for playability)
+  mmRoundSize = (pairs.length > 8) ? 8 : pairs.length;
+  startMMRound();
+}
+
+function startMMRound(){
   mmFlipped=[]; mmMatched=0; mmMoves=0; mmTimer=0; mmLocked=false;
   clearInterval(mmInterval); showScreen('memory');
+  const pairs=currentLesson.mmPairs;
+  const roundPairs=pairs.slice(mmRound*mmRoundSize, mmRound*mmRoundSize+mmRoundSize);
+  const totalRounds=Math.ceil(pairs.length/mmRoundSize);
+
+  // Update round label
+  const badge=document.getElementById('mm-score-badge');
+  if(totalRounds>1) badge.textContent=`第${mmRound+1}/${totalRounds}頁`;
+  else badge.textContent='0 配對';
+
   const tiles = [];
-  currentLesson.mmPairs.forEach((p,i) => {
+  roundPairs.forEach((p,i) => {
     tiles.push({id:i, side:'a', text:p.a, isEmoji: !!p.emoji});
     tiles.push({id:i, side:'b', text:p.b, isEmoji: false});
   });
   const grid = document.getElementById('mm-grid'); grid.innerHTML = '';
   shuffle(tiles).forEach(t => {
     const div = document.createElement('div'); div.className = 'mm-tile';
-    // emoji tiles: bigger emoji
-    const isEmoji = t.isEmoji;
-    if(isEmoji){
+    if(t.isEmoji){
       div.innerHTML = `<div class="mm-tile-inner"><div class="mm-tile-emoji">${t.text}</div></div>`;
     } else {
-      div.innerHTML = `<div class="mm-tile-inner">${t.text}</div>`;
+      div.innerHTML = `<div class="mm-tile-inner" style="font-size:${t.text.length>6?'13px':'15px'};line-height:1.3">${t.text}</div>`;
     }
-    div.onclick = () => mmClick(div, t); grid.appendChild(div);
+    div.onclick = () => mmClick(div, t, roundPairs.length, totalRounds); grid.appendChild(div);
   });
   mmInterval = setInterval(() => { mmTimer++; document.getElementById('mm-timer').textContent = `⏱ ${mmTimer}s` }, 1000);
-  mmUpdateStats();
+  mmUpdateStats(roundPairs.length);
 }
-function mmClick(div, t){
+
+function mmClick(div, t, total, totalRounds){
   if (mmLocked || div.classList.contains('matched') || div.classList.contains('revealed')) return;
   div.classList.add('revealed'); mmFlipped.push({div, t});
   if (mmFlipped.length === 2){
@@ -1110,19 +1502,36 @@ function mmClick(div, t){
     const [a, b] = mmFlipped;
     if (a.t.id === b.t.id && a.t.side !== b.t.side){
       a.div.classList.add('matched'); b.div.classList.add('matched');
-      mmMatched++; mmFlipped = []; mmLocked = false; mmUpdateStats();
-      if (mmMatched === currentLesson.mmPairs.length){ clearInterval(mmInterval); setTimeout(() => showResult('memory', currentLesson.mmPairs.length, currentLesson.mmPairs.length, `用了 ${mmMoves} 步，${mmTimer} 秒！`), 400) }
+      mmMatched++; mmFlipped = []; mmLocked = false; mmUpdateStats(total);
+      if (mmMatched === total){
+        clearInterval(mmInterval);
+        const pairs=currentLesson.mmPairs;
+        const hasMore = (mmRound+1)*mmRoundSize < pairs.length;
+        setTimeout(()=>{
+          if(hasMore){
+            if(confirm(`第${mmRound+1}頁完成！🎉 繼續下一頁？`)){
+              mmRound++;
+              startMMRound();
+            }
+          } else {
+            showResult('memory', pairs.length, pairs.length, `用了 ${mmMoves} 步！全部完成！🎉`);
+          }
+        }, 400);
+      }
     } else {
       a.div.classList.add('wrong'); b.div.classList.add('wrong');
       setTimeout(() => { a.div.classList.remove('revealed','wrong'); b.div.classList.remove('revealed','wrong'); mmFlipped = []; mmLocked = false }, 900);
     }
-    mmUpdateStats();
+    mmUpdateStats(total);
   }
 }
-function mmUpdateStats(){
-  document.getElementById('mm-pairs').textContent = `配對：${mmMatched} / ${currentLesson.mmPairs.length}`;
+function mmUpdateStats(total){
+  const t = total || currentLesson.mmPairs.length;
+  document.getElementById('mm-pairs').textContent = `配對：${mmMatched} / ${t}`;
   document.getElementById('mm-moves').textContent = `步數：${mmMoves}`;
-  document.getElementById('mm-score-badge').textContent = `${mmMatched} 配對`;
+  const totalRounds=Math.ceil(currentLesson.mmPairs.length/mmRoundSize);
+  if(totalRounds>1) document.getElementById('mm-score-badge').textContent=`第${mmRound+1}/${totalRounds}頁`;
+  else document.getElementById('mm-score-badge').textContent=`${mmMatched} 配對`;
 }
 
 // ════════════════════════════════════════════════════════
@@ -1191,13 +1600,20 @@ let ndList=[], ndIdx=0, ndRevealed=false, ndIsFirstRun=true;
 
 function buildNDList(isFirst){
   const items=[];
-  const isD4 = currentLesson && currentLesson.id==='D4';
+  const id = currentLesson && currentLesson.id;
+
+  // D5: fixed price dictation
+  if(id==='D5'){
+    const prices = currentLesson.priceDict || [55,109,458,1095,3085];
+    shuffle(prices).forEach(n=>items.push({type:'price',value:n}));
+    return items;
+  }
+  const isD4 = id==='D4';
   if(isD4){
-    // D4: 百/千/萬 大數字
     generateD4BigNumbers().forEach(n=>items.push({type:'num',value:n}));
     return items;
   }
-  // D3: 原邏輯
+  // D3 original logic
   if(isFirst){
     D3_FIXED_NUMBERS.forEach(n => items.push({type:'num', value:n}));
     D3_FIXED_PHONES.forEach(p => items.push({type:'phone', value:p}));
@@ -1241,7 +1657,8 @@ function ndSpeak(){
   const btn=document.getElementById('nd-sound-btn');
   btn.classList.add('playing');
   let txt='';
-  if(item.type==='num') txt=numToCharFixed(item.value);
+  if(item.type==='price') txt=numToCharFixed(item.value)+'塊';
+  else if(item.type==='num') txt=numToCharFixed(item.value);
   else txt=item.value.replace(/-/g,' ');
   speak(txt);
   setTimeout(()=>btn.classList.remove('playing'),1800);
@@ -1254,7 +1671,10 @@ function ndReveal(){
   const ansEl=document.getElementById('nd-answer');
   const pyEl=document.getElementById('nd-pinyin');
   let ansText='', pyText='';
-  if(item.type==='num'){
+  if(item.type==='price'){
+    ansText=String(item.value)+'元';
+    pyText=numToCharFixed(item.value)+'塊　'+numToPinyin(item.value)+' kuài';
+  } else if(item.type==='num'){
     ansText=String(item.value);
     pyText=numToCharFixed(item.value)+'　'+numToPinyin(item.value);
   } else {
@@ -1275,11 +1695,11 @@ function ndCheck(){
   if(!input){ resultEl.textContent='請先輸入答案！'; return; }
 
   let correct = '';
-  if(item.type==='num') correct = String(item.value);
+  if(item.type==='price') correct = String(item.value);
+  else if(item.type==='num') correct = String(item.value);
   else correct = item.value;
 
-  // normalize: remove spaces and dashes for phone comparison
-  const normalize = s => s.replace(/[\s\-－]/g,'');
+  const normalize = s => s.replace(/[\s\-－元塊]/g,'');
 
   if(normalize(input) === normalize(correct)){
     resultEl.style.color='var(--green)';
@@ -1298,11 +1718,15 @@ function ndNext(){
   if(ndIdx < ndList.length-1){ ndIdx++; renderND(); }
   else {
     d3PlayCount++;
-    // finished – rebuild with random for next time
-    alert('🎉 聽寫完成！再試一次會出現隨機數字。');
-    ndIsFirstRun=false;
-    ndList=buildNDList(false);
-    ndIdx=0; renderND();
+    if(currentLesson.id==='D5'){
+      alert('🎉 聽寫完成！再練一次！');
+      ndList=buildNDList(false); ndIdx=0; renderND();
+    } else {
+      alert('🎉 聽寫完成！再試一次會出現隨機數字。');
+      ndIsFirstRun=false;
+      ndList=buildNDList(false);
+      ndIdx=0; renderND();
+    }
   }
 }
 function ndPrev(){ if(ndIdx>0){ ndIdx--; renderND(); } }
@@ -1312,20 +1736,64 @@ function ndPrev(){ if(ndIdx>0){ ndIdx--; renderND(); } }
 // ════════════════════════════════════════════════════════
 let dfIdx=0, dfList=[];
 function startDialogue(){ dfIdx=0; dfList=currentLesson.dialogueData; showScreen('dialogue'); renderDF() }
+let dfAutoTimer = null;
+
 function renderDF(){
   const q = dfList[dfIdx];
   document.getElementById('df-q-num').textContent = `${dfIdx+1} / ${dfList.length}`;
   document.getElementById('df-progress').style.width = `${(dfIdx+1)/dfList.length*100}%`;
   document.getElementById('df-q').textContent = q.prompt;
-  const dfAns = document.getElementById('df-ans');
-  dfAns.textContent = q.answer;
-  dfAns.style.fontSize = (currentLesson.id === 'D3' || currentLesson.id === 'D4') ? '24px' : '60px';
-  document.getElementById('df-tip').textContent = q.explain ? '💡 ' + q.explain : '';
+
+  // Answer 1
+  const ans1El = document.getElementById('df-ans');
+  ans1El.textContent = q.answer || '';
+  const ansLen = (q.answer||'').length + (q.answer2||'').length;
+  const fs = ansLen > 20 ? '22px' : ansLen > 10 ? '28px' : '36px';
+  ans1El.style.fontSize = fs;
+
+  // Answer 2
+  const ans2El = document.getElementById('df-ans2');
+  if(q.answer2){
+    ans2El.textContent = q.answer2;
+    ans2El.style.fontSize = fs;
+    ans2El.style.display = 'block';
+  } else {
+    ans2El.style.display = 'none';
+    ans2El.textContent = '';
+  }
+
+  // Clear any pending auto-flip from previous card
+  if(dfAutoTimer){ clearTimeout(dfAutoTimer); dfAutoTimer=null; }
+  window.speechSynthesis.cancel();
+
   const card = document.getElementById('df-card');
   card.classList.remove('flipped'); card.classList.add('pop');
   setTimeout(()=>card.classList.remove('pop'),300);
+
+  // Speak prompt (front side only)
+  setTimeout(()=>speak(q.prompt.replace(/\n/g,'，')), 400);
 }
-function dfFlip(){ document.getElementById('df-card').classList.toggle('flipped'); }
+
+function dfSpeakAnswers(q){
+  window.speechSynthesis.cancel();
+  const ans1 = (q.answer||'').replace(/\n/g,'，');
+  setTimeout(()=>speak(ans1), 100);
+  if(q.answer2){
+    const delay = ans1.length * 320 + 900;
+    setTimeout(()=>speak(q.answer2.replace(/\n/g,'，')), delay);
+  }
+}
+
+function dfFlip(){
+  const card = document.getElementById('df-card');
+  card.classList.toggle('flipped');
+  if(card.classList.contains('flipped')){
+    dfSpeakAnswers(dfList[dfIdx]);
+  } else {
+    window.speechSynthesis.cancel();
+    setTimeout(()=>speak(dfList[dfIdx].prompt.replace(/\n/g,'，')), 100);
+  }
+}
 function dfNext(){ if(dfIdx < dfList.length-1){ dfIdx++; renderDF(); } }
 function dfPrev(){ if(dfIdx > 0){ dfIdx--; renderDF(); } }
 
@@ -1552,7 +2020,360 @@ document.addEventListener('click',e=>{
 });
 
 // ════════════════════════════════════════════════════════
-// INIT
+// 課堂用語 DATA
+// ════════════════════════════════════════════════════════
+const CL_VOCAB = [
+  {char:'跟我念',          pinyin:'gēn wǒ niàn',              meaning:'私の後について読んで'},
+  {char:'有問題嗎？',      pinyin:'yǒu wèn tí ma？',          meaning:'質問はありますか？'},
+  {char:'我有問題',        pinyin:'wǒ yǒu wèn tí',            meaning:'質問があります'},
+  {char:'○○是什麼意思？', pinyin:'○○ shì shén me yì si？',   meaning:'○○はどういう意味ですか？'},
+  {char:'○○的中文是什麼？',pinyin:'○○ de zhōng wén shì shén me？',meaning:'○○の中国語は何ですか？'},
+  {char:'問我',            pinyin:'wèn wǒ',                   meaning:'私に聞いて'},
+  {char:'問同學',          pinyin:'wèn tóng xué',             meaning:'クラスメートに聞いて'},
+  {char:'請再說一次',      pinyin:'qǐng zài shuō yī cì',      meaning:'もう一度言ってください'},
+  {char:'請說大聲一點',    pinyin:'qǐng shuō dà shēng yī diǎn',meaning:'もっと大きな声で話してください'},
+  {char:'請說慢一點',      pinyin:'qǐng shuō màn yī diǎn',    meaning:'もっとゆっくり話してください'},
+  {char:'答對了！好棒！',  pinyin:'dá duì le！hǎo bàng！',    meaning:'正解！すごい！'},
+  {char:'不對，可惜！',    pinyin:'bú duì，kě xī！',          meaning:'違います、残念！'},
+  {char:'請坐下',          pinyin:'qǐng zuò xià',             meaning:'座ってください'},
+  {char:'請站起來',        pinyin:'qǐng zhàn qǐ lái',         meaning:'立ってください'},
+  {char:'舉手',            pinyin:'jǔ shǒu',                  meaning:'手を挙げる'},
+  {char:'輪流',            pinyin:'lún liú',                  meaning:'順番に'},
+  {char:'請到前面來',      pinyin:'qǐng dào qián miàn lái',   meaning:'前に来てください'},
+  {char:'請回座位',        pinyin:'qǐng huí zuò wèi',         meaning:'席に戻ってください'},
+  {char:'兩人一組',        pinyin:'liǎng rén yī zǔ',          meaning:'二人一組'},
+  {char:'分成一半',        pinyin:'fēn chéng yī bàn',         meaning:'半分に分ける'},
+  {char:'打開課本第～頁',  pinyin:'dǎ kāi kè běn dì～yè',     meaning:'教科書の〜ページを開いて'},
+  {char:'課本收起來',      pinyin:'kè běn shōu qǐ lái',       meaning:'教科書をしまって'},
+  {char:'請念',            pinyin:'qǐng niàn',                meaning:'読んでください'},
+  {char:'看講義（プリント）',pinyin:'kàn jiǎng yì',           meaning:'プリントを見て'},
+];
+
+// Split into 3 rounds for memory game (8 pairs each)
+const CL_MM_ROUNDS = [
+  CL_VOCAB.slice(0, 8),
+  CL_VOCAB.slice(8, 16),
+  CL_VOCAB.slice(16, 24),
+];
+
+// ════════════════════════════════════════════════════════
+// 課堂用語 NAVIGATION
+// ════════════════════════════════════════════════════════
+function openCLHome(){ showScreen('cl-home'); }
+function openSPHome(){ showScreen('sp-home'); }
+function backToCLHome(){ clearInterval(clMMInterval); showScreen('cl-home'); }
+
+// ════════════════════════════════════════════════════════
+// 課堂用語 FLASHCARDS
+// ════════════════════════════════════════════════════════
+let clFcIdx=0, clFcList=[];
+function startCLFlashcards(){
+  clFcIdx=0; clFcList=shuffle(CL_VOCAB);
+  showScreen('cl-flashcards'); renderCLFC();
+}
+function renderCLFC(){
+  const v = clFcList[clFcIdx];
+  document.getElementById('cl-fc-char').textContent       = v.char;
+  document.getElementById('cl-fc-pinyin-front').textContent = v.pinyin;
+  document.getElementById('cl-fc-char-back').textContent  = v.char;
+  document.getElementById('cl-fc-meaning').textContent    = v.meaning;
+  document.getElementById('cl-fc-counter').textContent    = `${clFcIdx+1} / ${clFcList.length}`;
+  document.getElementById('cl-fc-progress').style.width  = `${(clFcIdx+1)/clFcList.length*100}%`;
+  const card = document.getElementById('cl-fc-card');
+  card.classList.remove('flipped'); card.classList.add('pop');
+  setTimeout(()=>card.classList.remove('pop'),300);
+  setTimeout(()=>clSpeakWord(),500);
+}
+function clSpeakWord(){
+  const btn=document.getElementById('cl-fc-sound-btn');
+  btn.classList.add('playing');
+  speak(clFcList[clFcIdx].char.replace('○○',''));
+  setTimeout(()=>btn.classList.remove('playing'),1400);
+}
+function clFlipCard(){ document.getElementById('cl-fc-card').classList.toggle('flipped') }
+function clFcNext(){ if(clFcIdx<clFcList.length-1){clFcIdx++;renderCLFC()} }
+function clFcPrev(){ if(clFcIdx>0){clFcIdx--;renderCLFC()} }
+
+// ════════════════════════════════════════════════════════
+// 課堂用語 MEMORY (3 rounds of 8)
+// ════════════════════════════════════════════════════════
+let clMMFlipped=[], clMMMatched=0, clMMMoves=0, clMMTimer=0, clMMInterval=null, clMMLocked=false;
+let clMMRound=0;
+
+function startCLMemory(){
+  clMMRound=0; showScreen('cl-memory'); renderCLMMRound();
+}
+function renderCLMMRound(){
+  clMMFlipped=[]; clMMMatched=0; clMMMoves=0; clMMTimer=0; clMMLocked=false;
+  clearInterval(clMMInterval);
+  document.getElementById('cl-mm-next-round').style.display='none';
+  const round = CL_MM_ROUNDS[clMMRound];
+  document.getElementById('cl-mm-round-label').textContent=`第 ${clMMRound+1} 頁 / 共 3 頁`;
+  document.getElementById('cl-mm-pairs').textContent=`配對：0 / ${round.length}`;
+  document.getElementById('cl-mm-moves').textContent='步數：0';
+  document.getElementById('cl-mm-score-badge').textContent='0 配對';
+  const tiles=[];
+  round.forEach((v,i)=>{
+    tiles.push({id:i,side:'a',text:v.char});
+    tiles.push({id:i,side:'b',text:v.meaning});
+  });
+  const grid=document.getElementById('cl-mm-grid'); grid.innerHTML='';
+  shuffle(tiles).forEach(t=>{
+    const div=document.createElement('div'); div.className='mm-tile';
+    div.innerHTML=`<div class="mm-tile-inner" style="font-size:${t.side==='a'?'14px':'13px'};line-height:1.3">${t.text}</div>`;
+    div.onclick=()=>clMMClick(div,t,round.length); grid.appendChild(div);
+  });
+  clMMInterval=setInterval(()=>{clMMTimer++;document.getElementById('cl-mm-timer').textContent=`⏱ ${clMMTimer}s`},1000);
+}
+function clMMClick(div,t,total){
+  if(clMMLocked||div.classList.contains('matched')||div.classList.contains('revealed'))return;
+  div.classList.add('revealed'); clMMFlipped.push({div,t});
+  if(clMMFlipped.length===2){
+    clMMMoves++; clMMLocked=true;
+    const [a,b]=clMMFlipped;
+    if(a.t.id===b.t.id&&a.t.side!==b.t.side){
+      a.div.classList.add('matched'); b.div.classList.add('matched');
+      clMMMatched++; clMMFlipped=[]; clMMLocked=false;
+      document.getElementById('cl-mm-pairs').textContent=`配對：${clMMMatched} / ${total}`;
+      document.getElementById('cl-mm-moves').textContent=`步數：${clMMMoves}`;
+      document.getElementById('cl-mm-score-badge').textContent=`${clMMMatched} 配對`;
+      if(clMMMatched===total){
+        clearInterval(clMMInterval);
+        setTimeout(()=>{
+          if(clMMRound<CL_MM_ROUNDS.length-1){
+            document.getElementById('cl-mm-next-round').style.display='inline-block';
+          } else {
+            alert('全部完成！恭喜！🎉');
+          }
+        },400);
+      }
+    } else {
+      a.div.classList.add('wrong'); b.div.classList.add('wrong');
+      setTimeout(()=>{a.div.classList.remove('revealed','wrong');b.div.classList.remove('revealed','wrong');clMMFlipped=[];clMMLocked=false},900);
+    }
+  }
+}
+function clMMNextRound(){ clMMRound++; renderCLMMRound(); }
+
+// ════════════════════════════════════════════════════════
+// 簡體→繁體 轉換（常用字對照表）
+// ════════════════════════════════════════════════════════
+const S2T_MAP = {
+  '爱':'愛','按':'按','办':'辦','帮':'幫','报':'報','边':'邊','标':'標','宾':'賓',
+  '补':'補','才':'才','参':'參','层':'層','产':'產','长':'長','场':'場','车':'車',
+  '陈':'陳','称':'稱','迟':'遲','冲':'衝','处':'處','传':'傳','从':'從','错':'錯',
+  '达':'達','带':'帶','担':'擔','当':'當','导':'導','的':'的','得':'得','点':'點',
+  '电':'電','动':'動','读':'讀','断':'斷','对':'對','发':'發','方':'方','飞':'飛',
+  '费':'費','风':'風','复':'復','该':'該','赶':'趕','个':'個','给':'給','跟':'跟',
+  '更':'更','观':'觀','关':'關','广':'廣','贵':'貴','国':'國','过':'過','还':'還',
+  '汉':'漢','好':'好','号':'號','和':'和','后':'後','划':'劃','话':'話','欢':'歡',
+  '换':'換','黄':'黃','会':'會','回':'回','机':'機','级':'級','几':'幾','记':'記',
+  '际':'際','价':'價','见':'見','间':'間','将':'將','讲':'講','进':'進','经':'經',
+  '开':'開','课':'課','来':'來','乐':'樂','类':'類','里':'裡','联':'聯','练':'練',
+  '两':'兩','了':'了','们':'們','买':'買','没':'沒','么':'麼','门':'門','面':'面',
+  '名':'名','明':'明','你':'你','年':'年','念':'念','农':'農','旁':'旁','朋':'朋',
+  '频':'頻','起':'起','气':'氣','钱':'錢','亲':'親','请':'請','区':'區','让':'讓',
+  '认':'認','时':'時','书':'書','说':'說','随':'隨','台':'台','题':'題','听':'聽',
+  '图':'圖','问':'問','我':'我','无':'無','习':'習','现':'現','线':'線','想':'想',
+  '小':'小','写':'寫','谢':'謝','学':'學','言':'言','也':'也','样':'樣','一':'一',
+  '应':'應','语':'語','员':'員','远':'遠','运':'運','在':'在','怎':'怎','这':'這',
+  '真':'真','证':'證','志':'志','中':'中','种':'種','重':'重','住':'住','专':'專',
+  '准':'準','自':'自','总':'總','走':'走','做':'做',
+  // 常見詞組（直接替換整詞更準確）
+  '谢谢':'謝謝','你好':'你好','再见':'再見','什么':'什麼','这个':'這個','那个':'那個',
+  '朋友':'朋友','学生':'學生','老师':'老師','学习':'學習','练习':'練習','说话':'說話',
+  '问题':'問題','回答':'回答','同学':'同學','请问':'請問','认识':'認識','喜欢':'喜歡',
+  '中文':'中文','汉语':'漢語','繁体':'繁體','简体':'簡體','台湾':'台灣','语言':'語言',
+  '发音':'發音','声调':'聲調','词语':'詞語','句子':'句子','课本':'課本','讲义':'講義',
+  '举手':'舉手','坐下':'坐下','站起来':'站起來','回答':'回答','大家':'大家','同学们':'同學們',
+};
+
+function toTraditional(text){
+  if(!text) return text;
+  // Replace multi-char entries first (longer match priority)
+  let result=text;
+  const entries=Object.entries(S2T_MAP).sort((a,b)=>b[0].length-a[0].length);
+  for(const [s,t] of entries){
+    result=result.split(s).join(t);
+  }
+  return result;
+}
+
+// ════════════════════════════════════════════════════════
+// 口說練習 SPEAKING PRACTICE  (no API key needed)
+// ════════════════════════════════════════════════════════
+let spRecognition=null, spIsRecording=false, spTranscript='';
+let spTTSRecognition=null, spTTSIsRecording=false;
+
+function startSpeakingPractice(){
+  spTranscript='';
+  showScreen('speaking-practice');
+  spSetTab('free');
+  spClear();
+}
+
+// ── TAB SWITCHING ──
+function spSetTab(tab){
+  document.getElementById('sp-tab-free').classList.toggle('active', tab==='free');
+  document.getElementById('sp-tab-tts').classList.toggle('active', tab==='tts');
+  document.getElementById('sp-panel-free').style.display = tab==='free' ? 'block':'none';
+  document.getElementById('sp-panel-tts').style.display  = tab==='tts'  ? 'block':'none';
+  if(spIsRecording) spStopRecording();
+  if(spTTSIsRecording) spTTSStopRecording();
+  spTTSStop();
+}
+
+// ── TAB A: 自由錄音 ──
+function spToggleMic(){
+  if(spIsRecording){ spStopRecording(); return; }
+  spStartRecording();
+}
+function spStartRecording(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ alert('Chrome ブラウザを使用してください（音声認識対応）'); return; }
+  spTranscript='';
+  spRecognition=new SR();
+  spRecognition.lang='zh-TW'; spRecognition.continuous=false; spRecognition.interimResults=true;
+  spRecognition.onresult=(e)=>{
+    let finalText='', interimText='';
+    for(let i=0;i<e.results.length;i++){
+      if(e.results[i].isFinal) finalText+=e.results[i][0].transcript;
+      else interimText+=e.results[i][0].transcript;
+    }
+    const display=toTraditional(finalText||interimText);
+    const tb=document.getElementById('sp-transcript-text');
+    const ph=document.getElementById('sp-transcript-placeholder');
+    const box=document.getElementById('sp-transcript-box');
+    if(display){
+      tb.textContent=display; tb.style.display='block'; ph.style.display='none';
+      box.classList.add('has-text');
+    }
+    if(finalText) spTranscript=toTraditional(finalText);
+  };
+  spRecognition.onend=()=>{
+    spIsRecording=false;
+    const btn=document.getElementById('sp-mic-btn');
+    btn.classList.remove('recording'); btn.textContent='🎙️';
+    if(!spTranscript) spTranscript=toTraditional(document.getElementById('sp-transcript-text').textContent||'');
+    if(spTranscript) spShowFeedback(spTranscript);
+    document.getElementById('sp-clear-btn').classList.add('visible');
+  };
+  spRecognition.onerror=(e)=>{
+    spIsRecording=false;
+    const btn=document.getElementById('sp-mic-btn');
+    btn.classList.remove('recording'); btn.textContent='🎙️';
+    if(e.error!=='no-speech') alert('音声認識エラー：'+e.error);
+  };
+  spRecognition.start();
+  spIsRecording=true;
+  const btn=document.getElementById('sp-mic-btn');
+  btn.classList.add('recording'); btn.textContent='⏹️';
+  document.getElementById('sp-result-box').style.display='none';
+}
+function spStopRecording(){ if(spRecognition) spRecognition.stop(); }
+
+function spShowFeedback(text){
+  const heard=text.trim();
+  const box=document.getElementById('sp-result-box');
+  document.getElementById('sp-heard').textContent=heard;
+  let msg='';
+  if(!heard){
+    msg='沒有聽到聲音，請再試一次！';
+  } else if(heard.length<=2){
+    msg='有聽到一點！繼續說，聲音大一點！😊';
+  } else {
+    const keywords=['你好','大家好','我','叫','是','名字','來自','喜歡','謝謝','老師','日本','台灣','學習','中文','請'];
+    const found=keywords.filter(w=>heard.includes(w));
+    if(found.length>=3){
+      msg=`很棒！AI 聽懂了「${found.join('、')}」！發音很清楚，繼續加油！🎉`;
+    } else if(found.length>=1){
+      msg=`不錯！AI 聽到了「${found.join('、')}」。試著說大聲一點！💪`;
+    } else {
+      msg='AI 聽到你說話了！發音可能和中文差一點，沒關係，多練習就進步！加油！😄';
+    }
+  }
+  document.getElementById('sp-feedback-msg').textContent=msg;
+  box.style.display='block';
+}
+
+function spClear(){
+  if(spIsRecording) spStopRecording();
+  spTranscript='';
+  const tb=document.getElementById('sp-transcript-text');
+  const ph=document.getElementById('sp-transcript-placeholder');
+  const box=document.getElementById('sp-transcript-box');
+  tb.textContent=''; tb.style.display='none'; ph.style.display='block';
+  box.classList.remove('has-text');
+  document.getElementById('sp-result-box').style.display='none';
+  document.getElementById('sp-clear-btn').classList.remove('visible');
+  const btn=document.getElementById('sp-mic-btn');
+  btn.classList.remove('recording'); btn.textContent='🎙️';
+}
+
+// ── TAB B: 朗讀器 TTS ──
+function spTTSSpeak(){
+  const text=document.getElementById('sp-tts-input').value.trim();
+  if(!text){ alert('請先輸入中文文字！'); return; }
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='zh-TW'; u.rate=0.82; u.pitch=1;
+  window.speechSynthesis.speak(u);
+}
+function spTTSStop(){ window.speechSynthesis.cancel(); }
+
+function spTTSToggleMic(){
+  if(spTTSIsRecording){ spTTSStopRecording(); return; }
+  spTTSStartRecording();
+}
+function spTTSStartRecording(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ alert('Chrome ブラウザを使用してください'); return; }
+  spTTSRecognition=new SR();
+  spTTSRecognition.lang='zh-TW'; spTTSRecognition.continuous=false; spTTSRecognition.interimResults=true;
+  spTTSRecognition.onresult=(e)=>{
+    let finalText='', interimText='';
+    for(let i=0;i<e.results.length;i++){
+      if(e.results[i].isFinal) finalText+=e.results[i][0].transcript;
+      else interimText+=e.results[i][0].transcript;
+    }
+    const display=toTraditional(finalText||interimText);
+    const tb=document.getElementById('sp-tts-transcript-text');
+    const ph=document.getElementById('sp-tts-placeholder');
+    const box=document.getElementById('sp-tts-transcript-box');
+    if(display){
+      tb.textContent=display; tb.style.display='block'; ph.style.display='none';
+      box.classList.add('has-text');
+    }
+  };
+  spTTSRecognition.onend=()=>{
+    spTTSIsRecording=false;
+    const btn=document.getElementById('sp-tts-mic-btn');
+    btn.classList.remove('recording'); btn.textContent='🎙️';
+    document.getElementById('sp-tts-clear-btn').classList.add('visible');
+  };
+  spTTSRecognition.onerror=()=>{
+    spTTSIsRecording=false;
+    document.getElementById('sp-tts-mic-btn').classList.remove('recording');
+    document.getElementById('sp-tts-mic-btn').textContent='🎙️';
+  };
+  spTTSRecognition.start();
+  spTTSIsRecording=true;
+  const btn=document.getElementById('sp-tts-mic-btn');
+  btn.classList.add('recording'); btn.textContent='⏹️';
+}
+function spTTSStopRecording(){ if(spTTSRecognition) spTTSRecognition.stop(); }
+function spTTSClear(){
+  if(spTTSIsRecording) spTTSStopRecording();
+  const tb=document.getElementById('sp-tts-transcript-text');
+  const ph=document.getElementById('sp-tts-placeholder');
+  const box=document.getElementById('sp-tts-transcript-box');
+  tb.textContent=''; tb.style.display='none'; ph.style.display='block';
+  box.classList.remove('has-text');
+  document.getElementById('sp-tts-clear-btn').classList.remove('visible');
+  document.getElementById('sp-tts-mic-btn').classList.remove('recording');
+  document.getElementById('sp-tts-mic-btn').textContent='🎙️';
+}
+
 // ════════════════════════════════════════════════════════
 buildPortal();
 </script>
