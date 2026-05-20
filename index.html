@@ -76,6 +76,10 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .fc-front,.fc-back{position:absolute;inset:0;background:var(--surface);border:1px solid var(--border);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;padding:24px}
 .fc-back{transform:rotateY(180deg);background:var(--surface2);border-color:var(--blue)}
 .fc-hint{font-size:12px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px}
+.fc-ruby-pair{display:inline-flex;flex-direction:column;align-items:center;margin:0 3px}
+.fc-ruby-py{font-size:13px;color:var(--blue-light);font-family:'Noto Sans TC',sans-serif;font-weight:400;letter-spacing:0.5px;line-height:1.4;text-align:center;min-width:1em}
+.fc-ruby-ch{font-family:'Noto Serif TC',serif;font-size:42px;font-weight:700;color:var(--text);line-height:1.2;text-align:center}
+.fc-ruby-punct{font-family:'Noto Serif TC',serif;font-size:36px;font-weight:700;color:var(--text);line-height:1.2;align-self:flex-start;padding-top:4px}
 .fc-char{font-family:'Noto Serif TC',serif;font-size:52px;font-weight:700;color:var(--text);margin-bottom:6px;text-align:center;line-height:1.2}
 .fc-pinyin{font-size:19px;color:var(--blue-light);margin-bottom:4px;letter-spacing:1px}
 .fc-meaning{font-size:17px;color:var(--text-mid);text-align:center}
@@ -117,7 +121,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .nd-question{font-size:22px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:4px}
 .nd-hint{font-size:12px;color:var(--text-muted);letter-spacing:2px}
 .nd-answer{font-size:28px;font-weight:700;color:var(--text);display:none;margin-top:12px}
-.nd-pinyin{font-size:16px;color:var(--blue-light);margin-top:6px;display:none}
+.nd-pinyin{font-size:20px;color:var(--blue-light);margin-top:6px;display:none}
 .nd-sound-row{display:flex;justify-content:center;gap:12px;margin-bottom:16px}
 .nd-btn-row{display:flex;gap:10px;margin-bottom:10px}
 .nd-btn{background:rgba(240,180,41,0.12);border:1px solid var(--gold);color:var(--gold);border-radius:10px;padding:12px 18px;font-size:15px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;flex:1;transition:all .15s}
@@ -282,10 +286,12 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
       <div class="fc-card" id="fc-card" onclick="flipCard()">
         <div class="fc-front">
           <div class="fc-hint">點擊翻轉</div>
-          <div class="fc-char" id="fc-char"></div>
+          <div class="fc-char" id="fc-char" style="display:none"></div>
+          <div id="fc-ruby-front"></div>
         </div>
         <div class="fc-back">
-          <div class="fc-pinyin" id="fc-pinyin"></div>
+          <div class="fc-pinyin" id="fc-pinyin" style="display:none"></div>
+          <div id="fc-ruby-wrap" style="margin-bottom:6px"></div>
           <div class="fc-meaning" id="fc-meaning"></div>
           <div class="fc-example" id="fc-example"></div>
         </div>
@@ -386,7 +392,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
       <div class="fc-card" id="df-card" onclick="dfFlip()">
         <div class="fc-front">
           <div class="fc-hint" style="font-size:18px">點擊翻轉看參考回答</div>
-          <div class="fc-char" id="df-q" style="font-size:24px;line-height:1.5"></div>
+          <div class="fc-char" id="df-q" style="font-size:26px;line-height:1.5"></div>
         </div>
         <div class="fc-back">
           <div class="fc-hint" style="color:var(--green);font-size:18px">參考回答</div>
@@ -455,8 +461,9 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
       <div class="fc-card" id="cl-fc-card" onclick="clFlipCard()">
         <div class="fc-front">
           <div class="fc-hint">點擊翻轉</div>
-          <div class="cl-fc-char" id="cl-fc-char"></div>
-          <div class="cl-fc-pinyin" id="cl-fc-pinyin-front"></div>
+          <div class="cl-fc-char" id="cl-fc-char" style="display:none"></div>
+          <div class="cl-fc-pinyin" id="cl-fc-pinyin-front" style="display:none"></div>
+          <div id="cl-ruby-front"></div>
         </div>
         <div class="fc-back">
           <div class="cl-fc-char" id="cl-fc-char-back" style="font-size:30px;color:var(--blue-light)"></div>
@@ -753,7 +760,7 @@ const LESSONS = [
     {char:'分成一半', pinyin:'fēn chéng yī bàn',meaning:'半分に分ける',     example:'請分成一半。'},
     {char:'打開課本', pinyin:'dǎ kāi kè běn', meaning:'教科書を開いて',     example:'請打開課本第十頁。'},
     {char:'課本收起來',pinyin:'kè běn shōu qǐ lái',meaning:'教科書をしまって',example:'好，課本收起來。'},
-    {char:'跟我讀',   pinyin:'gēn wǒ dú',     meaning:'私の後について読んで',example:'請跟我讀：你好！'},
+    {char:'跟我讀',   pinyin:'gēn wǒ dú',     meaning:'私のあとに読んでください',example:'請跟我讀：你好！'},
     {char:'請讀',     pinyin:'qǐng dú',        meaning:'読んでください',     example:'請讀第一課。'},
     {char:'看講義',   pinyin:'kàn jiǎng yì',   meaning:'プリントを見て',    example:'請看講義第一頁。'},
   ],
@@ -1145,7 +1152,7 @@ const LESSONS = [
     {char:'超～的', pinyin:'chāo～de',     meaning:'めちゃ〜',                 example:'這個超好吃的！'},
     {char:'～死了', pinyin:'～sǐ le',      meaning:'〜で死にそう（誇張）',     example:'今天熱死了！'},
     {char:'最',     pinyin:'zuì',         meaning:'最も',                     example:'哪一件最便宜？'},
-    {char:'還好',   pinyin:'hái hǎo',     meaning:'まあまあ・普通',           example:'這件衣服還好，不太貴。'},
+    {char:'還好',   pinyin:'hái hǎo',     meaning:'まあまあ・普通',           example:'這件衣服的價錢還好，不太貴。'},
     // 形容詞
     {char:'好吃',   pinyin:'hǎo chī',     meaning:'おいしい',                 example:'台灣小吃很好吃！'},
     {char:'好喝',   pinyin:'hǎo hē',      meaning:'おいしい（飲み物）',       example:'珍珠奶茶好喝嗎？'},
@@ -1164,17 +1171,17 @@ const LESSONS = [
     {char:'忙',     pinyin:'máng',        meaning:'忙しい',                   example:'最近很忙！'},
     {char:'累',     pinyin:'lèi',         meaning:'疲れた',                   example:'跑步很累。'},
     // 購物動詞
-    {char:'想',     pinyin:'xiǎng',       meaning:'〜したい',                 example:'我想買這件。'},
-    {char:'要',     pinyin:'yào',         meaning:'〜が必要・〜する',         example:'我要這個。'},
+    {char:'想',     pinyin:'xiǎng',       meaning:'〜したい',                 example:'我想買這件(衣服)。'},
+    {char:'要',     pinyin:'yào',         meaning:'〜が欲しい・〜必要とする', example:'我要這個。'},
     {char:'覺得',   pinyin:'jué de',      meaning:'〜と思う・感じる',         example:'你覺得怎麼樣？'},
     {char:'打折',   pinyin:'dǎ zhé',      meaning:'割引する',                 example:'有打折嗎？'},
     {char:'講價',   pinyin:'jiǎng jià',   meaning:'値切る',                   example:'我不講價，最便宜多少？'},
     {char:'刷卡',   pinyin:'shuā kǎ',     meaning:'カードで払う',             example:'可以刷卡嗎？'},
     {char:'付現',   pinyin:'fù xiàn',     meaning:'現金で払う',               example:'我付現，謝謝。'},
-    {char:'換貨',   pinyin:'huàn huò',    meaning:'交換する',                 example:'這件可以換嗎？'},
+    {char:'換貨',   pinyin:'huàn huò',    meaning:'交換する',                 example:'這件(衣服)太小了，可以換貨嗎？'},
     // 購物名詞
     {char:'發票',   pinyin:'fā piào',     meaning:'レシート・領収書',         example:'要發票嗎？'},
-    {char:'載具',   pinyin:'zài jù',      meaning:'電子レシート端末',         example:'有載具嗎？'},
+    {char:'載具',   pinyin:'zài jù',      meaning:'電子レシート用バーコード', example:'有載具嗎？'},
     {char:'新款',   pinyin:'xīn kuǎn',    meaning:'新モデル・新作',           example:'這是今年的新款。'},
     {char:'零錢',   pinyin:'líng qián',   meaning:'小銭',                     example:'不好意思，沒有零錢。'},
     // 數量詞
@@ -1223,7 +1230,7 @@ const LESSONS = [
     {a:'刷卡',   b:'カードで払う'},
     {a:'換貨',   b:'交換する'},
     {a:'發票',   b:'レシート'},
-    {a:'載具',   b:'電子レシート端末'},
+    {a:'載具',   b:'電子レシート用バーコード'},
     {a:'覺得',   b:'〜と思う・感じる'},
     {a:'太～了', b:'〜すぎる'},
   ],
@@ -1258,7 +1265,7 @@ const LESSONS = [
     {prompt:'怎麼賣？',                             answer:'兩件９９０。',        answer2:'一個５０。'},
     {prompt:'有打折嗎？',                           answer:'有，打八折。',        answer2:'抱歉，沒有。'},
     {prompt:'可以刷卡嗎？',                         answer:'可以。',             answer2:'不好意思，只收現金哦。'},
-    {prompt:'你買的衣服太大了，\n你想換小的，怎麼說？', answer:'這件衣服可以換嗎？'},
+    {prompt:'你買的衣服太大了，\n你想換小的，怎麼說？', answer:'這件衣服可以換小的嗎？'},
     {prompt:'要發票嗎？',                           answer:'要。',               answer2:'不用。'},
     {prompt:'有沒有黑色的？',                       answer:'有。',               answer2:'不好意思，沒有。'},
     {prompt:'哪一件好看？',                         answer:'這件。',             answer2:'都很好看。'},
@@ -1423,10 +1430,51 @@ function startFlashcards(){
   fcIdx = 0; fcVocab = shuffle(currentLesson.vocab);
   showScreen('flashcards'); renderFC();
 }
+function buildRuby(char, pinyin){
+  // 把 pinyin 拆成 token：拼音音節 或 標點符號
+  const pyTokens = [];
+  const pyRe = /[bpmfdtnlgkhjqxzcsryw][a-z\u0101\u00e1\u01ce\u00e0\u0113\u00e9\u011b\u00e8\u012b\u00ed\u01d0\u00ec\u014d\u00f3\u01d2\u00f2\u016b\u00fa\u01d4\u00f9\u01d6\u01d8\u01da\u01dc]*|[\u0101\u00e1\u01ce\u00e0\u0113\u00e9\u011b\u00e8\u012b\u00ed\u01d0\u00ec\u014d\u00f3\u01d2\u00f2\u016b\u00fa\u01d4\u00f9\u01d6\u01d8\u01da\u01dc][a-z\u0101\u00e1\u01ce\u00e0\u0113\u00e9\u011b\u00e8\u012b\u00ed\u01d0\u00ec\u014d\u00f3\u01d2\u00f2\u016b\u00fa\u01d4\u00f9\u01d6\u01d8\u01da\u01dc]*|[^\x20a-z\u0101\u00e1\u01ce\u00e0\u0113\u00e9\u011b\u00e8\u012b\u00ed\u01d0\u00ec\u014d\u00f3\u01d2\u00f2\u016b\u00fa\u01d4\u00f9\u01d6\u01d8\u01da\u01dc]/g;
+  let pm;
+  while((pm = pyRe.exec(pinyin)) !== null) pyTokens.push(pm[0]);
+
+  // 把 char 拆成 token，括號群組整體為一個 token
+  const chTokens = [];
+  const chRe = /\uff08[^\uff08\uff09]*\uff09|\([^()]*\)|\u25cb+|[^\s]/g;
+  let cm;
+  while((cm = chRe.exec(char)) !== null) chTokens.push(cm[0]);
+
+  const isPunct = s => /^[\uff0c\u3002\uff01\uff1f\u3001\uff1a\uff1b\u300c\u300d\u3010\u3011\uff5e\uff01\uff1f\u25cb]/.test(s) || s === '\uff5e' || s === '~';
+  const isAlpha = s => /^[a-z\u0101\u00e1\u01ce\u00e0\u0113\u00e9\u011b\u00e8\u012b\u00ed\u01d0\u00ec\u014d\u00f3\u01d2\u00f2\u016b\u00fa\u01d4\u00f9\u01d6\u01d8\u01da\u01dc]/i.test(s);
+
+  let ci = 0, pi = 0;
+  const pairs = [];
+
+  while(ci < chTokens.length){
+    const ch = chTokens[ci];
+    if(/^\uff08/.test(ch)){
+      pairs.push(`<div class="fc-ruby-pair"><div class="fc-ruby-punct" style="font-size:26px">${ch}</div><div class="fc-ruby-py">&nbsp;</div></div>`);
+      ci++;
+    } else if(isPunct(ch)){
+      pairs.push(`<div class="fc-ruby-pair"><div class="fc-ruby-punct">${ch}</div><div class="fc-ruby-py">&nbsp;</div></div>`);
+      ci++;
+      if(pi < pyTokens.length && isPunct(pyTokens[pi])) pi++;
+    } else {
+      while(pi < pyTokens.length && !isAlpha(pyTokens[pi])) pi++;
+      const syllable = pyTokens[pi] || '';
+      pairs.push(`<div class="fc-ruby-pair"><div class="fc-ruby-ch">${ch}</div><div class="fc-ruby-py">${syllable}</div></div>`);
+      ci++; if(syllable) pi++;
+    }
+  }
+  return `<div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:0">${pairs.join('')}</div>`;
+}
+
+
 function renderFC(){
   const v = fcVocab[fcIdx];
   document.getElementById('fc-char').textContent    = v.char;
-  document.getElementById('fc-pinyin').textContent  = v.pinyin;
+  document.getElementById('fc-ruby-front').innerHTML = buildRuby(v.char, v.pinyin);
+  document.getElementById('fc-ruby-wrap').innerHTML  = buildRuby(v.char, v.pinyin);
+  document.getElementById('fc-pinyin').textContent   = v.pinyin; // hidden, kept for reference
   document.getElementById('fc-meaning').textContent = v.meaning;
   document.getElementById('fc-example').textContent = v.example;
   document.getElementById('fc-counter').textContent = `${fcIdx+1} / ${fcVocab.length}`;
@@ -1439,10 +1487,11 @@ function renderFC(){
 function speakWord(){
   const btn = document.getElementById('fc-sound-btn');
   btn.classList.add('playing');
-  // If char is a pure number, speak the Chinese pinyin reading via the meaning field isn't great
-  // Instead speak the char directly – zh-TW TTS reads arabic numerals in Chinese
   const ch = fcVocab[fcIdx].char;
-  speak(ch);
+  // 「打折」的「折」在購物語境下應讀 zhé（二聲），
+  // 但 TTS 常讀成 zhē（一聲），改用同音替換確保正確發音
+  const speakText = ch === '打折' ? '打者' : ch;
+  speak(speakText);
   setTimeout(() => btn.classList.remove('playing'), 1400);
 }
 function flipCard(){ document.getElementById('fc-card').classList.toggle('flipped') }
@@ -1747,19 +1796,18 @@ function renderDF(){
   // Answer 1
   const ans1El = document.getElementById('df-ans');
   ans1El.textContent = q.answer || '';
-  const ansLen = (q.answer||'').length + (q.answer2||'').length;
-  const fs = ansLen > 20 ? '22px' : ansLen > 10 ? '28px' : '36px';
-  ans1El.style.fontSize = fs;
+  ans1El.style.fontSize = '28px';
 
   // Answer 2
   const ans2El = document.getElementById('df-ans2');
   if(q.answer2){
-    ans2El.textContent = q.answer2;
-    ans2El.style.fontSize = fs;
+    ans2El.innerHTML = q.answer2.replace(/\n/g,
+      '<hr style="border:none;border-top:1px solid var(--border);margin:10px 0"><span style="color:var(--text)">') + (q.answer2.includes('\n') ? '</span>' : '');
+    ans2El.style.fontSize = '28px';
     ans2El.style.display = 'block';
   } else {
     ans2El.style.display = 'none';
-    ans2El.textContent = '';
+    ans2El.innerHTML = '';
   }
 
   // Clear any pending auto-flip from previous card
@@ -2023,7 +2071,7 @@ document.addEventListener('click',e=>{
 // 課堂用語 DATA
 // ════════════════════════════════════════════════════════
 const CL_VOCAB = [
-  {char:'跟我念',          pinyin:'gēn wǒ niàn',              meaning:'私の後について読んで'},
+  {char:'跟我念',          pinyin:'gēn wǒ niàn',              meaning:'私のあとに読んでください'},
   {char:'有問題嗎？',      pinyin:'yǒu wèn tí ma？',          meaning:'質問はありますか？'},
   {char:'我有問題',        pinyin:'wǒ yǒu wèn tí',            meaning:'質問があります'},
   {char:'○○是什麼意思？', pinyin:'○○ shì shén me yì si？',   meaning:'○○はどういう意味ですか？'},
@@ -2031,8 +2079,8 @@ const CL_VOCAB = [
   {char:'問我',            pinyin:'wèn wǒ',                   meaning:'私に聞いて'},
   {char:'問同學',          pinyin:'wèn tóng xué',             meaning:'クラスメートに聞いて'},
   {char:'請再說一次',      pinyin:'qǐng zài shuō yī cì',      meaning:'もう一度言ってください'},
-  {char:'請說大聲一點',    pinyin:'qǐng shuō dà shēng yī diǎn',meaning:'もっと大きな声で話してください'},
-  {char:'請說慢一點',      pinyin:'qǐng shuō màn yī diǎn',    meaning:'もっとゆっくり話してください'},
+  {char:'請說大聲一點',    pinyin:'qǐng shuō dà shēng yī diǎn',meaning:'大きい声で話してください'},
+  {char:'請說慢一點',      pinyin:'qǐng shuō màn yī diǎn',    meaning:'ゆっくり話してください'},
   {char:'答對了！好棒！',  pinyin:'dá duì le！hǎo bàng！',    meaning:'正解！すごい！'},
   {char:'不對，可惜！',    pinyin:'bú duì，kě xī！',          meaning:'違います、残念！'},
   {char:'請坐下',          pinyin:'qǐng zuò xià',             meaning:'座ってください'},
@@ -2075,6 +2123,7 @@ function renderCLFC(){
   const v = clFcList[clFcIdx];
   document.getElementById('cl-fc-char').textContent       = v.char;
   document.getElementById('cl-fc-pinyin-front').textContent = v.pinyin;
+  document.getElementById('cl-ruby-front').innerHTML       = buildRuby(v.char, v.pinyin);
   document.getElementById('cl-fc-char-back').textContent  = v.char;
   document.getElementById('cl-fc-meaning').textContent    = v.meaning;
   document.getElementById('cl-fc-counter').textContent    = `${clFcIdx+1} / ${clFcList.length}`;
