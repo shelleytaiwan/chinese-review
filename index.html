@@ -1967,7 +1967,7 @@ const LESSONS = [
   ],
 },
 
-...Array.from({length:13},(_,i)=>({
+...Array.from({length:11},(_,i)=>({
   id:`D${i+10}`, title:`第 ${i+10} 課`, subtitle:'即將推出',
   info:'', vocab:[], mmPairs:[], toneData:[], dialogueData:[], sentenceData:[], locked:true
 })),
@@ -3294,7 +3294,7 @@ document.addEventListener('DOMContentLoaded', function(){
   if(grid){
     const card = document.createElement('div');
     card.className = 'lesson-card';
-    card.innerHTML = '<div class="d-num">D21</div><div class="d-title">中文打字練習</div>';
+    card.innerHTML = '<div class="d-title">中文打字練習</div>';
     card.onclick = function(){
       document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
       document.getElementById('typing-practice-screen').classList.add('active');
