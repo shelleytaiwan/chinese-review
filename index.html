@@ -94,8 +94,8 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .fc-btn.next{background:var(--blue);border-color:var(--blue);color:#fff}
 
 /* ── MEMORY ── */
-.mm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:20px}
-.mm-tile{aspect-ratio:1;min-height:144px;background:var(--surface);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:all .2s;text-align:center;padding:12px;line-height:1.4;position:relative;overflow:hidden}
+.mm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.mm-tile{width:100%;aspect-ratio:1;min-height:100px;background:var(--surface);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:all .2s;text-align:center;padding:12px;line-height:1.4;position:relative;overflow:hidden}
 .mm-tile::before{content:'';position:absolute;inset:0;background:var(--surface2);transition:opacity .25s;opacity:1}
 .mm-tile.revealed::before,.mm-tile.matched::before{opacity:0}
 .mm-tile.matched{border-color:var(--green);background:rgba(61,184,122,.1)}
