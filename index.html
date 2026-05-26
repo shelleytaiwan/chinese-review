@@ -2063,6 +2063,8 @@ function shuffle(a){ return [...a].sort(() => Math.random() - .5) }
 function speak(text){
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
+  // 修正 TTS 發音：面→麵（確保讀 miàn）
+  text = text.replace(/面/g, '麵');
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'zh-TW'; u.rate = 0.45;
 
@@ -2166,8 +2168,7 @@ function speakWord(){
   const ch = fcVocab[fcIdx].char;
   // 「打折」的「折」在購物語境下應讀 zhé（二聲），
   // 但 TTS 常讀成 zhē（一聲），改用同音替換確保正確發音
-  const speakText = ch === '打折' ? '打者'
-    : ch.replace(/面/g, '麵');
+  const speakText = ch === '打折' ? '打者' : ch;
   speak(speakText);
   setTimeout(() => btn.classList.remove('playing'), 1400);
 }
@@ -3214,7 +3215,7 @@ const DDOG_8 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWAAAADhCAIAAAB5mP
 const DDOG_MAP = {1:DDOG_1,2:DDOG_2,3:DDOG_3,4:DDOG_4,5:DDOG_5,6:DDOG_6,7:DDOG_7,8:DDOG_8};
 const DIMG_MAP = {duimian:DIMG_duimian,youbian:DIMG_youbian,zhuanjiao:DIMG_zhuanjiao,pangbian:DIMG_pangbian,zuobian:DIMG_zuobian,yizou:DIMG_yizou};
 const DG_DOG_CARDS = [[1, "小狗在哪裡？", "在箱子裡面", "zài xiāng zi lǐ miàn", ["在箱子裡面", "在裡面", "裡面"]], [2, "小狗在哪裡？", "在箱子上面", "zài xiāng zi shàng miàn", ["在箱子上面", "在上面", "上面"]], [3, "小狗在哪裡？", "在箱子後面", "zài xiāng zi hòu miàn", ["在箱子後面", "在後面", "後面"]], [4, "小狗在哪裡？", "在箱子下面", "zài xiāng zi xià miàn", ["在箱子下面", "在下面", "下面"]], [5, "小狗在哪裡？", "在箱子前面", "zài xiāng zi qián miàn", ["在箱子前面", "在前面", "前面"]], [6, "小狗在哪裡？", "在箱子旁邊", "zài xiāng zi páng biān", ["在箱子旁邊", "在旁邊", "旁邊"]], [7, "小狗在哪裡？", "在橘色箱子和藍色箱子之間", "zài liǎng gè xiāng zi zhōng jiān", ["在橘色箱子和藍色箱子之間", "在兩個箱子中間", "在中間", "中間"]], [8, "小狗在哪裡？", "在四個箱子中間", "zài sì gè xiāng zi zhōng jiān", ["在四個箱子中間", "在箱子中間", "在中間", "中間"]]];
-const DG_MAP_QS = [["學校在哪裡？", ["在銀行的旁邊", "銀行旁邊", "在銀行旁邊", "銀行的旁邊"]], ["銀行在哪裡？", ["在學校的旁邊", "學校旁邊", "在學校旁邊", "學校的旁邊"]], ["咖啡店在哪裡？", ["在學校的對面", "學校對面", "在學校對面", "學校的對面", "咖啡店在學校對面"]], ["餐廳在哪裡？", ["在咖啡店的旁邊", "咖啡店旁邊", "在咖啡店旁邊", "咖啡店的旁邊"]], ["百貨公司在哪裡？", ["在餐廳的對面", "餐廳對面", "在餐廳對面", "餐廳的對面"]], ["商店在哪裡？", ["在中間", "在學校和咖啡店之間", "學校和咖啡店中間", "中間", "在學校和咖啡店的中間"]], ["學校的對面是什麼？", ["咖啡店"]], ["銀行的旁邊是什麼？", ["學校"]], ["咖啡店的旁邊是什麼？", ["餐廳"]], ["餐廳的對面是什麼？", ["百貨公司"]], ["學校和咖啡店之間是什麼？", ["商店", "在中間", "中間"]]];
+const DG_MAP_QS = [["學校在哪裡？", ["在銀行的對面", "銀行對面", "在銀行對面", "銀行的對面"]], ["銀行在哪裡？", ["在百貨公司的旁邊", "百貨公司旁邊", "在百貨公司旁邊", "百貨公司的旁邊"]], ["咖啡店在哪裡？", ["在百貨公司的對面", "百貨公司對面", "在百貨公司對面", "百貨公司的對面", "咖啡店在百貨公司對面"]], ["餐廳在哪裡？", ["在百貨公司的旁邊", "百貨公司旁邊", "在百貨公司旁邊", "百貨公司的旁邊"]], ["百貨公司在哪裡？", ["在咖啡店的對面", "咖啡店對面", "在咖啡店對面", "咖啡店的對面"]], ["商店在哪裡？", ["在咖啡店的旁邊", "咖啡店旁邊", "在咖啡店旁邊", "咖啡店的旁邊"]], ["學校的對面是什麼？", ["銀行"]], ["銀行的對面是什麼？", ["學校"]], ["咖啡店的旁邊是什麼？", ["學校", "商店"]], ["餐廳的對面是什麼？", ["商店"]], ["學校和商店之間是什麼？", ["咖啡店", "在中間", "中間"]]];
 
 let dgIdx=0, dgList=[], dgAnswered=false;
 
