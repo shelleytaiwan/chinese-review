@@ -1831,7 +1831,7 @@ const LESSONS = [
     {char:'考卷',     pinyin:'kǎo juàn',     meaning:'試験用紙',                  example:'考卷交上來。'},
     // 人・角色
     {char:'班長',     pinyin:'bān zhǎng',    meaning:'クラス委員長',              example:'班長，請幫我發講義。'},
-    {char:'小老師',   pinyin:'xiǎo lǎo shī', meaning:'学習係・ミニ先生',         example:'小老師，來前面。'},
+    {char:'小老師',   pinyin:'xiǎo lǎo shī', meaning:'学習係',         example:'小老師，來前面。'},
     {char:'值日生',   pinyin:'zhí rì shēng', meaning:'日直',                      example:'今天誰是值日生？'},
     // 地點
     {char:'教務處',   pinyin:'jiào wù chù',  meaning:'教務室',                    example:'請去教務處拿白板筆。'},
@@ -1840,13 +1840,13 @@ const LESSONS = [
     // 動詞
     {char:'幫我',     pinyin:'bāng wǒ',      meaning:'私を助ける・代わりにする',example:'你幫我關窗戶，好嗎？'},
     {char:'交上來',   pinyin:'jiāo shàng lái',meaning:'提出する・出す',       example:'請把作業交上來。'},
-    {char:'發下去',   pinyin:'fā xià qù',    meaning:'配る・配布する',        example:'請你幫我發考卷。'},
-    {char:'傳下去',   pinyin:'chuán xià qù', meaning:'回す・回覧する',        example:'請把講義傳下去。'},
+    {char:'發下去',   pinyin:'fā xià qù',    meaning:'配る・配布する',        example:'請把講義發下去。'},
+    {char:'傳下去',   pinyin:'chuán xià qù', meaning:'回す',        example:'請把講義傳下去。'},
     {char:'搬桌子',   pinyin:'bān zhuō zi',  meaning:'机を運ぶ',              example:'請幫我搬桌子。'},
-    {char:'去拿',     pinyin:'qù ná',        meaning:'取りに行く',            example:'請去圖書館拿椅子。'},
+    {char:'去拿',     pinyin:'qù ná',        meaning:'取りに行く',            example:'我去拿講義。'},
     {char:'收上來',   pinyin:'shōu shàng lái',meaning:'集める・回収する',     example:'請把考卷收上來。'},
     {char:'借一下',   pinyin:'jiè yī xià',   meaning:'ちょっと借りる',        example:'白板筆借我一下。'},
-    {char:'還書',     pinyin:'huán shū',     meaning:'本を返す',              example:'書借了要還。'},
+    {char:'還書',     pinyin:'huán shū',     meaning:'本を返す',              example:'我要去圖書館還書。'},
     // 禮貌用語・句型
     {char:'麻煩你',   pinyin:'má fan nǐ',    meaning:'ご面倒をかけます',          example:'麻煩你幫我關燈，好嗎？'},
     {char:'不好意思', pinyin:'bù hǎo yì si', meaning:'すみません',               example:'不好意思，麻煩你幫我。'},
@@ -2063,8 +2063,8 @@ function shuffle(a){ return [...a].sort(() => Math.random() - .5) }
 function speak(text){
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
-  // 修正 TTS 發音：面→麵（確保讀 miàn）
-  text = text.replace(/面/g, '麵');
+  // 修正 TTS 發音：面→麵（確保讀 miàn）；還→環（確保讀 huán）
+  text = text.replace(/面/g, '麵').replace(/還書/g, '環書');
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'zh-TW'; u.rate = 0.45;
 
@@ -2153,7 +2153,11 @@ function renderFC(){
   document.getElementById('fc-ruby-front').innerHTML = buildRuby(v.char, v.pinyin);
   document.getElementById('fc-ruby-wrap').innerHTML  = buildRuby(v.char, v.pinyin);
   document.getElementById('fc-pinyin').textContent   = v.pinyin; // hidden, kept for reference
-  document.getElementById('fc-meaning').textContent = v.meaning;
+  const meaningEl = document.getElementById('fc-meaning');
+  meaningEl.textContent = v.meaning;
+  // 日文意思較長時自動縮小字體，避免換行
+  const mLen = v.meaning.length;
+  meaningEl.style.fontSize = mLen > 12 ? '20px' : mLen > 8 ? '24px' : '28px';
   document.getElementById('fc-example').textContent = v.example;
   document.getElementById('fc-counter').textContent = `${fcIdx+1} / ${fcVocab.length}`;
   document.getElementById('fc-progress').style.width = `${(fcIdx+1)/fcVocab.length*100}%`;
@@ -2168,7 +2172,7 @@ function speakWord(){
   const ch = fcVocab[fcIdx].char;
   // 「打折」的「折」在購物語境下應讀 zhé（二聲），
   // 但 TTS 常讀成 zhē（一聲），改用同音替換確保正確發音
-  const speakText = ch === '打折' ? '打者' : ch;
+  const speakText = ch === '打折' ? '打者' : ch === '還書' ? '環書' : ch;
   speak(speakText);
   setTimeout(() => btn.classList.remove('playing'), 1400);
 }
