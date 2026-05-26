@@ -196,7 +196,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 
 .q-num{font-size:12px;color:var(--text-muted);letter-spacing:2px;margin-bottom:14px}
 /* ── EMOJI MEMORY ── */
-.mm-tile-emoji{font-size:64px;line-height:1}
+.mm-tile-emoji{font-size:80px;line-height:1}
 .mm-tile-cn{font-size:32px;font-weight:600;margin-top:2px}
 @keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
 .pop{animation:pop .25s cubic-bezier(.34,1.56,.64,1)}
@@ -1578,15 +1578,15 @@ const LESSONS = [
     {char:'多久',   pinyin:'duō jiǔ',   meaning:'どのくらい（時間）',     example:'走路要多久？'},
   ],
   mmPairs:[
-    // Page 1: 方位動作（中文配日文）
-    {a:'在對面',  b:'向かい側'},
-    {a:'在右邊',  b:'右側（みぎがわ）'},
-    {a:'在轉角',  b:'角（かど）・曲がり角'},
-    {a:'在旁邊',  b:'隣（となり）'},
-    {a:'在左邊',  b:'左側（ひだりがわ）'},
-    {a:'一直走',  b:'まっすぐ行く'},
-    {a:'退稅',    b:'免税'},
-    {a:'加値',    b:'チャージ'},
+    // Page 1: 6方位圖卡 + 雜詞
+    {a:'IMG:在對面',  b:'在對面',    imgKey:'duimian'},
+    {a:'IMG:在右邊',  b:'在右邊',    imgKey:'youbian'},
+    {a:'IMG:在轉角',  b:'在轉角',    imgKey:'zhuanjiao'},
+    {a:'IMG:在旁邊',  b:'在旁邊',    imgKey:'pangbian'},
+    {a:'IMG:在左邊',  b:'在左邊',    imgKey:'zuobian'},
+    {a:'IMG:一直走',  b:'一直走',    imgKey:'yizou'},
+    {a:'退稅',        b:'免稅'},
+    {a:'加值',        b:'チャージ'},
     // Page 2: 方位詞中日配對
     {a:'前面',        b:'前（まえ）'},
     {a:'後面',        b:'後ろ（うしろ）'},
@@ -1600,8 +1600,8 @@ const LESSONS = [
     {a:'中間',        b:'真ん中・間（あいだ）'},
     {a:'刷卡',        b:'カード払い'},
     {a:'護照',        b:'パスポート'},
-    {a:'紅綠燈',      b:'信号'},
-    {a:'路口',        b:'交差点（こうさてん）'},
+    {a:'紅綠燈',      b:'🚦'},
+    {a:'路口',        b:'🔀'},
     {a:'附近',        b:'近く・付近'},
   ],
   toneData:[
@@ -1707,42 +1707,42 @@ const LESSONS = [
     {char:'V+過',     pinyin:'guò',           meaning:'〜したことがある',     example:'你吃過臭豆腐嗎？'},
   ],
   mmPairs:[
-    // Page 1: 交通手段（中文配日文）
-    {a:'高鐵',      b:'新幹線・高速鉄道'},
-    {a:'計程車',    b:'タクシー'},
-    {a:'塞車',      b:'渋滞'},
-    {a:'時刻表',    b:'時刻表'},
-    {a:'單程',      b:'片道'},
-    {a:'來回',      b:'往復・往来'},
-    {a:'來得及',    b:'間に合う'},
-    {a:'來不及',    b:'間に合わない'},
-    // Page 2: 交通詞（中文配日文）
-    {a:'早鳥',      b:'早割'},
-    {a:'地標',      b:'ランドマーク'},
-    {a:'轉車',      b:'乗り換える'},
-    {a:'高速公路',  b:'高速道路'},
-    {a:'售票處',    b:'切符売り場'},
-    {a:'跳表收費',  b:'メーター制の料金'},
-    {a:'伴手禮',    b:'手土産'},
-    {a:'請客',      b:'おごる・もてなす'},
-    // Page 3: 拜訪・做客（中文配日文）
-    {a:'做客',      b:'お宅訪問・お客になる'},
-    {a:'聊天',      b:'おしゃべりする'},
-    {a:'去接你',    b:'迎えに行く'},
-    {a:'送回家',    b:'家まで送る'},
-    {a:'開心',      b:'嬉しい・楽しい'},
-    {a:'有點',      b:'少し〜（ネガティブ）'},
-    {a:'好～',      b:'すごく〜！（感嘆）'},
-    {a:'別客氣',    b:'遠慮しないで'},
-    // Page 4: 句型・副詞（中文配日文）
-    {a:'聽說',      b:'聞いたところでは'},
-    {a:'能來嗎',    b:'来られますか'},
-    {a:'什麼時候',  b:'いつ'},
-    {a:'V+過',      b:'〜したことがある'},
-    {a:'跟～一樣',  b:'〜と同じ'},
-    {a:'差不多',    b:'だいたい・大体'},
-    {a:'大概',      b:'だいたい・約'},
-    {a:'跳表收費',  b:'メーター制の料金'},
+    // Page 1: 交通手段（emoji配中文）
+    {a:'🚄',        b:'高鐵', emoji:true},
+    {a:'🚕',        b:'計程車', emoji:true},
+    {a:'🚗🚗🚗',   b:'塞車', emoji:true},
+    {a:'📋⏰',      b:'時刻表', emoji:true},
+    {a:'➡️1',       b:'單程', emoji:true},
+    {a:'↔️',        b:'來回', emoji:true},
+    {a:'✅⏰',      b:'來得及', emoji:true},
+    {a:'❌⏰',      b:'來不及', emoji:true},
+    // Page 2: 交通詞（emoji配中文）
+    {a:'🐦🌅',      b:'早鳥', emoji:true},
+    {a:'📍🏛️',      b:'地標', emoji:true},
+    {a:'🔄🚌',      b:'轉車', emoji:true},
+    {a:'🛣️💨',      b:'高速公路', emoji:true},
+    {a:'🎫🏪',      b:'售票處', emoji:true},
+    {a:'💰📊',      b:'跳表收費', emoji:true},
+    {a:'🏠🎁',      b:'伴手禮', emoji:true},
+    {a:'🎉🍽️',      b:'請客', emoji:true},
+    // Page 3: 拜訪・做客（emoji配中文）
+    {a:'🏠👋',      b:'做客', emoji:true},
+    {a:'💬😊',      b:'聊天', emoji:true},
+    {a:'🤝🚗',      b:'接', emoji:true},
+    {a:'👋🚶',      b:'送', emoji:true},
+    {a:'⛰️🥾',     b:'爬山', emoji:true},
+    {a:'😄🎉',      b:'開心', emoji:true},
+    {a:'😅➖',      b:'有點', emoji:true},
+    {a:'😍✨',      b:'好～', emoji:true},
+    // Page 4: 句型・副詞（emoji配中文）
+    {a:'👂💬',      b:'聽說', emoji:true},
+    {a:'🙆',        b:'能', emoji:true},
+    {a:'⏰❓',      b:'什麼時候', emoji:true},
+    {a:'📖✅',      b:'V+過', emoji:true},
+    {a:'🤝👯',      b:'跟～一樣', emoji:true},
+    {a:'⏰≈',       b:'差不多', emoji:true},
+    {a:'🕐≈',       b:'大概', emoji:true},
+    {a:'🗣️🎁',      b:'別客氣', emoji:true},
   ],
   toneData:[
     {char:'高鐵',   correct:'gāo tiě',    opts:['gāo tiē','gāo tié','gāo tiě','gāo tiè']},
