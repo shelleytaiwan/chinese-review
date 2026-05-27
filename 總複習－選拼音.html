@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>總複習－選拼音</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1521;--surface:#1a2235;--surface2:#222d42;--border:#2d3d5a;
+  --blue:#4a7fd4;--blue-light:#6b9be8;--blue-glow:rgba(74,127,212,0.3);
+  --green:#3db87a;--green-glow:rgba(61,184,122,0.25);
+  --red:#e05555;--red-glow:rgba(224,85,85,0.25);
+  --gold:#f0b429;
+  --text:#e8edf5;--text-mid:#8fa3c0;--text-muted:#4d6080;--radius:14px;
+}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;display:flex;flex-direction:column;font-size:18px}
+
+.site-header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px}
+.site-title{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;color:var(--gold);flex:1}
+.site-sub{font-size:12px;color:var(--text-muted)}
+
+.main{flex:1;display:flex;justify-content:center;align-items:center;padding:32px 20px;background:radial-gradient(ellipse at 30% 20%,rgba(74,127,212,.12) 0%,transparent 60%),var(--bg)}
+.card{width:100%;max-width:680px;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:40px 32px;text-align:center}
+
+h1{font-family:'Noto Serif TC',serif;font-size:1.8rem;font-weight:700;color:var(--text);margin-bottom:24px}
+
+.speaker-btn{background:var(--blue-glow);border:1px solid var(--blue);color:var(--blue-light);display:inline-block;padding:16px 40px;border-radius:40px;font-size:1.5rem;font-weight:700;cursor:pointer;margin-bottom:28px;transition:all .15s;letter-spacing:1px}
+.speaker-btn:hover{background:var(--blue);color:#fff}
+.speaker-btn:active{transform:scale(.96)}
+
+.options{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin:0 0 24px}
+.option{background:var(--surface2);border:2px solid var(--border);border-radius:16px;padding:20px 28px;min-width:180px;cursor:pointer;transition:all .15s}
+.option:hover{border-color:var(--blue);background:var(--bg)}
+.option:active{transform:scale(.97)}
+.pinyin-text{font-size:1.5rem;font-weight:600;color:var(--blue-light);font-family:'Courier New',monospace;letter-spacing:1px}
+
+.feedback{font-size:1.3rem;margin:0 0 16px;padding:14px 20px;border-radius:40px;font-weight:500;min-height:54px}
+.correct-fb{background:var(--green-glow);border:1px solid var(--green);color:var(--green)}
+.wrong-fb{background:var(--red-glow);border:1px solid var(--red);color:var(--red)}
+
+.next-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:12px 32px;border-radius:40px;font-size:1.1rem;font-weight:600;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s}
+.next-btn:hover{border-color:var(--blue);background:var(--surface)}
+.next-btn:active{transform:scale(.96)}
+
+.counter{font-size:0.95rem;margin-top:20px;color:var(--text-muted)}
+.counter span{color:var(--gold);font-weight:700}
+.instruction{font-size:0.85rem;color:var(--text-muted);margin-top:10px}
+
+@media(max-width:550px){
+  .pinyin-text{font-size:1.2rem}
+  .option{padding:14px 18px;min-width:140px}
+  h1{font-size:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div>
+    <div class="site-title">派遣前台灣華語研修</div>
+    <div class="site-sub">總複習</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="card">
+    <h1>總複習－選拼音</h1>
+    <div class="speaker-btn" id="speakerBtn">🔊 聽發音 選答案</div>
+
+    <div class="options">
+      <div class="option" id="option0"><div class="pinyin-text" id="option0Text"></div></div>
+      <div class="option" id="option1"><div class="pinyin-text" id="option1Text"></div></div>
+    </div>
+
+    <div class="feedback" id="feedbackMsg"></div>
+    <button class="next-btn" id="nextBtn">下一題</button>
+
+    <div class="counter">已答 <span id="answeredCount">0</span> 題・正確 <span id="correctCount">0</span> 題</div>
+    <div class="instruction">點喇叭聽發音，選出你聽到的拼音</div>
+  </div>
+</div>
+
+<script>
+const questionBank=[
+  {hanzi:"投籃",option1:"tóu lán",option2:"tōu lǎn",correctIndex:0},
+  {hanzi:"偷懶",option1:"tóu lán",option2:"tōu lǎn",correctIndex:1},
+  {hanzi:"骯髒",option1:"āng zāng",option2:"àn zàn",correctIndex:0},
+  {hanzi:"按讚",option1:"āng zāng",option2:"àn zàn",correctIndex:1},
+  {hanzi:"姐妹",option1:"jiě mèi",option2:"xiě mèi",correctIndex:0},
+  {hanzi:"寫妹",option1:"jiě mèi",option2:"xiě mèi",correctIndex:1},
+  {hanzi:"好棒",option1:"hǎo bàng",option2:"hǎo pàng",correctIndex:0},
+  {hanzi:"好胖",option1:"hǎo bàng",option2:"hǎo pàng",correctIndex:1},
+  {hanzi:"祖父",option1:"zǔ fù",option2:"zhǔ fù",correctIndex:0},
+  {hanzi:"囑咐",option1:"zǔ fù",option2:"zhǔ fù",correctIndex:1},
+  {hanzi:"跳舞",option1:"tiào wǔ",option2:"diào wǔ",correctIndex:0},
+  {hanzi:"掉舞",option1:"tiào wǔ",option2:"diào wǔ",correctIndex:1},
+  {hanzi:"餐廳",option1:"cān tīng",option2:"sān tīng",correctIndex:0},
+  {hanzi:"三聽",option1:"cān tīng",option2:"sān tīng",correctIndex:1},
+  {hanzi:"夏天",option1:"xià tiān",option2:"jià tiān",correctIndex:0},
+  {hanzi:"價天",option1:"xià tiān",option2:"jià tiān",correctIndex:1},
+  {hanzi:"騎馬",option1:"qí mǎ",option2:"xì mǎ",correctIndex:0},
+  {hanzi:"細馬",option1:"qí mǎ",option2:"xì mǎ",correctIndex:1},
+  {hanzi:"髒水",option1:"zāng shuǐ",option2:"zǒu shuǐ",correctIndex:0},
+  {hanzi:"走水",option1:"zāng shuǐ",option2:"zǒu shuǐ",correctIndex:1},
+  {hanzi:"舌頭",option1:"shé tóu",option2:"zhè tóu",correctIndex:0},
+  {hanzi:"這頭",option1:"shé tóu",option2:"zhè tóu",correctIndex:1},
+  {hanzi:"結婚",option1:"jié hūn",option2:"qié hūn",correctIndex:0},
+  {hanzi:"切婚",option1:"jié hūn",option2:"qié hūn",correctIndex:1},
+  {hanzi:"開車",option1:"kāi chē",option2:"gāi chē",correctIndex:0},
+  {hanzi:"該車",option1:"kāi chē",option2:"gāi chē",correctIndex:1},
+  {hanzi:"真美",option1:"zhēn měi",option2:"zhēng měi",correctIndex:0},
+  {hanzi:"爭美",option1:"zhēn měi",option2:"zhēng měi",correctIndex:1},
+  {hanzi:"山上",option1:"shān shàng",option2:"shāng shàng",correctIndex:0},
+  {hanzi:"傷上",option1:"shān shàng",option2:"shāng shàng",correctIndex:1},
+  {hanzi:"然後",option1:"rán hòu",option2:"rén hòu",correctIndex:0},
+  {hanzi:"人後",option1:"rán hòu",option2:"rén hòu",correctIndex:1},
+  {hanzi:"情人",option1:"qíng rén",option2:"qín rén",correctIndex:0},
+  {hanzi:"秦人",option1:"qíng rén",option2:"qín rén",correctIndex:1},
+  {hanzi:"成功",option1:"chéng gōng",option2:"chán gōng",correctIndex:0},
+  {hanzi:"蟾宮",option1:"chéng gōng",option2:"chán gōng",correctIndex:1},
+  {hanzi:"抹油",option1:"mǒ yóu",option2:"mǔ yóu",correctIndex:0},
+  {hanzi:"母油",option1:"mǒ yóu",option2:"mǔ yóu",correctIndex:1},
+  {hanzi:"強",option1:"qiáng",option2:"qiǎng",correctIndex:0},
+  {hanzi:"搶",option1:"qiáng",option2:"qiǎng",correctIndex:1},
+  {hanzi:"長",option1:"cháng",option2:"chāng",correctIndex:0},
+  {hanzi:"昌",option1:"cháng",option2:"chāng",correctIndex:1},
+  {hanzi:"拔",option1:"bá",option2:"bā",correctIndex:0},
+  {hanzi:"八",option1:"bá",option2:"bā",correctIndex:1},
+  {hanzi:"描",option1:"miáo",option2:"miāo",correctIndex:0},
+  {hanzi:"喵",option1:"miáo",option2:"miāo",correctIndex:1},
+  {hanzi:"其",option1:"qí",option2:"qǐ",correctIndex:0},
+  {hanzi:"起",option1:"qí",option2:"qǐ",correctIndex:1},
+  {hanzi:"蝌",option1:"kē",option2:"ké",correctIndex:0},
+  {hanzi:"殼",option1:"kē",option2:"ké",correctIndex:1}
+];
+
+let currentQuestion=null,totalAnswered=0,totalCorrect=0,isCurrentCorrect=false;
+
+function loadProgress(){
+  const a=localStorage.getItem('pinyinQuiz_answered'),c=localStorage.getItem('pinyinQuiz_correct');
+  if(a!==null)totalAnswered=parseInt(a,10);
+  if(c!==null)totalCorrect=parseInt(c,10);
+  if(isNaN(totalAnswered))totalAnswered=0;
+  if(isNaN(totalCorrect))totalCorrect=0;
+  updateCounterUI();
+}
+function saveProgress(){
+  localStorage.setItem('pinyinQuiz_answered',totalAnswered);
+  localStorage.setItem('pinyinQuiz_correct',totalCorrect);
+}
+function updateCounterUI(){
+  document.getElementById('answeredCount').innerText=totalAnswered;
+  document.getElementById('correctCount').innerText=totalCorrect;
+}
+function loadNewQuestion(){
+  currentQuestion={...questionBank[Math.floor(Math.random()*questionBank.length)]};
+  isCurrentCorrect=false;
+  document.getElementById('option0Text').innerText=currentQuestion.option1;
+  document.getElementById('option1Text').innerText=currentQuestion.option2;
+  const opts=document.querySelectorAll('.option');
+  opts.forEach(o=>{o.style.borderColor='';o.style.background='';});
+  document.getElementById('feedbackMsg').innerHTML='';
+  document.getElementById('feedbackMsg').className='feedback';
+}
+function speakQuestion(){
+  if(!currentQuestion)loadNewQuestion();
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(currentQuestion.hanzi);
+    u.lang='zh-TW';u.rate=0.8;
+    window.speechSynthesis.speak(u);
+  }
+}
+function selectAnswer(idx){
+  if(!currentQuestion)loadNewQuestion();
+  const fb=document.getElementById('feedbackMsg');
+  if(isCurrentCorrect){
+    fb.innerHTML='✅ 這題已經答對了！按下一題繼續！';
+    fb.className='feedback correct-fb';return;
+  }
+  const isCorrect=(idx===currentQuestion.correctIndex);
+  const opts=document.querySelectorAll('.option');
+  if(isCorrect){
+    isCurrentCorrect=true;totalAnswered++;totalCorrect++;
+    updateCounterUI();saveProgress();
+    fb.innerHTML='✅ 答對了，好棒！';fb.className='feedback correct-fb';
+    opts[idx].style.borderColor='var(--green)';
+    opts[idx].style.background='var(--green-glow)';
+  }else{
+    fb.innerHTML='❌ 不對哦！再一次。';fb.className='feedback wrong-fb';
+    opts[idx].style.borderColor='var(--red)';
+    setTimeout(()=>{opts[idx].style.borderColor='';},300);
+  }
+}
+function init(){
+  loadProgress();loadNewQuestion();
+  document.getElementById('speakerBtn').onclick=()=>speakQuestion();
+  document.getElementById('option0').onclick=()=>selectAnswer(0);
+  document.getElementById('option1').onclick=()=>selectAnswer(1);
+  document.getElementById('nextBtn').onclick=()=>loadNewQuestion();
+}
+init();
+</script>
+</body>
+</html>
