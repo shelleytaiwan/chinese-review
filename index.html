@@ -961,14 +961,14 @@ const LESSONS = [
     {char:'謝謝', correct:'xiè xie',   opts:['xiē xie','xié xie','xiě xie','xiè xie']},
   ],
   dialogueData:[
-    {prompt:'對方送東西說：\n「這是一點小意思。」\n你說？',    correct:'你太客氣了！',         opts:['謝謝！不客氣！','你太客氣了！','對不起！','辛苦了！'],         explain:'收到禮物 → 你太客氣了！謝謝！'},
-    {prompt:'對方說「謝謝！」\n你說？',                       correct:'不會！',               opts:['辛苦了！','麻煩你了！','不會！','請多多指教。'],               explain:'謝謝 → 不會！／不謝！／不用客氣！'},
-    {prompt:'對方說「麻煩你了！」\n你說？',                   correct:'不會！',               opts:['你太客氣了！','不會！','別客氣！','早安！'],                   explain:'麻煩你了 → 不會！'},
-    {prompt:'對方說「別客氣！」\n你說？',                     correct:'不用了不用了！謝謝！', opts:['辛苦了！','不用了不用了！謝謝！','麻煩你了！','晚安！'],       explain:'別客氣 → 不用了不用了！謝謝！'},
-    {prompt:'對方說「辛苦了！」\n你說？',                     correct:'辛苦了！',             opts:['謝謝！','你好！','辛苦了！','再見！'],                         explain:'辛苦了 → 辛苦了！（互說）'},
-    {prompt:'初次見面，你說？',                               correct:'請多多指教。',         opts:['早安！','別客氣！','請多多指教。','麻煩你了！'],               explain:'初次見面 → 請多多指教。'},
-    {prompt:'早上見到老師，你說？',                           correct:'老師早安！',           opts:['老師晚安！','老師午安！','老師早安！','老師辛苦了！'],         explain:'早上 → 早安！'},
-    {prompt:'對方問你喜歡什麼後，\n你也想反問對方，該怎麼說？',           correct:'你呢？',               opts:['你好嗎？','你呢？','你貴姓？','你是做什麼的？'],               explain:'省略式問句 → 你呢?'},
+    {prompt:'對方送東西說：「這是一點小意思。」',  answer:'你太客氣了，謝謝你！'},
+    {prompt:'對方說「謝謝！」',                    answer:'不客氣！／不會！'},
+    {prompt:'對方說「麻煩你了！」',                answer:'不會！'},
+    {prompt:'對方說「別客氣！」',                  answer:'謝謝！'},
+    {prompt:'對方說「辛苦了！」',                  answer:'不會！／您也辛苦了！'},
+    {prompt:'初次見面，你說？',                    answer:'請多指教。'},
+    {prompt:'早上見到老師，你說？',                answer:'老師早。'},
+    {prompt:'對方問你喜歡什麼，你回答後反問對方。', answer:'我喜歡～，你呢？'},
   ],
   sentenceData:[
     {prompt:'問對方稱呼',   answer:'你怎麼稱呼？',
@@ -1079,6 +1079,7 @@ const LESSONS = [
     {prompt:'日本人喜歡什麼數字？', answer:'7（七）', explain:'文化：日本的幸運數字'},
     {prompt:'台灣人喜歡什麼數字？', answer:'6（六）、8（八）', explain:'文化：台灣的幸運數字'},
     {prompt:'日本人和台灣人都不喜歡什麼數字？', answer:'4（四）──因為發音像「死」', explain:'文化：忌諱數字'},
+    {prompt:'很高興認識你。', answer:'我也很高興認識你。'},
   ],
   sentenceData:[
     {prompt:'問國籍',           answer:'她是哪國人？',
@@ -2369,7 +2370,7 @@ const LESSONS = [
 },
 
 {
-  id:'D13', title:'你說中文說得真好！', subtitle:'程度補語・比較',
+  id:'D13', title:'你說中文說得真好！', subtitle:'評價動作行為和能力',
   info:'程度補語・比較　｜　詞語 21 個・配對練習・聲調 7 組・對話練習・句子重組',
   vocab:[
     {char:'流利',     pinyin:'liú lì',             meaning:'流暢だ',                   example:'他的日語說得很流利。'},
@@ -2464,11 +2465,6 @@ const LESSONS = [
      tiles:[{cn:'她',py:'tā'},{cn:'唱歌',py:'chàng gē'},{cn:'唱得',py:'chàng de'},{cn:'和歌星',py:'hé gē xīng'},{cn:'一樣',py:'yī yàng'},{cn:'。',py:''}]},
   ],
 },
-
-...Array.from({length:7},(_,i)=>({
-  id:`D${i+14}`, title:`第 ${i+14} 課`, subtitle:'即將推出',
-  info:'', vocab:[], mmPairs:[], toneData:[], dialogueData:[], sentenceData:[], locked:true
-})),
 
 ]; // END LESSONS
 
