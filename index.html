@@ -495,7 +495,6 @@ button.btns2:hover{background:#0f3460}
   </div>
   <div class="game-body">
     <div class="q-num" id="s2-q-num"></div>
-    <div class="s2-prompt" id="s2-prompt"></div>
     <div class="s2-answer-area" id="s2-answer"></div>
     <div class="s2-bank" id="s2-bank"></div>
     <div class="s2-actions">
@@ -981,8 +980,8 @@ const LESSONS = [
      tiles:[{cn:'我',py:'wǒ'},{cn:'喜歡',py:'xǐ huān'},{cn:'咖啡',py:'kā fēi'},{cn:'，',py:''},{cn:'你呢',py:'nǐ ne'},{cn:'？',py:''}]},
     {prompt:'~不喜歡~',     answer:'她不喜歡跑步。',
      tiles:[{cn:'她',py:'tā'},{cn:'不',py:'bù'},{cn:'喜歡',py:'xǐ huān'},{cn:'跑步',py:'pǎo bù'},{cn:'。',py:''}]},
-    {prompt:'初次見面',     answer:'初次見面，請多多指教。',
-     tiles:[{cn:'初次見面',py:'chū cì jiàn miàn'},{cn:'，',py:''},{cn:'請',py:'qǐng'},{cn:'多多指教',py:'duō duō zhǐ jiào'},{cn:'。',py:''}]},
+    {prompt:'初次見面',     answer:'我叫王明，請多指教。',
+     tiles:[{cn:'我',py:'wǒ'},{cn:'叫',py:'jiào'},{cn:'王明',py:'Wáng Míng'},{cn:'，',py:''},{cn:'請',py:'qǐng'},{cn:'多指教',py:'duō zhǐ jiào'},{cn:'。',py:''}]},
   ],
 },
 
@@ -2567,7 +2566,7 @@ function openLesson(id){
   showScreen('lesson-home');
 }
 
-function backToLesson(){ clearInterval(mmInterval); showScreen('lesson-home'); }
+function backToLesson(){ clearInterval(mmInterval); if(!currentLesson){ showScreen('portal'); return; } showScreen('lesson-home'); }
 
 // ════════════════════════════════════════════════════════
 // HELPERS
@@ -2613,7 +2612,7 @@ function showResult(mode, score, total, sub){
   document.getElementById('res-total').textContent = `/ ${total}`;
   document.getElementById('res-msg').textContent = msg;
   document.getElementById('res-sub').textContent = sub || `正確率 ${pct}%`;
-  const map = { flashcards: startFlashcards, memory: startMemory, tonequiz: startToneQuiz, dialogue: startDialogue, sentence: startSentence };
+  const map = { flashcards: startFlashcards, memory: startMemory, tonequiz: startToneQuiz, dialogue: startDialogue, sentence: startSentence, 'review-sentence': startReviewSentence };
   document.getElementById('res-retry').onclick = map[mode] || backToLesson;
   showScreen('result');
 }
@@ -2621,9 +2620,25 @@ function showResult(mode, score, total, sub){
 // ════════════════════════════════════════════════════════
 // FLASHCARDS
 // ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+// PROGRESS PERSISTENCE
+// ════════════════════════════════════════════════════════
+function progKey(lid, mode){ return 'prog_' + lid + '_' + mode; }
+function progSave(lid, mode, idx, score){
+  try{ localStorage.setItem(progKey(lid,mode), JSON.stringify({idx:idx, score:score||0})); }catch(e){}
+}
+function progLoad(lid, mode){
+  try{ var v=localStorage.getItem(progKey(lid,mode)); return v ? JSON.parse(v) : null; }catch(e){ return null; }
+}
+function progClear(lid, mode){
+  try{ localStorage.removeItem(progKey(lid,mode)); }catch(e){}
+}
+
 let fcIdx = 0, fcVocab = [];
 function startFlashcards(){
-  fcIdx = 0; fcVocab = shuffle(currentLesson.vocab);
+  fcVocab = shuffle(currentLesson.vocab);
+  var _fc = progLoad(currentLesson.id,'fc');
+  fcIdx = (_fc && _fc.idx > 0 && _fc.idx < fcVocab.length) ? _fc.idx : 0;
   showScreen('flashcards'); renderFC();
 }
 function buildRuby(char, pinyin){
@@ -2666,6 +2681,7 @@ function buildRuby(char, pinyin){
 
 
 function renderFC(){
+  if(currentLesson) progSave(currentLesson.id,'fc',fcIdx,0);
   const v = fcVocab[fcIdx];
   document.getElementById('fc-char').textContent    = v.char;
   document.getElementById('fc-ruby-front').innerHTML = buildRuby(v.char, v.pinyin);
@@ -2802,9 +2818,11 @@ let tqCurrentMode='tone'; // 'tone' or 'number'
 let d3PlayCount=0; // track if it's the first run for D3 numbers
 
 function startToneQuiz(){
-  tqIdx=0; tqScore=0; tqSelected=null;
   tqList = shuffle(currentLesson.toneData || []);
   tqCurrentMode = 'tone';
+  var _tq = progLoad(currentLesson.id,'tq');
+  if(_tq && _tq.idx > 0 && _tq.idx < tqList.length){ tqIdx=_tq.idx; tqScore=_tq.score||0; } else { tqIdx=0; tqScore=0; }
+  tqSelected=null;
   // Show tabs only if lesson has both
   const hasTone = (currentLesson.toneData||[]).length > 0;
   const hasNum  = !!currentLesson.hasNumberDictation;
@@ -2825,7 +2843,8 @@ function tqSetMode(mode){
 
 function renderTQ(){
   if(!tqList.length) return;
-  if (tqIdx >= tqList.length){ showResult('tonequiz', tqScore, tqList.length, '聲調練習完成！'); return }
+  if (tqIdx >= tqList.length){ progClear(currentLesson.id,'tq'); showResult('tonequiz', tqScore, tqList.length, '聲調練習完成！'); return }
+  if(currentLesson) progSave(currentLesson.id,'tq',tqIdx,tqScore);
   tqSelected = null;
   const q = tqList[tqIdx];
   document.getElementById('tq-q-num').textContent = `第 ${tqIdx+1} 題 / 共 ${tqList.length} 題`;
@@ -2892,11 +2911,15 @@ function buildNDList(isFirst){
 function initND(){
   ndIsFirstRun = (d3PlayCount === 0);
   ndList = buildNDList(ndIsFirstRun);
-  ndIdx=0; ndRevealed=false;
+  var _nd = currentLesson ? progLoad(currentLesson.id,'nd') : null;
+  ndIdx = (_nd && _nd.idx > 0 && _nd.idx < ndList.length) ? _nd.idx : 0;
+  ndRevealed=false;
   renderND();
 }
 
 function renderND(){
+  if(currentLesson && ndList.length) progSave(currentLesson.id,'nd',ndIdx,0);
+  if(ndIdx >= ndList.length && currentLesson) progClear(currentLesson.id,'nd');
   const item = ndList[ndIdx];
   ndRevealed=false;
   document.getElementById('nd-counter').textContent=`第 ${ndIdx+1} 題 / 共 ${ndList.length} 題`;
@@ -2995,10 +3018,17 @@ function ndPrev(){ if(ndIdx>0){ ndIdx--; renderND(); } }
 // DIALOGUE
 // ════════════════════════════════════════════════════════
 let dfIdx=0, dfList=[];
-function startDialogue(){ dfIdx=0; dfList=currentLesson.dialogueData; showScreen('dialogue'); renderDF() }
+function startDialogue(){
+  dfList=currentLesson.dialogueData;
+  var _df = progLoad(currentLesson.id,'df');
+  dfIdx = (_df && _df.idx > 0 && _df.idx < dfList.length) ? _df.idx : 0;
+  showScreen('dialogue'); renderDF();
+}
 let dfAutoTimer = null;
 
 function renderDF(){
+  if(currentLesson && dfList.length) progSave(currentLesson.id,'df',dfIdx,0);
+  if(dfIdx >= dfList.length && currentLesson) progClear(currentLesson.id,'df');
   const q = dfList[dfIdx];
   const isJP = !!q.jpPrompt; // D9 mode: front is Japanese, back is Chinese
   document.getElementById('df-q-num').textContent = `${dfIdx+1} / ${dfList.length}`;
@@ -3085,12 +3115,16 @@ function dfPrev(){ if(dfIdx > 0){ dfIdx--; renderDF(); } }
 // SENTENCE
 // ════════════════════════════════════════════════════════
 let s2Idx=0, s2Score=0, s2Answered=false, s2Selected=[], s2Current=null;
-function startSentence(){ s2Idx=0; s2Score=0; showScreen('sentence'); renderS2() }
+function startSentence(){
+  var _s2 = progLoad(currentLesson.id,'s2');
+  if(_s2 && _s2.idx > 0 && _s2.idx < currentLesson.sentenceData.length){ s2Idx=_s2.idx; s2Score=_s2.score||0; } else { s2Idx=0; s2Score=0; }
+  showScreen('sentence'); renderS2();
+}
 function renderS2(){
-  if (s2Idx >= currentLesson.sentenceData.length){ showResult('sentence', s2Score, currentLesson.sentenceData.length, '重組全部完成！'); return }
+  if (s2Idx >= currentLesson.sentenceData.length){ progClear(currentLesson.id,'s2'); showResult('sentence', s2Score, currentLesson.sentenceData.length, '重組全部完成！'); return }
+  progSave(currentLesson.id,'s2',s2Idx,s2Score);
   s2Answered=false; s2Selected=[]; s2Current=currentLesson.sentenceData[s2Idx];
   document.getElementById('s2-q-num').textContent = `第 ${s2Idx+1} 題 / 共 ${currentLesson.sentenceData.length} 題`;
-  document.getElementById('s2-prompt').textContent = s2Current.prompt;
   document.getElementById('s2-score-badge').textContent = `${s2Score} / ${s2Idx}`;
   const fb = document.getElementById('s2-feedback'); fb.style.display='none'; fb.className='s2-feedback';
   const shuffled = shuffle(s2Current.tiles.map((t,i) => ({...t, idx:i})));
@@ -3831,10 +3865,184 @@ function dgStartRecording(){
 }
 
 
+// ── 總複習－句子重組 ──────────────────────────────────────
+const reviewSentenceData = [
+  {prompt:'王媽媽做的牛肉麵超好吃', answer:'王媽媽做的牛肉麵超好吃的。',
+   tiles:[{cn:'王媽媽',py:'Wáng māma'},{cn:'做的',py:'zuò de'},{cn:'牛肉麵',py:'niú ròu miàn'},{cn:'超',py:'chāo'},{cn:'好吃',py:'hǎo chī'},{cn:'的',py:'de'},{cn:'。',py:''}]},
+  {prompt:'自我介紹＋問職業', answer:'我是老師，你是做什麼的？',
+   tiles:[{cn:'我',py:'wǒ'},{cn:'是',py:'shì'},{cn:'老師',py:'lǎo shī'},{cn:'，',py:''},{cn:'你',py:'nǐ'},{cn:'是',py:'shì'},{cn:'做',py:'zuò'},{cn:'什麼',py:'shén me'},{cn:'的',py:'de'},{cn:'？',py:''}]},
+  {prompt:'有禮貌地請人轉交', answer:'不好意思，這個，可以麻煩你幫我拿給主任嗎？謝謝你！',
+   tiles:[{cn:'不好意思',py:'bù hǎo yì si'},{cn:'，',py:''},{cn:'這個',py:'zhè ge'},{cn:'，',py:''},{cn:'可以',py:'kě yǐ'},{cn:'麻煩',py:'má fán'},{cn:'你',py:'nǐ'},{cn:'幫我',py:'bāng wǒ'},{cn:'拿',py:'ná'},{cn:'給',py:'gěi'},{cn:'主任',py:'zhǔ rèn'},{cn:'嗎',py:'ma'},{cn:'？',py:''},{cn:'謝謝你',py:'xiè xie nǐ'},{cn:'！',py:''}]},
+  {prompt:'請人叫計程車', answer:'不好意思，可以請你幫我叫計程車嗎？',
+   tiles:[{cn:'不好意思',py:'bù hǎo yì si'},{cn:'，',py:''},{cn:'可以',py:'kě yǐ'},{cn:'請',py:'qǐng'},{cn:'你',py:'nǐ'},{cn:'幫我',py:'bāng wǒ'},{cn:'叫',py:'jiào'},{cn:'計程車',py:'jì chéng chē'},{cn:'嗎',py:'ma'},{cn:'？',py:''}]},
+  {prompt:'因為喜歡台灣文化', answer:'因為我喜歡台灣文化，所以想到台灣。',
+   tiles:[{cn:'因為',py:'yīn wèi'},{cn:'我',py:'wǒ'},{cn:'喜歡',py:'xǐ huān'},{cn:'台灣',py:'Tái wān'},{cn:'文化',py:'wén huà'},{cn:'，',py:''},{cn:'所以',py:'suǒ yǐ'},{cn:'想',py:'xiǎng'},{cn:'到',py:'dào'},{cn:'台灣',py:'Tái wān'},{cn:'。',py:''}]},
+  {prompt:'請人去跟老師說', answer:'請你去跟陳老師說投影機壞了。',
+   tiles:[{cn:'請',py:'qǐng'},{cn:'你',py:'nǐ'},{cn:'去',py:'qù'},{cn:'跟',py:'gēn'},{cn:'陳老師',py:'Chén lǎo shī'},{cn:'說',py:'shuō'},{cn:'投影機',py:'tóu yǐng jī'},{cn:'壞了',py:'huài le'},{cn:'。',py:''}]},
+  {prompt:'昨天吃藥就睡覺', answer:'昨天吃了藥就睡覺，今天好了。',
+   tiles:[{cn:'昨天',py:'zuó tiān'},{cn:'吃了',py:'chī le'},{cn:'藥',py:'yào'},{cn:'就',py:'jiù'},{cn:'睡覺',py:'shuì jiào'},{cn:'，',py:''},{cn:'今天',py:'jīn tiān'},{cn:'好了',py:'hǎo le'},{cn:'。',py:''}]},
+  {prompt:'高速公路塞車', answer:'這個時候高速公路會塞車。',
+   tiles:[{cn:'這個',py:'zhè ge'},{cn:'時候',py:'shí hòu'},{cn:'高速公路',py:'gāo sù gōng lù'},{cn:'會',py:'huì'},{cn:'塞車',py:'sāi chē'},{cn:'。',py:''}]},
+  {prompt:'帶去保健室', answer:'班長，請帶她去保健室。',
+   tiles:[{cn:'班長',py:'bān zhǎng'},{cn:'，',py:''},{cn:'請',py:'qǐng'},{cn:'帶',py:'dài'},{cn:'她',py:'tā'},{cn:'去',py:'qù'},{cn:'保健室',py:'bǎo jiàn shì'},{cn:'。',py:''}]},
+  {prompt:'早點回家休息', answer:'你今天早一點回家休息吧。',
+   tiles:[{cn:'你',py:'nǐ'},{cn:'今天',py:'jīn tiān'},{cn:'早',py:'zǎo'},{cn:'一點',py:'yī diǎn'},{cn:'回家',py:'huí jiā'},{cn:'休息',py:'xiū xi'},{cn:'吧',py:'ba'},{cn:'。',py:''}]},
+  {prompt:'自我介紹', answer:'我叫王明，請多指教。',
+   tiles:[{cn:'我',py:'wǒ'},{cn:'叫',py:'jiào'},{cn:'王明',py:'Wáng Míng'},{cn:'，',py:''},{cn:'請',py:'qǐng'},{cn:'多',py:'duō'},{cn:'指教',py:'zhǐ jiào'},{cn:'。',py:''}]},
+  {prompt:'打包', answer:'小姐，可以幫我打包嗎？',
+   tiles:[{cn:'小姐',py:'xiǎo jiě'},{cn:'，',py:''},{cn:'可以',py:'kě yǐ'},{cn:'幫我',py:'bāng wǒ'},{cn:'打包',py:'dǎ bāo'},{cn:'嗎',py:'ma'},{cn:'？',py:''}]},
+  {prompt:'下一班高鐵', answer:'下一班高鐵幾點到台北？',
+   tiles:[{cn:'下',py:'xià'},{cn:'一班',py:'yī bān'},{cn:'高鐵',py:'gāo tiě'},{cn:'幾點',py:'jǐ diǎn'},{cn:'到',py:'dào'},{cn:'台北',py:'Tái běi'},{cn:'？',py:''}]},
+  {prompt:'去找老師拿講義', answer:'請你去找陳老師拿講義。',
+   tiles:[{cn:'請',py:'qǐng'},{cn:'你',py:'nǐ'},{cn:'去',py:'qù'},{cn:'找',py:'zhǎo'},{cn:'陳老師',py:'Chén lǎo shī'},{cn:'拿',py:'ná'},{cn:'講義',py:'jiǎng yì'},{cn:'。',py:''}]},
+  {prompt:'應該早回家休息', answer:'你應該早一點回家休息。',
+   tiles:[{cn:'你',py:'nǐ'},{cn:'應該',py:'yīng gāi'},{cn:'早',py:'zǎo'},{cn:'一點',py:'yī diǎn'},{cn:'回家',py:'huí jiā'},{cn:'休息',py:'xiū xi'},{cn:'。',py:''}]},
+  {prompt:'如果還不舒服', answer:'如果還不舒服，最好再去看醫生。',
+   tiles:[{cn:'如果',py:'rú guǒ'},{cn:'還',py:'hái'},{cn:'不',py:'bù'},{cn:'舒服',py:'shū fu'},{cn:'，',py:''},{cn:'最好',py:'zuì hǎo'},{cn:'再',py:'zài'},{cn:'去',py:'qù'},{cn:'看醫生',py:'kàn yī shēng'},{cn:'。',py:''}]},
+  {prompt:'幫我代課', answer:'可以麻煩你幫我代課嗎？',
+   tiles:[{cn:'可以',py:'kě yǐ'},{cn:'麻煩',py:'má fán'},{cn:'你',py:'nǐ'},{cn:'幫我',py:'bāng wǒ'},{cn:'代課',py:'dài kè'},{cn:'嗎',py:'ma'},{cn:'？',py:''}]},
+  {prompt:'唱歌和歌星一樣', answer:'她唱歌唱得和歌星一樣。',
+   tiles:[{cn:'她',py:'tā'},{cn:'唱歌',py:'chàng gē'},{cn:'唱得',py:'chàng de'},{cn:'和',py:'hé'},{cn:'歌星',py:'gē xīng'},{cn:'一樣',py:'yī yàng'},{cn:'。',py:''}]},
+  {prompt:'稱呼自己', answer:'叫我美香就可以了。',
+   tiles:[{cn:'叫',py:'jiào'},{cn:'我',py:'wǒ'},{cn:'美香',py:'Měi xiāng'},{cn:'就',py:'jiù'},{cn:'可以了',py:'kě yǐ le'},{cn:'。',py:''}]},
+  {prompt:'怎麼受傷的', answer:'他是怎麼受傷的？',
+   tiles:[{cn:'他',py:'tā'},{cn:'是',py:'shì'},{cn:'怎麼',py:'zěn me'},{cn:'受傷',py:'shòu shāng'},{cn:'的',py:'de'},{cn:'？',py:''}]},
+  {prompt:'從東京到大阪', answer:'從東京到大阪要多久？',
+   tiles:[{cn:'從',py:'cóng'},{cn:'東京',py:'Dōng jīng'},{cn:'到',py:'dào'},{cn:'大阪',py:'Dà bǎn'},{cn:'要',py:'yào'},{cn:'多久',py:'duō jiǔ'},{cn:'？',py:''}]},
+  {prompt:'去辦公室找老師', answer:'請你去辦公室找老師來。',
+   tiles:[{cn:'請',py:'qǐng'},{cn:'你',py:'nǐ'},{cn:'去',py:'qù'},{cn:'辦公室',py:'bàn gōng shì'},{cn:'找',py:'zhǎo'},{cn:'老師',py:'lǎo shī'},{cn:'來',py:'lái'},{cn:'。',py:''}]},
+  {prompt:'背下來', answer:'這個很重要，背下來。',
+   tiles:[{cn:'這個',py:'zhè ge'},{cn:'很',py:'hěn'},{cn:'重要',py:'zhòng yào'},{cn:'，',py:''},{cn:'背',py:'bèi'},{cn:'下來',py:'xià lái'},{cn:'。',py:''}]},
+  {prompt:'連休補課', answer:'上星期三連休所以這星期六要上課。',
+   tiles:[{cn:'上',py:'shàng'},{cn:'星期三',py:'xīng qī sān'},{cn:'連休',py:'lián xiū'},{cn:'所以',py:'suǒ yǐ'},{cn:'這',py:'zhè'},{cn:'星期六',py:'xīng qī liù'},{cn:'要',py:'yào'},{cn:'上課',py:'shàng kè'},{cn:'。',py:''}]},
+  {prompt:'問暑假時間', answer:'暑假是從幾號到幾號？',
+   tiles:[{cn:'暑假',py:'shǔ jià'},{cn:'是',py:'shì'},{cn:'從',py:'cóng'},{cn:'幾號',py:'jǐ hào'},{cn:'到',py:'dào'},{cn:'幾號',py:'jǐ hào'},{cn:'？',py:''}]},
+  {prompt:'比較大阪人東京人', answer:'大阪人比東京人熱情。',
+   tiles:[{cn:'大阪人',py:'Dà bǎn rén'},{cn:'比',py:'bǐ'},{cn:'東京人',py:'Dōng jīng rén'},{cn:'熱情',py:'rè qíng'},{cn:'。',py:''}]},
+  {prompt:'浴衣比較簡單', answer:'我覺得浴衣比較簡單。',
+   tiles:[{cn:'我',py:'wǒ'},{cn:'覺得',py:'jué de'},{cn:'浴衣',py:'yù yī'},{cn:'比較',py:'bǐ jiào'},{cn:'簡單',py:'jiǎn dān'},{cn:'。',py:''}]},
+  {prompt:'可以教摺紙', answer:'我想我們可以教摺紙。',
+   tiles:[{cn:'我',py:'wǒ'},{cn:'想',py:'xiǎng'},{cn:'我們',py:'wǒ men'},{cn:'可以',py:'kě yǐ'},{cn:'教',py:'jiāo'},{cn:'摺紙',py:'zhé zhǐ'},{cn:'。',py:''}]},
+  {prompt:'書法寫得漂亮', answer:'她寫書法寫得滿漂亮的！',
+   tiles:[{cn:'她',py:'tā'},{cn:'寫',py:'xiě'},{cn:'書法',py:'shū fǎ'},{cn:'寫得',py:'xiě de'},{cn:'滿',py:'mǎn'},{cn:'漂亮',py:'piào liàng'},{cn:'的',py:'de'},{cn:'！',py:''}]},
+  {prompt:'喜歡反問', answer:'我喜歡喝咖啡，你呢？',
+   tiles:[{cn:'我',py:'wǒ'},{cn:'喜歡',py:'xǐ huān'},{cn:'喝',py:'hē'},{cn:'咖啡',py:'kā fēi'},{cn:'，',py:''},{cn:'你呢',py:'nǐ ne'},{cn:'？',py:''}]},
+  {prompt:'幫買咖啡', answer:'請幫我買一杯咖啡，謝謝。',
+   tiles:[{cn:'請',py:'qǐng'},{cn:'幫我',py:'bāng wǒ'},{cn:'買',py:'mǎi'},{cn:'一杯',py:'yī bēi'},{cn:'咖啡',py:'kā fēi'},{cn:'，',py:''},{cn:'謝謝',py:'xiè xie'},{cn:'。',py:''}]},
+  {prompt:'有人跟蹤報警', answer:'有人跟蹤我！請幫我報警。',
+   tiles:[{cn:'有人',py:'yǒu rén'},{cn:'跟蹤',py:'gēn zōng'},{cn:'我',py:'wǒ'},{cn:'！',py:''},{cn:'請',py:'qǐng'},{cn:'幫我',py:'bāng wǒ'},{cn:'報警',py:'bào jǐng'},{cn:'。',py:''}]},
+  {prompt:'平常晚上看電視', answer:'我平常晚上看電視。',
+   tiles:[{cn:'我',py:'wǒ'},{cn:'平常',py:'píng cháng'},{cn:'晚上',py:'wǎn shàng'},{cn:'看',py:'kàn'},{cn:'電視',py:'diàn shì'},{cn:'。',py:''}]},
+  {prompt:'選擇疑問句', answer:'你要咖啡還是紅茶？',
+   tiles:[{cn:'你',py:'nǐ'},{cn:'要',py:'yào'},{cn:'咖啡',py:'kā fēi'},{cn:'還是',py:'hái shì'},{cn:'紅茶',py:'hóng chá'},{cn:'？',py:''}]},
+  {prompt:'描述嫌犯衣著', answer:'她穿著紅色的長裙。',
+   tiles:[{cn:'她',py:'tā'},{cn:'穿著',py:'chuān zhe'},{cn:'紅色的',py:'hóng sè de'},{cn:'長裙',py:'cháng qún'},{cn:'。',py:''}]},
+  {prompt:'怎麼了不舒服', answer:'怎麼了？哪裡不舒服？',
+   tiles:[{cn:'怎麼了',py:'zěn me le'},{cn:'？',py:''},{cn:'哪裡',py:'nǎ lǐ'},{cn:'不',py:'bù'},{cn:'舒服',py:'shū fu'},{cn:'？',py:''}]},
+  {prompt:'聽說這家店有名', answer:'聽說這家店很有名。',
+   tiles:[{cn:'聽說',py:'tīng shuō'},{cn:'這家',py:'zhè jiā'},{cn:'店',py:'diàn'},{cn:'很',py:'hěn'},{cn:'有名',py:'yǒu míng'},{cn:'。',py:''}]},
+  {prompt:'問路怎麼走', answer:'請問博物館怎麼走？',
+   tiles:[{cn:'請問',py:'qǐng wèn'},{cn:'博物館',py:'bó wù guǎn'},{cn:'怎麼',py:'zěn me'},{cn:'走',py:'zǒu'},{cn:'？',py:''}]},
+  {prompt:'從這裡到車站多久', answer:'從這裡去車站要多久？',
+   tiles:[{cn:'從',py:'cóng'},{cn:'這裡',py:'zhè lǐ'},{cn:'去',py:'qù'},{cn:'車站',py:'chē zhàn'},{cn:'要',py:'yào'},{cn:'多久',py:'duō jiǔ'},{cn:'？',py:''}]},
+  {prompt:'離捷運站不遠', answer:'我家離捷運站不遠。',
+   tiles:[{cn:'我家',py:'wǒ jiā'},{cn:'離',py:'lí'},{cn:'捷運站',py:'jié yùn zhàn'},{cn:'不遠',py:'bù yuǎn'},{cn:'。',py:''}]},
+  {prompt:'叫計程車', answer:'我想叫一輛計程車。',
+   tiles:[{cn:'我',py:'wǒ'},{cn:'想',py:'xiǎng'},{cn:'叫',py:'jiào'},{cn:'一輛',py:'yī liàng'},{cn:'計程車',py:'jì chéng chē'},{cn:'。',py:''}]},
+  {prompt:'能來上課嗎', answer:'你明天能來上課嗎？',
+   tiles:[{cn:'你',py:'nǐ'},{cn:'明天',py:'míng tiān'},{cn:'能',py:'néng'},{cn:'來',py:'lái'},{cn:'上課',py:'shàng kè'},{cn:'嗎',py:'ma'},{cn:'？',py:''}]},
+  {prompt:'上課不可以玩手機', answer:'上課不可以玩手機。',
+   tiles:[{cn:'上課',py:'shàng kè'},{cn:'不可以',py:'bù kě yǐ'},{cn:'玩',py:'wán'},{cn:'手機',py:'shǒu jī'},{cn:'。',py:''}]},
+  {prompt:'鑰匙什麼時候不見', answer:'你的鑰匙是什麼時候不見的？',
+   tiles:[{cn:'你的',py:'nǐ de'},{cn:'鑰匙',py:'yào shi'},{cn:'是',py:'shì'},{cn:'什麼時候',py:'shén me shí hòu'},{cn:'不見的',py:'bù jiàn de'},{cn:'？',py:''}]},
+  {prompt:'喉嚨痛多久了', answer:'你喉嚨痛，痛多久了？',
+   tiles:[{cn:'你',py:'nǐ'},{cn:'喉嚨痛',py:'hóu lóng tòng'},{cn:'，',py:''},{cn:'痛',py:'tòng'},{cn:'多久',py:'duō jiǔ'},{cn:'了',py:'le'},{cn:'？',py:''}]},
+  {prompt:'打電話給警察', answer:'幫我打電話給警察。',
+   tiles:[{cn:'幫我',py:'bāng wǒ'},{cn:'打電話',py:'dǎ diàn huà'},{cn:'給',py:'gěi'},{cn:'警察',py:'jǐng chá'},{cn:'。',py:''}]},
+  {prompt:'嫌犯外套顏色', answer:'他穿著黑色的外套。',
+   tiles:[{cn:'他',py:'tā'},{cn:'穿著',py:'chuān zhe'},{cn:'黑色的',py:'hēi sè de'},{cn:'外套',py:'wài tào'},{cn:'。',py:''}]},
+  {prompt:'連假不用上課', answer:'連假三天不用上課。',
+   tiles:[{cn:'連假',py:'lián jià'},{cn:'三天',py:'sān tiān'},{cn:'不用',py:'bú yòng'},{cn:'上課',py:'shàng kè'},{cn:'。',py:''}]},
+  {prompt:'跳舞跳得很棒', answer:'你跳舞跳得好棒啊！',
+   tiles:[{cn:'你',py:'nǐ'},{cn:'跳舞',py:'tiào wǔ'},{cn:'跳得',py:'tiào de'},{cn:'好棒',py:'hǎo bàng'},{cn:'啊',py:'a'},{cn:'！',py:''}]},
+  {prompt:'中文學得真快', answer:'你們中文學得真快！',
+   tiles:[{cn:'你們',py:'nǐ men'},{cn:'中文',py:'Zhōng wén'},{cn:'學得',py:'xué de'},{cn:'真',py:'zhēn'},{cn:'快',py:'kuài'},{cn:'！',py:''}]},
+];
+
+let rvIdx=0, rvScore=0, rvAnswered=false, rvSelected=[], rvCurrent=null;
+
+function startReviewSentence(){
+  var _rv = progLoad('review','sentence');
+  if(_rv && _rv.idx > 0 && _rv.idx < reviewSentenceData.length){ rvIdx=_rv.idx; rvScore=_rv.score||0; } else { rvIdx=0; rvScore=0; }
+  showScreen('review-sentence');
+  renderRV();
+}
+function renderRV(){
+  if(rvIdx >= reviewSentenceData.length){
+    progClear('review','sentence');
+    showResult('review-sentence', rvScore, reviewSentenceData.length, '總複習完成！');
+    return;
+  }
+  progSave('review','sentence',rvIdx,rvScore);
+  rvAnswered=false; rvSelected=[]; rvCurrent=reviewSentenceData[rvIdx];
+  document.getElementById('rv-q-num').textContent = `第 ${rvIdx+1} 題 / 共 ${reviewSentenceData.length} 題`;
+  document.getElementById('rv-score-badge').textContent = `${rvScore} / ${rvIdx}`;
+  const fb = document.getElementById('rv-feedback'); fb.style.display='none'; fb.className='s2-feedback';
+  const shuffled = shuffle(rvCurrent.tiles.map((t,i) => ({...t, idx:i})));
+  const bank = document.getElementById('rv-bank'); bank.innerHTML='';
+  shuffled.forEach(t => {
+    const div = document.createElement('div'); div.className='s2-bank-tile';
+    div.innerHTML = `<div class="tile-cn">${t.cn}</div>${t.py ? `<div class="tile-py">${t.py}</div>` : ''}`;
+    div.onclick = () => rvPick(div, t); bank.appendChild(div);
+  });
+  document.getElementById('rv-answer').innerHTML='';
+  document.getElementById('rv-answer').className='s2-answer-area';
+}
+function rvPick(div, t){
+  if(rvAnswered) return;
+  div.classList.add('used'); rvSelected.push(t);
+  const area = document.getElementById('rv-answer'); area.classList.add('has-content');
+  const tile = document.createElement('div'); tile.className='s2-tile pop';
+  tile.innerHTML = `<div class="tile-cn">${t.cn}</div>${t.py ? `<div class="tile-py">${t.py}</div>` : ''}`;
+  tile.onclick = () => { rvSelected=rvSelected.filter(s=>s.idx!==t.idx); div.classList.remove('used'); tile.remove(); if(!rvSelected.length) area.classList.remove('has-content') };
+  area.appendChild(tile);
+}
+function rvClear(){
+  rvSelected=[];
+  document.getElementById('rv-answer').innerHTML='';
+  document.getElementById('rv-answer').className='s2-answer-area';
+  document.querySelectorAll('#rv-bank .s2-bank-tile').forEach(b => b.classList.remove('used'));
+}
+function rvCheck(){
+  if(rvAnswered || !rvSelected.length) return;
+  rvAnswered=true;
+  const ans = rvSelected.map(s => s.cn).join('');
+  const fb = document.getElementById('rv-feedback'); fb.style.display='block';
+  if(ans === rvCurrent.answer){
+    rvScore++; fb.className='s2-feedback correct';
+    fb.innerHTML=`✓ 正確！<br><small style="font-size:15px">${rvCurrent.answer}</small>`;
+    speak(rvCurrent.answer);
+  } else {
+    fb.className='s2-feedback wrong';
+    fb.innerHTML=`✗ 再想想！正確答案：<br><strong>${rvCurrent.answer}</strong>`;
+  }
+  document.getElementById('rv-next-row').style.display='flex';
+}
+function rvReplay(){ speak(rvCurrent.answer); }
+function rvNext(){ rvIdx++; document.getElementById('rv-next-row').style.display='none'; renderRV(); }
+
 // 中文打字練習入口
 document.addEventListener('DOMContentLoaded', function(){
   const grid = document.getElementById('lessons-grid');
   if(grid){
+    // 總複習－句子重組 card
+    const rvCard = document.createElement('div');
+    rvCard.className = 'lesson-card';
+    rvCard.innerHTML = '<div class="d-num">REVIEW</div><div class="d-title">總複習<br>句子重組</div>';
+    rvCard.onclick = function(){ startReviewSentence(); };
+    grid.appendChild(rvCard);
+
+    // 中文打字練習 card
     const card = document.createElement('div');
     card.className = 'lesson-card';
     card.innerHTML = '<div class="d-title">中文打字練習</div>';
@@ -3874,6 +4082,29 @@ document.addEventListener('DOMContentLoaded', function(){
     </div>
   </div>
 
+
+<!-- 總複習－句子重組 -->
+<div class="screen" id="review-sentence">
+  <div class="game-header">
+    <button class="back-btn" onclick="showScreen('portal')">←</button>
+    <span class="game-title">🔁 總複習－句子重組</span>
+    <div class="score-badge" id="rv-score-badge">0 / 0</div>
+  </div>
+  <div class="game-body">
+    <div class="q-num" id="rv-q-num"></div>
+    <div class="s2-answer-area" id="rv-answer"></div>
+    <div class="s2-bank" id="rv-bank"></div>
+    <div class="s2-actions">
+      <button class="s2-clear" onclick="rvClear()">清除</button>
+      <button class="s2-check" onclick="rvCheck()">確認 ✓</button>
+    </div>
+    <div class="s2-feedback" id="rv-feedback"></div>
+    <div id="rv-next-row" style="display:none;gap:10px;margin-top:12px">
+      <button class="s2-clear" onclick="rvReplay()" style="flex:1;font-size:15px">🔊 再聽一次</button>
+      <button class="s2-check" onclick="rvNext()" style="flex:2;font-size:15px">下一題 →</button>
+    </div>
+  </div>
+</div>
 
 <!-- 中文打字練習 -->
 <div class="screen" id="typing-practice-screen" style="background:#1a1a2e;overflow:auto">
