@@ -3162,12 +3162,20 @@ function s2Check(){
   if (ans === s2Current.answer){
     s2Score++; fb.className='s2-feedback correct';
     fb.innerHTML=`✓ 正確！<br><small>${s2Current.answer}</small>`;
-    speak(s2Current.answer);
+    // 語音唸完後才跳下一題
+    const u = new SpeechSynthesisUtterance(s2Current.answer.replace(/面/g,'麵').replace(/還書/g,'環書'));
+    u.lang = 'zh-TW'; u.rate = 0.45;
+    const voices = window.speechSynthesis.getVoices();
+    const twVoice = voices.find(v => v.lang==='zh-TW' && /Taiwan|Meijia|Tingting|Yating/i.test(v.name)) || voices.find(v => v.lang==='zh-TW') || voices.find(v => v.lang.startsWith('zh'));
+    if (twVoice) u.voice = twVoice;
+    u.onend = () => { setTimeout(() => { s2Idx++; renderS2() }, 500); };
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
   } else {
     fb.className='s2-feedback wrong';
     fb.innerHTML=`✗ 再想想！正確答案：<br><strong>${s2Current.answer}</strong>`;
+    setTimeout(() => { s2Idx++; renderS2() }, 2500);
   }
-  setTimeout(() => { s2Idx++; renderS2() }, 2200);
 }
 
 // ════════════════════════════════════════════════════════
