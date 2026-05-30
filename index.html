@@ -111,7 +111,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .tq-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .tq-btn{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 10px;font-size:24px;color:var(--text);cursor:pointer;transition:all .15s;text-align:center;font-family:'Noto Sans TC',sans-serif;letter-spacing:1px}
 .tq-btn:hover:not(:disabled){border-color:var(--gold);background:rgba(240,180,41,0.08)}
-.tq-btn.correct{background:var(--green-glow);border-color:var(--green);color:#7de8b0}
+.tq-btn.selected{background:rgba(240,180,41,0.15);border-color:var(--gold);color:var(--gold);transform:scale(1.03)}.tq-btn.correct{background:var(--green-glow);border-color:var(--green);color:#7de8b0}
 .tq-btn.wrong{background:var(--red-glow);border-color:var(--red);color:#ff8a8a}
 .tq-submit{background:var(--gold);color:#1a1000;border:none;border-radius:12px;padding:15px;width:100%;font-size:16px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-weight:700}
 .tq-submit:disabled{opacity:.4;cursor:default}
@@ -2025,7 +2025,7 @@ const LESSONS = [
     {char:'保健室', correct:'bǎo jiàn shì',opts:['bāo jiàn shì','báo jiàn shì','bǎo jiàn shì','bào jiàn shì']},
     {char:'吃藥',   correct:'chī yào',    opts:['chī yāo','chī yáo','chī yǎo','chī yào']},
     {char:'護士',   correct:'hù shi',     opts:['hū shi','hú shi','hǔ shi','hù shi']},
-    {char:'休息',   correct:'xiū xi',     opts:['xiū xī','xiū xí','xiū xǐ','xiū xì']},
+    {char:'休息',   correct:'xiū xi',     opts:['xiū xì','xiū xí','xiū xǐ','xiū xi']},
     {char:'拉肚子', correct:'lā dù zi',   opts:['lā dū zi','lā dú zi','lā dǔ zi','lā dù zi']},
     {char:'肩膀',   correct:'jiān bǎng',  opts:['jiān bāng','jiān báng','jiān bǎng','jiān bàng']},
     {char:'掛號',   correct:'guà hào',    opts:['guā hào','guá hào','guǎ hào','guà hào']},
@@ -2853,7 +2853,10 @@ function renderTQ(){
   const submit = document.getElementById('tq-submit');
   submit.disabled = true; submit.textContent = '確認 ✓'; submit.onclick = tqSubmit;
   const grid = document.getElementById('tq-grid'); grid.innerHTML = '';
-  shuffle(q.opts).forEach(opt => {
+  // 確保正確答案一定在選項中
+  let opts = q.opts.slice();
+  if (!opts.includes(q.correct)) opts[opts.length - 1] = q.correct;
+  shuffle(opts).forEach(opt => {
     const btn = document.createElement('button'); btn.className = 'tq-btn'; btn.textContent = opt;
     btn.onclick = () => { document.querySelectorAll('.tq-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); tqSelected = opt; submit.disabled = false };
     grid.appendChild(btn);
