@@ -2579,8 +2579,8 @@ function shuffle(a){ return [...a].sort(() => Math.random() - .5) }
 function speak(text){
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
-  // 修正 TTS 發音：面→麵（確保讀 miàn）；還→環（確保讀 huán）
-  text = text.replace(/面/g, '麵').replace(/還書/g, '環書');
+  // 修正 TTS 發音：面→麵（確保讀 miàn）；還→環（確保讀 huán）；不舒服的服讀輕聲
+  text = text.replace(/面/g, '麵').replace(/還書/g, '環書').replace(/不舒服/g, '不舒fu');
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'zh-TW'; u.rate = 0.45;
 
