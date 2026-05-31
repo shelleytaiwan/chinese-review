@@ -2580,7 +2580,7 @@ function speak(text){
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
   // 修正 TTS 發音：面→麵（確保讀 miàn）；還→環（確保讀 huán）；不舒服的服讀輕聲
-  text = text.replace(/面/g, '麵').replace(/還書/g, '環書').replace(/不舒服/g, '不舒fu').replace(/背著/g, '揹著').replace(/連假/g, '連價').replace(/為什麼/g, '喂什麼').replace(/教和服/g, '交和服').replace(/教浴衣/g, '交浴衣').replace(/好耶！/g, '好！').replace(/好耶/g, '好');
+  text = text.replace(/面/g, '麵').replace(/還書/g, '環書').replace(/不舒服/g, '不舒fu').replace(/背著/g, '揹著').replace(/連假/g, '連價').replace(/為什麼/g, '喂什麼').replace(/教和服/g, '交和服').replace(/教浴衣/g, '交浴衣').replace(/好耶！/g, '好！').replace(/好耶/g, '好').replace(/出身地/g, '出身帝').replace(/出生地/g, '出生帝');
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'zh-TW'; u.rate = 0.45;
 
@@ -4753,7 +4753,7 @@ const LN_PHONES=['08038622941','035214985','0225971564'];
 let lnQ=null,lnAnswered=0,lnCorrect=0,lnCurrentCorrect=false;
 
 function lnRandInt(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
-function lnPhoneSpeech(p){const m={'0':'零','1':'yī','2':'èr','3':'sān','4':'sì','5':'wǔ','6':'liù','7':'qī','8':'bā','9':'jiǔ'};return p.split('').map(c=>m[c]||c).join(' ');}
+function lnPhoneSpeech(p){const m={'0':'零','1':'一','2':'二','3':'三','4':'四','5':'五','6':'六','7':'七','8':'八','9':'九'};return p.split('').map(c=>m[c]||c).join(' ');}
 function lnYearSpeech(y){const s=y.toString();let r='';const ns=['零','一','二','三','四','五','六','七','八','九'];for(let i=0;i<s.length;i++)r+=ns[parseInt(s[i])];return r+'年';}
 function lnGenQ(){
   const r=Math.random();
@@ -4776,9 +4776,37 @@ function lnNewQ(){
   document.getElementById('ln-input').value='';
   const fb=document.getElementById('ln-feedback');fb.innerHTML='';fb.style.cssText='font-size:1.3rem;margin:16px 0;padding:14px 20px;border-radius:40px;font-weight:500;min-height:54px';
 }
+function lnNumToChinese(n){
+  if(n===0)return'零';
+  const digits=['零','一','二','三','四','五','六','七','八','九'];
+  const units=['','十','百','千','萬'];
+  let result='',s=n.toString();
+  if(n<10)return digits[n];
+  if(n<100){const t=Math.floor(n/10);const o=n%10;return(t===1?'十':digits[t]+'十')+(o?digits[o]:'');}
+  if(n<1000){const h=Math.floor(n/100);const r=n%100;const mid=r<10&&r>0?'零'+digits[r]:r===0?'':lnNumToChinese(r);return digits[h]+'百'+mid;}
+  if(n<10000){const th=Math.floor(n/1000);const r=n%1000;const mid=r<100&&r>0?'零'+lnNumToChinese(r):r===0?'':lnNumToChinese(r);return digits[th]+'千'+mid;}
+  const wan=Math.floor(n/10000);const r=n%10000;const mid=r<1000&&r>0?'零'+lnNumToChinese(r):r===0?'':lnNumToChinese(r);
+  return lnNumToChinese(wan)+'萬'+mid;
+}
+function lnBuildSpeech(q){
+  if(q.type==='phone')return q.speech;
+  if(q.type==='year')return q.speech;
+  if(q.type==='money')return lnNumToChinese(q.ans)+'元';
+  if(q.type==='measure')return lnNumToChinese(q.ans)+q.speech.replace(/^[0-9]+/,'');
+  return q.speech;
+}
 function lnSpeak(){
   if(!lnQ)lnNewQ();
-  if('speechSynthesis' in window){window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(lnQ.speech);u.lang='zh-TW';u.rate=0.85;window.speechSynthesis.speak(u);}
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const text=lnBuildSpeech(lnQ);
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='zh-TW';u.rate=0.85;
+    const voices=window.speechSynthesis.getVoices();
+    const twVoice=voices.find(v=>v.lang==='zh-TW'&&/Taiwan|Meijia|Tingting|Yating/i.test(v.name))||voices.find(v=>v.lang==='zh-TW')||voices.find(v=>v.lang.startsWith('zh'));
+    if(twVoice)u.voice=twVoice;
+    window.speechSynthesis.speak(u);
+  }
 }
 function lnCheck(){
   if(!lnQ)return;
@@ -4898,8 +4926,13 @@ function vmDoNext(){
 }
 function vmSpeakCurrent(){
   if(vmIdx>=VM_CARDS.length)return;
-  const u=new SpeechSynthesisUtterance(VM_CARDS[vmIdx].word);
+  let word=VM_CARDS[vmIdx].word;
+  word=word.replace(/面/g,'麵').replace(/還書/g,'環書').replace(/出身地/g,'出身帝').replace(/出生地/g,'出生帝').replace(/連假/g,'連價').replace(/為什麼/g,'喂什麼');
+  const u=new SpeechSynthesisUtterance(word);
   u.lang='zh-TW';u.rate=0.82;
+  const voices=window.speechSynthesis.getVoices();
+  const twVoice=voices.find(v=>v.lang==='zh-TW'&&/Taiwan|Meijia|Tingting|Yating/i.test(v.name))||voices.find(v=>v.lang==='zh-TW')||voices.find(v=>v.lang.startsWith('zh'));
+  if(twVoice)u.voice=twVoice;
   window.speechSynthesis.cancel();window.speechSynthesis.speak(u);
 }
 document.addEventListener('keydown',e=>{
