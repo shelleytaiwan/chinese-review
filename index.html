@@ -3567,6 +3567,21 @@ function spToggleMic(){
   spStartRecording();
 }
 function spStartRecording(){
+
+// 簡繁轉換（語音識別結果修正）
+function s2t(text){
+  const map={'爱':'愛','边':'邊','长':'長','车':'車','单':'單','对':'對','发':'發','关':'關',
+    '国':'國','过':'過','话':'話','见':'見','进':'進','开':'開','来':'來','联':'聯','两':'兩',
+    '马':'馬','门':'門','钱':'錢','气':'氣','请':'請','认':'認','时':'時','书':'書','说':'說',
+    '岁':'歲','体':'體','题':'題','听':'聽','头':'頭','问':'問','现':'現','线':'線','写':'寫',
+    '学':'學','语':'語','员':'員','运':'運','这':'這','钟':'鐘','实':'實','东':'東','带':'帶',
+    '帮':'幫','报':'報','让':'讓','给':'給','转':'轉','场':'場','难':'難','吗':'嗎','们':'們',
+    '药':'藥','医':'醫','应':'應','鱼':'魚','园':'園','针':'針','装':'裝','终':'終','证':'證',
+    '历':'歷','导':'導','办':'辦','图':'圖','档':'檔','总':'總','组':'組','间':'間','样':'樣',
+    '张':'張','种':'種','职':'職','钥':'鑰','护':'護','码':'碼','账':'帳','网':'網','号':'號',
+    '后':'後','华':'華','汉':'漢','机':'機','务':'務','队':'隊','须':'須','齿':'齒','检':'檢'};
+  return text.split('').map(c=>map[c]||c).join('');
+}
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){ alert('Chrome ブラウザを使用してください（音声認識対応）'); return; }
   spTranscript='';
@@ -3575,8 +3590,8 @@ function spStartRecording(){
   spRecognition.onresult=(e)=>{
     let finalText='', interimText='';
     for(let i=0;i<e.results.length;i++){
-      if(e.results[i].isFinal) finalText+=e.results[i][0].transcript;
-      else interimText+=e.results[i][0].transcript;
+      if(e.results[i].isFinal) finalText+=s2t(e.results[i][0].transcript);
+      else interimText+=s2t(e.results[i][0].transcript);
     }
     const display=toTraditional(finalText||interimText);
     const tb=document.getElementById('sp-transcript-text');
@@ -3671,8 +3686,8 @@ function spTTSStartRecording(){
   spTTSRecognition.onresult=(e)=>{
     let finalText='', interimText='';
     for(let i=0;i<e.results.length;i++){
-      if(e.results[i].isFinal) finalText+=e.results[i][0].transcript;
-      else interimText+=e.results[i][0].transcript;
+      if(e.results[i].isFinal) finalText+=s2t(e.results[i][0].transcript);
+      else interimText+=s2t(e.results[i][0].transcript);
     }
     const display=toTraditional(finalText||interimText);
     const tb=document.getElementById('sp-tts-transcript-text');
@@ -3865,7 +3880,7 @@ function dgStartRecording(){
   dgRecognition.lang='zh-TW';dgRecognition.continuous=false;dgRecognition.interimResults=true;
   btn.textContent='⏹ 停止';btn.style.background='var(--red)';btn.style.color='#fff';btn.style.borderColor='var(--red)';
   dgRecognition.onresult=function(e){
-    var t='';for(var i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;
+    var t='';for(var i=0;i<e.results.length;i++)t+=s2t(e.results[i][0].transcript);
     document.getElementById('dg-speech-text').textContent='🎤 '+t;
     if(e.results[e.results.length-1].isFinal){
       document.getElementById('dg-input').value=t;
