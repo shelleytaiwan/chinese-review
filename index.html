@@ -2512,8 +2512,8 @@ function buildPortal(){
       const reviewItems = [
         {icon:'🔤', color:'var(--blue-light)', label:'選拼音', sub:'音韻辨別練習', fn:'openPinyinQuiz'},
         {icon:'🔢', color:'var(--gold)',       label:'聽數字', sub:'數字聽力練習', fn:'openListenNum'},
-        {icon:'📖', color:'var(--green)',      label:'詞語練習',sub:'跑馬燈 419 詞', fn:'openVocabMarquee'},
-        {icon:'💬', color:'var(--red)',        label:'快速問答',sub:'120 題口說卡', fn:'openOralQuiz'},
+        {icon:'📖', color:'var(--green)',      label:'詞語練習',sub:'跑馬燈 458 詞', fn:'openVocabMarquee'},
+        {icon:'💬', color:'var(--red)',        label:'快速問答',sub:'236 題口說卡', fn:'openOralQuiz'},
       ];
       reviewItems.forEach(item => {
         const rc = document.createElement('div');
@@ -4578,7 +4578,7 @@ function showResult(){
     <div style="text-align:center">
       <div class="lesson-badge" onclick="showPortal()">← 所有課次</div>
       <h2 style="font-family:'Noto Serif TC',serif;font-size:26px;font-weight:700;color:var(--text);margin-bottom:6px;margin-top:14px">總複習－詞語</h2>
-      <p style="font-size:14px;color:var(--text-muted)">419 個詞語・跑馬燈練習</p>
+      <p style="font-size:14px;color:var(--text-muted)">458 個詞語・跑馬燈練習</p>
     </div>
     <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center">
       <button onclick="vmStartMode('pinyin')" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px 48px;font-family:'Noto Sans TC',sans-serif;font-size:22px;font-weight:700;color:var(--text);cursor:pointer;min-width:180px">拼音</button>
@@ -4611,7 +4611,7 @@ function showResult(){
   <div id="vm-done" style="display:none;flex-direction:column;align-items:center;gap:24px;padding:48px 20px;text-align:center;height:100%;background:radial-gradient(ellipse at 30% 20%,rgba(61,184,122,.1) 0%,transparent 60%),var(--bg)">
     <div style="font-size:5rem">🎉</div>
     <div style="font-family:'Noto Serif TC',serif;font-size:2rem;font-weight:700;color:var(--text)">完成了！</div>
-    <div style="color:var(--text-mid)">全部 419 個詞語都練習完畢</div>
+    <div style="color:var(--text-mid)">全部 458 個詞語都練習完畢</div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:8px">
       <button onclick="vmRestartSame()" style="background:var(--blue);color:#fff;border:none;border-radius:40px;padding:14px 36px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif">再練一次</button>
       <button onclick="vmGoMenu()" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:40px;padding:14px 36px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif">回選單</button>
