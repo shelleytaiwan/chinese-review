@@ -226,6 +226,9 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .sp-transcript-placeholder{color:var(--text-muted);font-size:15px;letter-spacing:1px}
 .sp-clear-btn{background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;display:none;margin-bottom:16px}
 .sp-clear-btn.visible{display:inline-block}
+.sp-finish-btn{background:var(--green);border:none;color:#fff;border-radius:24px;padding:12px 32px;font-size:17px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;display:none;letter-spacing:1px;box-shadow:0 2px 10px var(--green-glow);transition:all .15s}
+.sp-finish-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.sp-finish-btn.visible{display:inline-block}
 .sp-result-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;display:none}
 .sp-result-box.visible{display:block}
 .sp-score-row{display:flex;align-items:center;gap:16px;margin-bottom:14px}
@@ -579,10 +582,10 @@ button.btns2:hover{background:#0f3460}
 <!-- 口說練習 SPEAKING PRACTICE -->
 <div class="screen" id="speaking-practice">
   <div class="game-header">
-    <button class="back-btn" onclick="showScreen('sp-home')">←</button>
+    <button class="back-btn" onclick="showPortal()">←</button>
     <span class="game-title">🎤 口說練習</span>
   </div>
-  <div class="game-body" style="max-width:520px">
+  <div class="game-body" style="max-width:none;width:100%">
 
     <!-- TABS -->
     <div class="nd-mode-tabs" style="margin-bottom:20px">
@@ -593,7 +596,7 @@ button.btns2:hover{background:#0f3460}
     <!-- ══ TAB A: 自由錄音 ══ -->
     <div id="sp-panel-free">
       <p style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:16px;line-height:1.7">
-        按麥克風，用中文說任何話。<br>AI 會把聽到的打出來，幫你知道發音清不清楚！
+        按麥克風，慢慢用中文說，<b>停頓也沒關係</b>，AI 會一直等你。<br>說完後按「✅ 我說完了」，AI 才會給你評語！
       </p>
       <!-- transcript display -->
       <div class="sp-transcript-box" id="sp-transcript-box">
@@ -603,6 +606,9 @@ button.btns2:hover{background:#0f3460}
       <!-- mic -->
       <div style="display:flex;justify-content:center;margin-bottom:14px">
         <button class="sp-mic-btn" id="sp-mic-btn" onclick="spToggleMic()">🎙️</button>
+      </div>
+      <div style="text-align:center;margin-bottom:8px">
+        <button class="sp-finish-btn" id="sp-finish-btn" onclick="spFinish()">✅ 我說完了</button>
       </div>
       <div style="text-align:center;margin-bottom:16px">
         <button class="sp-clear-btn" id="sp-clear-btn" onclick="spClear()">🗑 清除，重新錄音</button>
@@ -629,13 +635,24 @@ button.btns2:hover{background:#0f3460}
         <button onclick="spTTSStop()" style="background:var(--surface2);color:var(--text-mid);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-size:16px;cursor:pointer;font-family:'Noto Sans TC',sans-serif">⏹ 停</button>
       </div>
       <div style="border-top:1px solid var(--border);padding-top:16px">
-        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;text-align:center">聽完後，試著模仿說說看 👇</p>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;text-align:center">聽完後，試著模仿說說看 👇<br>（會自動錄下你的聲音，可以重聽和 AI 比較）</p>
         <div class="sp-transcript-box" id="sp-tts-transcript-box">
           <span class="sp-transcript-placeholder" id="sp-tts-placeholder">按 🎙️ 模仿錄音⋯</span>
           <span id="sp-tts-transcript-text" style="display:none;font-size:22px;line-height:1.6"></span>
         </div>
         <div style="display:flex;justify-content:center;margin-bottom:10px">
           <button class="sp-mic-btn" id="sp-tts-mic-btn" onclick="spTTSToggleMic()">🎙️</button>
+        </div>
+        <!-- 聽自己的錄音 / 再聽一次 AI -->
+        <div style="display:flex;gap:10px;justify-content:center;margin-bottom:10px">
+          <button id="sp-tts-play-mine" onclick="spTTSPlayMine()" style="display:none;background:var(--gold-glow);border:1px solid var(--gold);color:var(--gold);border-radius:12px;padding:10px 16px;font-size:15px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-weight:700">🔁 聽我的錄音</button>
+          <button id="sp-tts-play-ai" onclick="spTTSSpeak()" style="display:none;background:var(--blue-glow);border:1px solid var(--blue);color:var(--blue-light);border-radius:12px;padding:10px 16px;font-size:15px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-weight:700">🔊 再聽 AI</button>
+        </div>
+        <!-- AI 評語 -->
+        <div class="sp-result-box" id="sp-tts-result-box" style="display:none;margin-bottom:12px">
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;letter-spacing:1px">🤖 AI 聽到你念的</div>
+          <div id="sp-tts-heard" style="font-size:20px;color:var(--text);font-weight:600;margin-bottom:12px;line-height:1.5"></div>
+          <div id="sp-tts-feedback-msg" style="font-size:15px;color:var(--green);line-height:1.8"></div>
         </div>
         <div style="text-align:center">
           <button class="sp-clear-btn" id="sp-tts-clear-btn" onclick="spTTSClear()">🗑 清除</button>
@@ -3397,7 +3414,7 @@ const CL_MM_ROUNDS = [
 // 課堂用語 NAVIGATION
 // ════════════════════════════════════════════════════════
 function openCLHome(){ showScreen('cl-home'); }
-function openSPHome(){ showScreen('sp-home'); }
+function openSPHome(){ startSpeakingPractice(); }
 function backToCLHome(){ clearInterval(clMMInterval); showScreen('cl-home'); }
 
 // ════════════════════════════════════════════════════════
@@ -3524,6 +3541,100 @@ const S2T_MAP = {
   '中文':'中文','汉语':'漢語','繁体':'繁體','简体':'簡體','台湾':'台灣','语言':'語言',
   '发音':'發音','声调':'聲調','词语':'詞語','句子':'句子','课本':'課本','讲义':'講義',
   '举手':'舉手','坐下':'坐下','站起来':'站起來','回答':'回答','大家':'大家','同学们':'同學們',
+  '例如':'例如','出现':'出現','现在':'現在','发现':'發現','这里':'這裡','大阪烧':'大阪燒',
+  // ── 常用單字補充（涵蓋日常字） ──
+  '烧':'燒','饭':'飯','饮':'飲','馆':'館','卖':'賣','买':'買','块':'塊','热':'熱','凉':'涼',
+  '汤':'湯','面':'麵','饼':'餅','糖':'糖','盐':'鹽','酱':'醬','鸡':'雞','鸭':'鴨','鱼':'魚',
+  '虾':'蝦','蔬':'蔬','苹':'蘋','咸':'鹹','尝':'嚐','饿':'餓','饱':'飽','厨':'廚','锅':'鍋',
+  '湾':'灣','岛':'島','县':'縣','镇':'鎮','乡':'鄉','东':'東','边':'邊','远':'遠','车':'車',
+  '马':'馬','飞':'飛','轮':'輪','驾':'駕','驶':'駛','载':'載','运':'運','购':'購','带':'帶',
+  '钟':'鐘','点':'點','银':'銀','风':'風','云':'雲','电':'電','阴':'陰','气':'氣','汽':'汽',
+  '温':'溫','湿':'濕','干':'乾','净':'淨','脏':'髒','洁':'潔','废':'廢','门':'門','开':'開',
+  '关':'關','锁':'鎖','钥':'鑰','楼':'樓','层':'層','阶':'階','园':'園','场':'場','广':'廣',
+  '厅':'廳','库':'庫','仓':'倉','厂':'廠','务':'務','谈':'談','论':'論','议':'議','词':'詞',
+  '纸':'紙','笔':'筆','画':'畫','签':'簽','识':'識','答':'答','测':'測','试':'試','验':'驗',
+  '复':'複','级':'級','员':'員','队':'隊','组':'組','团':'團','约':'約','寄':'寄','闻':'聞',
+  '视':'視','观':'觀','览':'覽','显':'顯','现':'現','线':'線','网':'網','脑':'腦','软':'軟',
+  '键':'鍵','码':'碼','档':'檔','录':'錄','频':'頻','声':'聲','图':'圖','样':'樣','种':'種',
+  '类':'類','别':'別','单':'單','双':'雙','张':'張','两':'兩','几':'幾','个':'個','只':'隻',
+  '间':'間','时':'時','岁':'歲','龄':'齡','历':'歷','过':'過','还':'還','来':'來','进':'進',
+  '达':'達','迟':'遲','赶':'趕','动':'動','转':'轉','换':'換','变':'變','坏':'壞','旧':'舊',
+  '应':'應','该':'該','须':'須','为':'為','与':'與','从':'從','众':'眾','体':'體','优':'優',
+  '统':'統','总':'總','结':'結','纪':'紀','纳':'納','红':'紅','绿':'綠','蓝':'藍','黄':'黃',
+  '钢':'鋼','铁':'鐵','针':'針','医':'醫','药':'藥','疗':'療','护':'護','检':'檢','齿':'齒',
+  '难':'難','顺':'順','顾':'顧','颜':'顏','额':'額','凤':'鳳','飘':'飄','骑':'騎','团':'團',
+  '围':'圍','国':'國','圆':'圓','专':'專','传':'傳','区':'區','协':'協','号':'號','吗':'嗎',
+  '响':'響','处':'處','备':'備','够':'夠','头':'頭','奋':'奮','妈':'媽','妇':'婦','孙':'孫',
+  '宁':'寧','宝':'寶','实':'實','宽':'寬','寻':'尋','导':'導','寿':'壽','将':'將','尽':'盡',
+  '属':'屬','币':'幣','帅':'帥','帮':'幫','异':'異','弃':'棄','弯':'彎','态':'態','怀':'懷',
+  '恋':'戀','恶':'惡','闷':'悶','惊':'驚','惧':'懼','愤':'憤','愿':'願','懒':'懶','戏':'戲',
+  '战':'戰','户':'戶','执':'執','扩':'擴','扫':'掃','扬':'揚','抚':'撫','报':'報','担':'擔',
+  '挂':'掛','挤':'擠','损':'損','据':'據','摄':'攝','击':'擊','敌':'敵','断':'斷','无':'無',
+  '术':'術','机':'機','杀':'殺','杂':'雜','权':'權','条':'條','极':'極','构':'構','枪':'槍',
+  '柜':'櫃','桥':'橋','梦':'夢','棒':'棒','概':'概','横':'橫','欢':'歡','欧':'歐','残':'殘',
+  '毁':'毀','毕':'畢','汇':'匯','沟':'溝','没':'沒','泪':'淚','泼':'潑','泽':'澤','洒':'灑',
+  '济':'濟','浓':'濃','涛':'濤','涨':'漲','液':'液','渔':'漁','满':'滿','滤':'濾','潜':'潛',
+  '灭':'滅','灯':'燈','灵':'靈','灾':'災','炉':'爐','炼':'煉','烂':'爛','烛':'燭','烟':'煙',
+  '营':'營','烫':'燙','爱':'愛','爷':'爺','牵':'牽','犹':'猶','狭':'狹','狮':'獅','独':'獨',
+  '狱':'獄','猎':'獵','猫':'貓','献':'獻','环':'環','现':'現','电':'電','画':'畫','畅':'暢',
+  '疯':'瘋','症':'症','瘫':'癱','皱':'皺','盏':'盞','盐':'鹽','监':'監','盖':'蓋','盘':'盤',
+  '着':'著','睁':'睜','矫':'矯','矿':'礦','码':'碼','砚':'硯','础':'礎','硕':'碩','确':'確',
+  '碍':'礙','礼':'禮','祸':'禍','禅':'禪','离':'離','种':'種','积':'積','称':'稱','稳':'穩',
+  '穷':'窮','窃':'竊','窝':'窩','竖':'豎','竞':'競','笋':'筍','笔':'筆','笼':'籠','筑':'築',
+  '筛':'篩','筹':'籌','签':'簽','简':'簡','篮':'籃','类':'類','粮':'糧','紧':'緊','纠':'糾',
+  '红':'紅','约':'約','级':'級','纪':'紀','纫':'紉','纬':'緯','纯':'純','纱':'紗','纲':'綱',
+  '纳':'納','纵':'縱','纷':'紛','纸':'紙','纹':'紋','纺':'紡','纽':'紐','线':'線','练':'練',
+  '组':'組','细':'細','织':'織','终':'終','绍':'紹','经':'經','绑':'綁','结':'結','绕':'繞',
+  '绘':'繪','给':'給','络':'絡','绝':'絕','绞':'絞','统':'統','绣':'繡','继':'繼','绩':'績',
+  '绪':'緒','续':'續','绳':'繩','维':'維','绵':'綿','绷':'繃','绸':'綢','综':'綜','绿':'綠',
+  '缓':'緩','缔':'締','缕':'縷','编':'編','缘':'緣','缝':'縫','缠':'纏','缩':'縮','缴':'繳',
+  '罗':'羅','罚':'罰','罢':'罷','羡':'羨','翘':'翹','联':'聯','聋':'聾','职':'職','肠':'腸',
+  '肤':'膚','肾':'腎','肿':'腫','胀':'脹','胁':'脅','胆':'膽','胜':'勝','脉':'脈','脏':'臟',
+  '脑':'腦','脚':'腳','脱':'脫','腾':'騰','舍':'捨','舰':'艦','艰':'艱','艳':'艷','艺':'藝',
+  '节':'節','芦':'蘆','苹':'蘋','茎':'莖','荐':'薦','荚':'莢','荣':'榮','荤':'葷','获':'獲',
+  '莱':'萊','莲':'蓮','萝':'蘿','萤':'螢','营':'營','萧':'蕭','葱':'蔥','蓝':'藍','蔼':'藹',
+  '虏':'虜','虑':'慮','虚':'虛','虫':'蟲','虽':'雖','虾':'蝦','蚂':'螞','蚊':'蚊','蚕':'蠶',
+  '蛮':'蠻','蜡':'蠟','蝇':'蠅','补':'補','衬':'襯','袄':'襖','袜':'襪','装':'裝','裤':'褲',
+  '见':'見','观':'觀','规':'規','觅':'覓','视':'視','览':'覽','觉':'覺','誉':'譽','计':'計',
+  '订':'訂','认':'認','讥':'譏','讨':'討','让':'讓','训':'訓','议':'議','讯':'訊','记':'記',
+  '讲':'講','讳':'諱','许':'許','论':'論','讼':'訟','讽':'諷','设':'設','访':'訪','诀':'訣',
+  '证':'證','评':'評','识':'識','诉':'訴','诊':'診','词':'詞','译':'譯','试':'試','诗':'詩',
+  '诚':'誠','话':'話','诞':'誕','询':'詢','该':'該','详':'詳','诫':'誡','语':'語','误':'誤',
+  '诱':'誘','说':'說','诵':'誦','请':'請','诸':'諸','诺':'諾','读':'讀','课':'課','谁':'誰',
+  '调':'調','谅':'諒','谈':'談','谊':'誼','谋':'謀','谎':'謊','谐':'諧','谓':'謂','谕':'諭',
+  '谚':'諺','谜':'謎','谢':'謝','谣':'謠','谤':'謗','谦':'謙','谨':'謹','谱':'譜','谴':'譴',
+  '贝':'貝','贞':'貞','负':'負','贡':'貢','财':'財','责':'責','贤':'賢','败':'敗','账':'賬',
+  '货':'貨','质':'質','贩':'販','贪':'貪','贫':'貧','贬':'貶','购':'購','贮':'貯','贯':'貫',
+  '贱':'賤','贴':'貼','贵':'貴','贷':'貸','贸':'貿','费':'費','贺':'賀','贼':'賊','贾':'賈',
+  '贿':'賄','赁':'賃','赂':'賂','资':'資','赋':'賦','赌':'賭','赎':'贖','赏':'賞','赐':'賜',
+  '赔':'賠','赖':'賴','赛':'賽','赝':'贋','赞':'贊','赠':'贈','赡':'贍','赢':'贏','赵':'趙',
+  '赶':'趕','趋':'趨','跃':'躍','践':'踐','跷':'蹺','踪':'蹤','蹒':'蹣','蹿':'躥','躯':'軀',
+  '车':'車','轧':'軋','轨':'軌','轩':'軒','转':'轉','轮':'輪','软':'軟','轰':'轟','轴':'軸',
+  '轻':'輕','载':'載','较':'較','辅':'輔','辆':'輛','辈':'輩','辉':'輝','输':'輸','辕':'轅',
+  '辖':'轄','辙':'轍','辞':'辭','辩':'辯','辫':'辮','边':'邊','辽':'遼','达':'達','迁':'遷',
+  '过':'過','迈':'邁','运':'運','还':'還','这':'這','进':'進','远':'遠','违':'違','连':'連',
+  '迟':'遲','迹':'跡','适':'適','选':'選','逊':'遜','递':'遞','遗':'遺','遥':'遙','邓':'鄧',
+  '邮':'郵','郑':'鄭','酱':'醬','酿':'釀','释':'釋','里':'裡','重':'重','野':'野','量':'量',
+  '针':'針','钓':'釣','钙':'鈣','钝':'鈍','钞':'鈔','钟':'鐘','钠':'鈉','钢':'鋼','钥':'鑰',
+  '钦':'欽','钧':'鈞','钩':'鉤','钱':'錢','钳':'鉗','钻':'鑽','铁':'鐵','铃':'鈴','铅':'鉛',
+  '铜':'銅','铝':'鋁','铠':'鎧','铭':'銘','银':'銀','铸':'鑄','铺':'鋪','链':'鏈','销':'銷',
+  '锁':'鎖','锅':'鍋','锈':'鏽','锋':'鋒','锌':'鋅','错':'錯','锚':'錨','锥':'錐','锦':'錦',
+  '键':'鍵','锯':'鋸','锰':'錳','锻':'鍛','镀':'鍍','镇':'鎮','镜':'鏡','镯':'鐲','镰':'鐮',
+  '镶':'鑲','长':'長','门':'門','闪':'閃','闭':'閉','问':'問','闯':'闖','闲':'閑','间':'間',
+  '闷':'悶','闸':'閘','闹':'鬧','闻':'聞','阀':'閥','阁':'閣','阅':'閱','阔':'闊','队':'隊',
+  '阳':'陽','阴':'陰','阵':'陣','阶':'階','际':'際','陆':'陸','陈':'陳','险':'險','随':'隨',
+  '隐':'隱','隶':'隸','难':'難','雏':'雛','雾':'霧','静':'靜','韩':'韓','韵':'韻','页':'頁',
+  '顶':'頂','顷':'頃','项':'項','顺':'順','须':'須','顽':'頑','顾':'顧','顿':'頓','颁':'頒',
+  '颂':'頌','预':'預','领':'領','颇':'頗','颈':'頸','频':'頻','颓':'頹','颗':'顆','题':'題',
+  '颜':'顏','额':'額','颠':'顛','颤':'顫','风':'風','飘':'飄','飞':'飛','饥':'飢','饭':'飯',
+  '饮':'飲','饰':'飾','饱':'飽','饲':'飼','饺':'餃','饼':'餅','饿':'餓','馀':'餘','馁':'餒',
+  '馄':'餛','馅':'餡','馆':'館','馒':'饅','馋':'饞','马':'馬','驯':'馴','驰':'馳','驱':'驅',
+  '驳':'駁','驴':'驢','驶':'駛','驻':'駐','驼':'駝','驾':'駕','骁':'驍','骂':'罵','骄':'驕',
+  '骆':'駱','骇':'駭','验':'驗','骏':'駿','骑':'騎','骗':'騙','骚':'騷','骤':'驟','髅':'髏',
+  '鬓':'鬢','鱼':'魚','鲁':'魯','鲍':'鮑','鲜':'鮮','鲨':'鯊','鲫':'鯽','鲸':'鯨','鳄':'鱷',
+  '鳞':'鱗','鸟':'鳥','鸡':'雞','鸣':'鳴','鸥':'鷗','鸦':'鴉','鸭':'鴨','鸳':'鴛','鸽':'鴿',
+  '鸿':'鴻','鹅':'鵝','鹊':'鵲','鹏':'鵬','鹤':'鶴','鹦':'鸚','鹰':'鷹','麦':'麥','黄':'黃',
+  '黉':'黌','齐':'齊','齿':'齒','龄':'齡','龙':'龍','龚':'龔','龟':'龜',
 };
 
 function toTraditional(text){
@@ -3537,11 +3648,17 @@ function toTraditional(text){
   return result;
 }
 
+// 全域簡繁轉換（語音識別結果修正）— 統一使用完整對照表
+function s2t(text){ return toTraditional(text); }
+
 // ════════════════════════════════════════════════════════
 // 口說練習 SPEAKING PRACTICE  (no API key needed)
 // ════════════════════════════════════════════════════════
 let spRecognition=null, spIsRecording=false, spTranscript='';
 let spTTSRecognition=null, spTTSIsRecording=false;
+let spWantStop=false;       // 使用者是否按了「說完了」/停止
+let spCommitted='';         // 跨段（暫停後重啟）已確定的文字
+let spSession=[];           // 本次聆聽中已確定的句段
 
 function startSpeakingPractice(){
   spTranscript='';
@@ -3556,44 +3673,57 @@ function spSetTab(tab){
   document.getElementById('sp-tab-tts').classList.toggle('active', tab==='tts');
   document.getElementById('sp-panel-free').style.display = tab==='free' ? 'block':'none';
   document.getElementById('sp-panel-tts').style.display  = tab==='tts'  ? 'block':'none';
-  if(spIsRecording) spStopRecording();
+  if(spIsRecording) spFinish();
   if(spTTSIsRecording) spTTSStopRecording();
   spTTSStop();
 }
 
+// 把已確定的句段以逗號連接組成顯示文字
+function spBuildText(extraInterim){
+  const segs=[];
+  if(spCommitted) segs.push(spCommitted);
+  for(const s of spSession){ if(s) segs.push(s); }
+  let body=segs.join('，');
+  if(extraInterim){ body = body ? body+'，'+extraInterim : extraInterim; }
+  return toTraditional(body);
+}
+
 // ── TAB A: 自由錄音 ──
 function spToggleMic(){
-  if(spIsRecording){ spStopRecording(); return; }
+  if(spIsRecording){ spFinish(); return; }   // 錄音中再按 = 結束並評分
   spStartRecording();
 }
-function spStartRecording(){
 
-// 簡繁轉換（語音識別結果修正）
-function s2t(text){
-  const map={'爱':'愛','边':'邊','长':'長','车':'車','单':'單','对':'對','发':'發','关':'關',
-    '国':'國','过':'過','话':'話','见':'見','进':'進','开':'開','来':'來','联':'聯','两':'兩',
-    '马':'馬','门':'門','钱':'錢','气':'氣','请':'請','认':'認','时':'時','书':'書','说':'說',
-    '岁':'歲','体':'體','题':'題','听':'聽','头':'頭','问':'問','现':'現','线':'線','写':'寫',
-    '学':'學','语':'語','员':'員','运':'運','这':'這','钟':'鐘','实':'實','东':'東','带':'帶',
-    '帮':'幫','报':'報','让':'讓','给':'給','转':'轉','场':'場','难':'難','吗':'嗎','们':'們',
-    '药':'藥','医':'醫','应':'應','鱼':'魚','园':'園','针':'針','装':'裝','终':'終','证':'證',
-    '历':'歷','导':'導','办':'辦','图':'圖','档':'檔','总':'總','组':'組','间':'間','样':'樣',
-    '张':'張','种':'種','职':'職','钥':'鑰','护':'護','码':'碼','账':'帳','网':'網','号':'號',
-    '后':'後','华':'華','汉':'漢','机':'機','务':'務','队':'隊','须':'須','齿':'齒','检':'檢'};
-  return text.split('').map(c=>map[c]||c).join('');
-}
+// 開始一段聆聽（會在說話停頓後自動重啟，不會打斷學生）
+function spStartRecording(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){ alert('Chrome ブラウザを使用してください（音声認識対応）'); return; }
+  spWantStop=false;
+  spCommitted='';
+  spSession=[];
   spTranscript='';
+  spLaunchRecognition();
+  spIsRecording=true;
+  const btn=document.getElementById('sp-mic-btn');
+  btn.classList.add('recording'); btn.textContent='⏹️';
+  const fin=document.getElementById('sp-finish-btn'); if(fin) fin.classList.add('visible');
+  document.getElementById('sp-result-box').style.display='none';
+}
+
+// 內部：建立並啟動一個辨識 session（暫停後可重啟接續）
+function spLaunchRecognition(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   spRecognition=new SR();
-  spRecognition.lang='zh-TW'; spRecognition.continuous=false; spRecognition.interimResults=true;
+  spRecognition.lang='zh-TW'; spRecognition.continuous=true; spRecognition.interimResults=true;
   spRecognition.onresult=(e)=>{
-    let finalText='', interimText='';
+    const finals=[]; let interimText='';
     for(let i=0;i<e.results.length;i++){
-      if(e.results[i].isFinal) finalText+=s2t(e.results[i][0].transcript);
-      else interimText+=s2t(e.results[i][0].transcript);
+      const t=s2t(e.results[i][0].transcript);
+      if(e.results[i].isFinal){ if(t.trim()) finals.push(t.trim()); }
+      else interimText+=t;
     }
-    const display=toTraditional(finalText||interimText);
+    spSession=finals;   // 本 session 內的句段（逗號分隔）
+    const display=spBuildText(interimText.trim());
     const tb=document.getElementById('sp-transcript-text');
     const ph=document.getElementById('sp-transcript-placeholder');
     const box=document.getElementById('sp-transcript-box');
@@ -3601,29 +3731,51 @@ function s2t(text){
       tb.textContent=display; tb.style.display='block'; ph.style.display='none';
       box.classList.add('has-text');
     }
-    if(finalText) spTranscript=toTraditional(finalText);
   };
   spRecognition.onend=()=>{
-    spIsRecording=false;
-    const btn=document.getElementById('sp-mic-btn');
-    btn.classList.remove('recording'); btn.textContent='🎙️';
-    if(!spTranscript) spTranscript=toTraditional(document.getElementById('sp-transcript-text').textContent||'');
-    if(spTranscript) spShowFeedback(spTranscript);
-    document.getElementById('sp-clear-btn').classList.add('visible');
+    // 把本 session 已確定的句段併入 committed
+    for(const s of spSession){ if(s){ spCommitted = spCommitted ? spCommitted+'，'+s : s; } }
+    spSession=[];
+    if(spWantStop){
+      // 使用者已按「說完了」→ 收尾並給評語
+      spIsRecording=false;
+      const btn=document.getElementById('sp-mic-btn');
+      btn.classList.remove('recording'); btn.textContent='🎙️';
+      const fin=document.getElementById('sp-finish-btn'); if(fin) fin.classList.remove('visible');
+      let full=toTraditional(spCommitted.trim());
+      if(full && !/[。！？]$/.test(full)) full+='。';   // 句尾自動加句號
+      const tb=document.getElementById('sp-transcript-text');
+      if(full){ tb.textContent=full; tb.style.display='block';
+                document.getElementById('sp-transcript-placeholder').style.display='none';
+                document.getElementById('sp-transcript-box').classList.add('has-text'); }
+      spTranscript=full;
+      if(spTranscript) spShowFeedback(spTranscript);
+      document.getElementById('sp-clear-btn').classList.add('visible');
+    } else {
+      // 只是說話停頓造成的自動結束 → 立即重啟，繼續等學生說
+      try{ spLaunchRecognition(); }catch(err){ /* ignore */ }
+    }
   };
   spRecognition.onerror=(e)=>{
+    if(e.error==='no-speech'){ return; }  // 沒聲音不算錯，onend 會自動重啟
+    if(e.error==='aborted'){ return; }
     spIsRecording=false;
+    spWantStop=true;
     const btn=document.getElementById('sp-mic-btn');
     btn.classList.remove('recording'); btn.textContent='🎙️';
-    if(e.error!=='no-speech') alert('音声認識エラー：'+e.error);
+    const fin=document.getElementById('sp-finish-btn'); if(fin) fin.classList.remove('visible');
+    alert('音声認識エラー：'+e.error);
   };
   spRecognition.start();
-  spIsRecording=true;
-  const btn=document.getElementById('sp-mic-btn');
-  btn.classList.add('recording'); btn.textContent='⏹️';
-  document.getElementById('sp-result-box').style.display='none';
 }
-function spStopRecording(){ if(spRecognition) spRecognition.stop(); }
+
+// 使用者按「✅ 我說完了」或 ⏹️：停止並觸發評語
+function spFinish(){
+  if(!spIsRecording) return;
+  spWantStop=true;
+  if(spRecognition){ try{ spRecognition.stop(); }catch(e){} }
+}
+function spStopRecording(){ spFinish(); }
 
 function spShowFeedback(text){
   const heard=text.trim();
@@ -3650,7 +3802,8 @@ function spShowFeedback(text){
 }
 
 function spClear(){
-  if(spIsRecording) spStopRecording();
+  if(spIsRecording){ spWantStop=true; if(spRecognition){ try{ spRecognition.stop(); }catch(e){} } }
+  spIsRecording=false; spWantStop=false; spCommitted=''; spSession=[];
   spTranscript='';
   const tb=document.getElementById('sp-transcript-text');
   const ph=document.getElementById('sp-transcript-placeholder');
@@ -3659,11 +3812,14 @@ function spClear(){
   box.classList.remove('has-text');
   document.getElementById('sp-result-box').style.display='none';
   document.getElementById('sp-clear-btn').classList.remove('visible');
+  const fin=document.getElementById('sp-finish-btn'); if(fin) fin.classList.remove('visible');
   const btn=document.getElementById('sp-mic-btn');
   btn.classList.remove('recording'); btn.textContent='🎙️';
 }
 
 // ── TAB B: 朗讀器 TTS ──
+let spTTSMediaRec=null, spTTSChunks=[], spTTSAudioURL=null, spTTSStream=null, spTTSHeard='';
+
 function spTTSSpeak(){
   const text=document.getElementById('sp-tts-input').value.trim();
   if(!text){ alert('請先輸入中文文字！'); return; }
@@ -3681,14 +3837,19 @@ function spTTSToggleMic(){
 function spTTSStartRecording(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){ alert('Chrome ブラウザを使用してください'); return; }
+  spTTSHeard='';
+  document.getElementById('sp-tts-result-box').style.display='none';
+  document.getElementById('sp-tts-play-mine').style.display='none';
+  // 1) 語音辨識（轉文字）
   spTTSRecognition=new SR();
-  spTTSRecognition.lang='zh-TW'; spTTSRecognition.continuous=false; spTTSRecognition.interimResults=true;
+  spTTSRecognition.lang='zh-TW'; spTTSRecognition.continuous=true; spTTSRecognition.interimResults=true;
   spTTSRecognition.onresult=(e)=>{
     let finalText='', interimText='';
     for(let i=0;i<e.results.length;i++){
       if(e.results[i].isFinal) finalText+=s2t(e.results[i][0].transcript);
       else interimText+=s2t(e.results[i][0].transcript);
     }
+    if(finalText) spTTSHeard=toTraditional(finalText);
     const display=toTraditional(finalText||interimText);
     const tb=document.getElementById('sp-tts-transcript-text');
     const ph=document.getElementById('sp-tts-placeholder');
@@ -3703,8 +3864,11 @@ function spTTSStartRecording(){
     const btn=document.getElementById('sp-tts-mic-btn');
     btn.classList.remove('recording'); btn.textContent='🎙️';
     document.getElementById('sp-tts-clear-btn').classList.add('visible');
+    if(!spTTSHeard) spTTSHeard=toTraditional(document.getElementById('sp-tts-transcript-text').textContent||'');
+    spTTSShowFeedback();
   };
-  spTTSRecognition.onerror=()=>{
+  spTTSRecognition.onerror=(e)=>{
+    if(e.error==='no-speech'||e.error==='aborted') return;
     spTTSIsRecording=false;
     document.getElementById('sp-tts-mic-btn').classList.remove('recording');
     document.getElementById('sp-tts-mic-btn').textContent='🎙️';
@@ -3713,10 +3877,82 @@ function spTTSStartRecording(){
   spTTSIsRecording=true;
   const btn=document.getElementById('sp-tts-mic-btn');
   btn.classList.add('recording'); btn.textContent='⏹️';
+  // 2) 同步用 MediaRecorder 錄下真實聲音（可回放比較）
+  if(navigator.mediaDevices && window.MediaRecorder){
+    navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+      spTTSStream=stream;
+      spTTSChunks=[];
+      try{
+        spTTSMediaRec=new MediaRecorder(stream);
+        spTTSMediaRec.ondataavailable=ev=>{ if(ev.data.size>0) spTTSChunks.push(ev.data); };
+        spTTSMediaRec.onstop=()=>{
+          if(spTTSAudioURL){ URL.revokeObjectURL(spTTSAudioURL); }
+          if(spTTSChunks.length){
+            const blob=new Blob(spTTSChunks,{type:spTTSChunks[0].type||'audio/webm'});
+            spTTSAudioURL=URL.createObjectURL(blob);
+            document.getElementById('sp-tts-play-mine').style.display='inline-block';
+          }
+          if(spTTSStream){ spTTSStream.getTracks().forEach(t=>t.stop()); spTTSStream=null; }
+        };
+        spTTSMediaRec.start();
+      }catch(err){ /* 錄音不支援就只做辨識 */ }
+    }).catch(()=>{ /* 使用者拒絕麥克風或不支援，略過回放功能 */ });
+  }
 }
-function spTTSStopRecording(){ if(spTTSRecognition) spTTSRecognition.stop(); }
+function spTTSStopRecording(){
+  if(spTTSRecognition){ try{ spTTSRecognition.stop(); }catch(e){} }
+  if(spTTSMediaRec && spTTSMediaRec.state!=='inactive'){ try{ spTTSMediaRec.stop(); }catch(e){} }
+}
+function spTTSPlayMine(){
+  if(spTTSAudioURL){ const a=new Audio(spTTSAudioURL); a.play(); }
+}
+
+// 比對目標文字與聽到的，給鼓勵 + 具體建議
+function spTTSShowFeedback(){
+  const heard=(spTTSHeard||'').trim();
+  document.getElementById('sp-tts-play-ai').style.display='inline-block';
+  const box=document.getElementById('sp-tts-result-box');
+  document.getElementById('sp-tts-heard').textContent = heard || '（沒有聽到聲音）';
+  const clean=s=>(s||'').replace(/[，。！？、,.!?\s「」『』：；…—～]/g,'');
+  const target=clean(document.getElementById('sp-tts-input').value);
+  const said=clean(heard);
+  let msg='';
+  if(!said){
+    msg='沒有聽到聲音，靠近麥克風大聲一點，再試一次！😊';
+  } else if(!target){
+    // 沒有目標文字，只能給一般鼓勵
+    msg = said.length>=4
+      ? '念得很流暢！🎉 可以在上面貼一段課文，AI 就能告訴你哪幾個字要再練習。'
+      : '有聽到囉！多念幾個字試試看，AI 會幫你比對。💪';
+  } else {
+    // 找出目標裡、學生沒念對的字（聽到的字串中沒出現）
+    const saidSet=new Set(said.split(''));
+    const missing=[];
+    for(const ch of target){ if(!saidSet.has(ch) && !missing.includes(ch)) missing.push(ch); }
+    const matched=target.length-missing.length;
+    const ratio=target.length? matched/target.length : 0;
+    const miss=missing.slice(0,5).join('、');
+    if(ratio>=0.85){
+      msg='很棒！👏 AI 幾乎全部都聽清楚了，發音很標準！';
+      if(missing.length) msg+=`只有「${miss}」可以再唸清楚一點點，繼續保持！🎉`;
+      else msg+=' 完全正確，太厲害了！🎉';
+    } else if(ratio>=0.5){
+      msg=`不錯喔！👍 大部分都對了。「${miss}」這幾個字 AI 聽得不太清楚，`;
+      msg+='可以按「🔁 聽我的錄音」和「🔊 再聽 AI」比較看看，注意聲調有沒有念對。💪';
+    } else {
+      msg='加油！這段有點難。😄 先按「🔊 再聽 AI」多聽幾次，';
+      if(miss) msg+=`特別注意「${miss}」的發音和聲調，`;
+      msg+='一個字一個字慢慢念，再用「🔁 聽我的錄音」對照，多練幾次一定會進步！';
+    }
+  }
+  document.getElementById('sp-tts-feedback-msg').textContent=msg;
+  box.style.display='block';
+}
+
 function spTTSClear(){
   if(spTTSIsRecording) spTTSStopRecording();
+  if(spTTSAudioURL){ URL.revokeObjectURL(spTTSAudioURL); spTTSAudioURL=null; }
+  spTTSChunks=[]; spTTSHeard='';
   const tb=document.getElementById('sp-tts-transcript-text');
   const ph=document.getElementById('sp-tts-placeholder');
   const box=document.getElementById('sp-tts-transcript-box');
@@ -3725,6 +3961,9 @@ function spTTSClear(){
   document.getElementById('sp-tts-clear-btn').classList.remove('visible');
   document.getElementById('sp-tts-mic-btn').classList.remove('recording');
   document.getElementById('sp-tts-mic-btn').textContent='🎙️';
+  document.getElementById('sp-tts-result-box').style.display='none';
+  document.getElementById('sp-tts-play-mine').style.display='none';
+  document.getElementById('sp-tts-play-ai').style.display='none';
 }
 
 // ════════════════════════════════════════════════════════
