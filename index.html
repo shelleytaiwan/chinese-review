@@ -457,6 +457,26 @@ button.btns2:hover{background:#0f3460}
 /* 詞語跑馬燈計數/標籤 */
 #vm-counter, #vm-lesson-tag{ font-size:20px !important; }
 
+/* 與 AI 自由對話 */
+#ai-chat-body{ max-width:min(92vw,820px) !important; align-items:stretch !important; }
+.ai-level-btn{ background:var(--surface2); border:2px solid var(--border); color:var(--text);
+  border-radius:18px; padding:24px 44px; font-size:28px; font-weight:800; line-height:1.4;
+  cursor:pointer; min-width:210px; transition:all .15s; font-family:inherit; }
+.ai-level-btn span{ font-size:15px; color:var(--text-mid); font-weight:500; }
+.ai-level-btn:hover{ border-color:var(--blue); }
+.ai-level-btn.selected{ border-color:var(--gold); background:var(--gold-glow); color:var(--gold);
+  box-shadow:0 0 0 3px rgba(212,175,55,.22); }
+.ai-level-btn.selected span{ color:var(--gold); }
+#ai-prompt-box{ width:100%; min-height:210px; font-size:19px; line-height:1.85; padding:20px 22px;
+  border-radius:16px; border:2px solid var(--border); background:var(--surface2); color:var(--text);
+  resize:vertical; font-family:inherit; }
+#ai-prompt-box:focus{ outline:none; border-color:var(--gold); }
+.ai-go-btn{ font-size:20px; font-weight:800; padding:16px 36px; border-radius:40px; cursor:pointer;
+  border:none; font-family:inherit; }
+.ai-go-copy{ background:var(--surface2); border:2px solid var(--gold); color:var(--gold); }
+.ai-go-open{ background:linear-gradient(180deg,#5b9cff,var(--blue)); color:#fff; box-shadow:0 4px 0 #2a5bb0; }
+.ai-go-open:active{ transform:translateY(2px); }
+
 </style>
 
 <style>
@@ -3620,6 +3640,49 @@ const CL_MM_ROUNDS = [
 // 課堂用語 NAVIGATION
 // ════════════════════════════════════════════════════════
 function openCLHome(){ showScreen('cl-home'); }
+
+// ===== 與 AI 自由對話（連出去 claude.ai 練口說） =====
+const AI_PROMPTS = {
+  beginner: '你是有耐心的華語老師。請只用 HSK 1～3 級的詞彙、放慢語速跟我對話。我是零起點或初級學生，發音和聲調會出錯，請不要糾正每個錯誤，只要聽懂、用簡單的話回我，並把句子保持在五個字以內。如果我卡住，請在打字區打出 keywords，除非我說「日本語」，否則不要翻譯日文。\n\n開頭說：你好，請說。',
+  inter: '你是有耐心的華語老師。請只用 HSK 1～6 級的詞彙和語法對話。如果我卡住，請在打字區打出 keywords，除非我說「日本語」，否則不要翻譯日文。\n\n開頭說：你好，你今天過得怎麼樣？或今天忙嗎之類的問候語。'
+};
+let aiLevel = null;
+function openAIChat(){ showScreen('ai-chat-screen'); }
+function aiPickLevel(lv){
+  aiLevel = lv;
+  document.getElementById('ai-prompt-box').value = AI_PROMPTS[lv];
+  document.getElementById('ai-lv-beginner').classList.toggle('selected', lv==='beginner');
+  document.getElementById('ai-lv-inter').classList.toggle('selected', lv==='inter');
+  document.getElementById('ai-copy-tip').textContent = '';
+}
+function aiTryCopy(text){
+  let ok = false;
+  try{
+    const box = document.getElementById('ai-prompt-box');
+    box.focus(); box.select(); box.setSelectionRange(0, 999999);
+    ok = document.execCommand('copy');
+  }catch(e){}
+  try{ if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text); ok = true; } }catch(e){}
+  return ok;
+}
+function aiCopyPrompt(){
+  const box = document.getElementById('ai-prompt-box');
+  const tip = document.getElementById('ai-copy-tip');
+  if(!box.value.trim()){ tip.style.color='var(--red)'; tip.textContent='請先選擇「初級」或「中級」'; return; }
+  aiTryCopy(box.value);
+  tip.style.color='var(--green)';
+  tip.textContent='✅ 已複製設定，貼到 AI 對話頁送出即可';
+}
+function aiOpenChat(){
+  const box = document.getElementById('ai-prompt-box');
+  const tip = document.getElementById('ai-copy-tip');
+  if(!box.value.trim()){ tip.style.color='var(--red)'; tip.textContent='請先選擇「初級」或「中級」'; return; }
+  aiTryCopy(box.value);
+  const url = 'https://chatgpt.com/?q=' + encodeURIComponent(box.value);
+  window.open(url, '_blank');
+  tip.style.color='var(--green)';
+  tip.textContent='已開啟 ChatGPT。若沒有自動帶入，請貼上（已複製）後送出，再開語音模式 🎧 用說的聊天。';
+}
 function openSPHome(){ startSpeakingPractice(); }
 function backToCLHome(){ clearInterval(clMMInterval); showScreen('cl-home'); }
 
@@ -4585,6 +4648,13 @@ document.addEventListener('DOMContentLoaded', function(){
       document.getElementById('typing-practice-screen').classList.add('active');
     };
     grid.appendChild(card);
+
+    // 與 AI 自由對話 card（放在中文打字練習後面）
+    const aiCard = document.createElement('div');
+    aiCard.className = 'lesson-card pinyin-card';
+    aiCard.innerHTML = '<div class="d-num" style="color:var(--blue-light)">💬</div><div class="d-title" style="color:var(--text);font-weight:700">與 AI 自由對話<br><span style="font-size:12px;color:var(--text-muted)">初級・中級　口說對話</span></div>';
+    aiCard.onclick = function(){ openAIChat(); };
+    grid.appendChild(aiCard);
   }
 
   // 動態量測頂部標題列高度，避免複習各畫面被標題遮住
@@ -4630,6 +4700,39 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 <!-- 總複習－句子重組 -->
+<!-- 與 AI 自由對話 -->
+<div class="screen" id="ai-chat-screen">
+  <div class="game-header">
+    <button class="back-btn" onclick="showPortal()">←</button>
+    <span class="game-title" style="color:var(--gold)">💬 與 AI 自由對話</span>
+    <div style="flex:1"></div>
+  </div>
+  <div class="game-body" id="ai-chat-body">
+    <p style="font-size:22px;line-height:1.8;color:var(--text);text-align:center;margin-bottom:8px">選擇程度，開始用「<b style="color:var(--gold)">說</b>」的跟 ChatGPT 老師練習對話</p>
+    <p style="font-size:16px;line-height:1.7;color:var(--text-mid);text-align:center;margin-bottom:26px">送出設定後，打開 ChatGPT 的語音模式 🎧，就能純用「說」的聊天，不必打字</p>
+
+    <div style="display:flex;gap:18px;justify-content:center;margin-bottom:26px;flex-wrap:wrap">
+      <button id="ai-lv-beginner" class="ai-level-btn" onclick="aiPickLevel('beginner')">初級<br><span>零起點・HSK 1–3</span></button>
+      <button id="ai-lv-inter" class="ai-level-btn" onclick="aiPickLevel('inter')">中級<br><span>HSK 1–6</span></button>
+    </div>
+
+    <textarea id="ai-prompt-box" placeholder="先選上面的程度，這裡會出現對話設定。&#10;你也可以在這裡加上想聊的主題或單字（keyword），例如：我想聊旅行。"></textarea>
+
+    <div style="display:flex;gap:16px;justify-content:center;margin-top:22px;flex-wrap:wrap">
+      <button onclick="aiCopyPrompt()" class="ai-go-btn ai-go-copy">📋 複製設定</button>
+      <button onclick="aiOpenChat()" class="ai-go-btn ai-go-open">🚀 開啟 ChatGPT</button>
+    </div>
+    <div id="ai-copy-tip" style="text-align:center;font-size:16px;color:var(--green);min-height:26px;margin-top:16px"></div>
+
+    <ol style="max-width:560px;margin:14px auto 0;font-size:17px;line-height:2;color:var(--text-mid);padding-left:24px">
+      <li>選「初級」或「中級」</li>
+      <li>按「🚀 開啟 ChatGPT」</li>
+      <li>若沒有自動帶入設定，貼上（已複製）後送出</li>
+      <li>點 ChatGPT 的語音模式 🎧，用說的跟 AI 老師對話！</li>
+    </ol>
+  </div>
+</div>
+
 <div class="screen" id="review-sentence">
   <div class="game-header">
     <button class="back-btn" onclick="showScreen('portal')">←</button>
