@@ -393,6 +393,14 @@ button.btns2:hover{background:#0f3460}
 .fc-counter{ font-size:17px !important; }
 .cl-fc-meaning{ font-size:28px !important; }
 
+/* 對話練習卡：橫式寬卡（長句橫向排列，不再擠成直的一行一字） */
+#dialogue .game-body{ max-width:min(94vw,1040px) !important; }
+#dialogue .fc-wrap{ width:100% !important; max-width:min(94vw,1000px) !important; margin-left:auto !important; margin-right:auto !important; }
+#df-card{ width:100% !important; height:300px !important; }
+#df-card .fc-front, #df-card .fc-back{ padding:26px 34px !important; overflow:auto !important; }
+#df-q{ font-size:38px !important; line-height:1.6 !important; white-space:pre-line !important; }
+#df-ans, #df-ans2{ font-size:40px !important; line-height:1.5 !important; }
+
 /* 配對遊戲（需整頁可見，故適度放大不溢出） */
 .mm-grid{ gap:18px !important; }
 .mm-tile-inner{ font-size:32px !important; }
@@ -1096,14 +1104,12 @@ const LESSONS = [
     {char:'謝謝', correct:'xiè xie',   opts:['xiē xie','xié xie','xiě xie','xiè xie']},
   ],
   dialogueData:[
-    {prompt:'我說「謝謝！」\n你說？',    correct:'不客氣！',       opts:['沒關係！','不客氣！','再見！','你好！'],         explain:'謝謝 → 不客氣／不謝／不用客氣'},
-    {prompt:'我說「對不起！」\n你說？',  correct:'沒關係！',       opts:['不客氣！','謝謝！','沒關係！','再見！'],         explain:'對不起 → 沒關係／不會哦'},
-    {prompt:'我說「再見！」\n你說？',    correct:'再見！',          opts:['你好！','謝謝！','對不起！','再見！'],           explain:'再見 → 再見／明天見'},
-    {prompt:'我說「不好意思！」\n你說？',correct:'沒關係！',       opts:['謝謝！','沒關係！','不客氣！','再見！'],         explain:'不好意思 → 沒關係／不會哦'},
-    {prompt:'我說「你好！」\n你說？',    correct:'你好！',          opts:['再見！','謝謝！','你好！','對不起！'],           explain:'你好 → 你好'},
-    {prompt:'學生說「老師好！」\n老師說？',correct:'同學好！',     opts:['謝謝！','同學好！','再見！','不客氣！'],         explain:'老師好 → 同學好'},
-    {prompt:'這是什麼？\n（指著中文字）', correct:'這叫「中文」。', opts:['這叫「中文」。','這是日文。','不知道。','請給我例句。'],explain:'這是什麼？→ 這叫～。'},
-    {prompt:'「謝謝」怎麼用？\n請給我例句。',correct:'謝謝你！',   opts:['再見！','謝謝你！','對不起！','沒關係！'],       explain:'請給我例句 → 謝謝你！謝謝老師！'},
+    {prompt:'我說「謝謝！」\n你說？',     answer:'不客氣！', answer2:'不會！'},
+    {prompt:'我說「對不起！」\n你說？',   answer:'沒關係！', answer2:'不會！'},
+    {prompt:'我說「再見！」\n你說？',     answer:'再見！'},
+    {prompt:'我說「不好意思」\n你說？',   answer:'不會！'},
+    {prompt:'我說「你好」\n你說？',       answer:'你好！'},
+    {prompt:'學生說「老師好」\n老師說？', answer:'同學好！'},
   ],
   sentenceData:[
     {prompt:'自我介紹',  answer:'大家好！我姓張，請叫我張老師。',
