@@ -8,6 +8,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
+  --header-h:96px;
   --bg:#0f1521;--surface:#1a2235;--surface2:#222d42;--border:#2d3d5a;
   --blue:#4a7fd4;--blue-light:#6b9be8;--blue-glow:rgba(74,127,212,0.3);
   --green:#3db87a;--green-glow:rgba(61,184,122,0.25);
@@ -23,7 +24,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .site-sub{font-size:12px;color:var(--text-muted)}
 
 /* ── SCREENS ── */
-.screen{display:none;min-height:calc(100vh - 57px);flex-direction:column}
+.screen{display:none;min-height:calc(100vh - var(--header-h));flex-direction:column}
 .screen.active{display:flex}
 
 /* ── PORTAL (課次選單) ── */
@@ -59,7 +60,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .mode-desc{display:none}
 
 /* ── GAME HEADER ── */
-.game-header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:57px;z-index:50}
+.game-header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:var(--header-h);z-index:50}
 .back-btn{background:none;border:none;color:var(--text-mid);font-size:22px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:all .15s}
 .back-btn:hover{color:var(--text);background:var(--surface2)}
 .game-title{font-size:17px;font-weight:500;flex:1}
@@ -201,10 +202,23 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 @keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
 .pop{animation:pop .25s cubic-bezier(.34,1.56,.64,1)}
 
-/* ── 課堂用語 FLASHCARD ── */
-.cl-fc-char{font-family:'Noto Serif TC',serif;font-size:38px;font-weight:700;color:var(--text);margin-bottom:8px;text-align:center;line-height:1.3}
-.cl-fc-pinyin{font-size:16px;color:var(--blue-light);margin-bottom:6px;letter-spacing:1px;text-align:center}
-.cl-fc-meaning{font-size:20px;color:var(--text-mid);text-align:center}
+/* ── 課堂用語 FLASHCARD（放大版） ── */
+.cl-fc-char{font-family:'Noto Serif TC',serif;font-size:68px;font-weight:700;color:var(--text);margin-bottom:14px;text-align:center;line-height:1.3}
+.cl-fc-pinyin{font-size:26px;color:var(--blue-light);margin-bottom:12px;letter-spacing:1px;text-align:center}
+.cl-fc-meaning{font-size:28px;color:var(--text-mid);text-align:center;line-height:1.4}
+/* 課堂用語字卡放大（僅限本單元，不影響其他課次的字卡/對話） */
+#cl-flashcards .fc-counter{font-size:15px;margin-bottom:20px}
+#cl-flashcards .fc-wrap{margin-bottom:28px}
+#cl-flashcards .fc-card{height:520px}
+#cl-flashcards .fc-front,#cl-flashcards .fc-back{border-radius:28px;padding:32px 28px;box-shadow:0 12px 30px rgba(0,0,0,0.3)}
+#cl-flashcards .fc-hint{font-size:16px;margin-bottom:20px}
+#cl-flashcards .fc-ruby-ch{font-size:68px}
+#cl-flashcards .fc-ruby-py{font-size:24px;letter-spacing:0.8px;min-width:1.2em}
+#cl-flashcards .fc-ruby-punct{font-size:58px;padding-top:6px}
+#cl-flashcards .fc-ruby-pair{margin:0 5px}
+#cl-flashcards .fc-sound-btn{width:70px;height:70px;font-size:32px}
+#cl-flashcards .fc-controls{gap:16px;margin-top:10px}
+#cl-flashcards .fc-btn{padding:14px 28px;border-radius:16px;font-size:18px}
 
 /* ── 口說練習 SPEAKING PRACTICE ── */
 .sp-phrase-box{background:var(--surface2);border:2px solid var(--blue);border-radius:18px;padding:28px 20px;text-align:center;margin-bottom:20px}
@@ -321,6 +335,127 @@ button.btns2:hover{background:#0f3460}
 /* Streak flash */
 .correct-flash{animation:flash .25s ease-out}
 @keyframes flash{0%{background:#0d2a1a}100%{background:#0a0a1a}}
+
+/* ═══════════════════════════════════════════════════════
+   放大顯示：填滿畫面（保留邊距），讓坐在教室後排的學生也看得清楚。
+   例外（維持原樣、不放大）：漢語拼音表 #pinyin-chart、
+   短文跟讀 #shadowing、中文打字練習 #app / #typing-practice-screen
+   ═══════════════════════════════════════════════════════ */
+:root{ --content-wide: min(94vw, 1500px); --content-mid: min(90vw, 1040px); }
+
+/* 頂部標題列維持原大小（避免變高造成下方對位誤差） */
+
+/* 課次選單（主頁） */
+#portal{ padding:40px 3vw !important; }
+.portal-heading h2{ font-size:34px !important; }
+.portal-heading p{ font-size:18px !important; }
+.lessons-grid{ max-width:var(--content-wide) !important;
+  grid-template-columns:repeat(auto-fill,minmax(210px,1fr)) !important; gap:20px !important; }
+.lesson-card{ padding:30px 18px !important; }
+.lesson-card .d-num{ font-size:22px !important; margin-bottom:10px !important; }
+.lesson-card .d-title{ font-size:21px !important; line-height:1.5 !important; }
+.lesson-card .d-title span{ font-size:15px !important; }
+
+/* 單元主頁 */
+#lesson-home{ padding:36px 3vw !important; }
+.lesson-home-header, .lesson-info, .modes-grid{ max-width:var(--content-mid) !important; }
+.lesson-title{ font-size:40px !important; }
+.lesson-info{ font-size:20px !important; padding:24px !important; }
+.modes-grid{ gap:22px !important; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)) !important; }
+.mode-btn{ padding:36px 20px !important; }
+.mode-icon{ font-size:52px !important; margin-bottom:14px !important; }
+.mode-name{ font-size:26px !important; }
+
+/* 共用遊戲區 + 抬頭 */
+/* 標題列不再黏頂：改成隨內容一起捲動，避免放大後題目被標題列蓋住 */
+.game-header{ position:static !important; top:auto !important; margin-bottom:6px !important; }
+/* 內容區頂部多留白，整體往下移幾行，和標題列之間留出空白 */
+.game-body{ max-width:var(--content-mid) !important; padding:40px 4vw 32px !important; }
+#memory .game-body, #cl-memory .game-body{ max-width:min(92vw,880px) !important; }
+.game-title{ font-size:24px !important; }
+.score-badge{ font-size:18px !important; padding:7px 16px !important; }
+.q-num, .fc-counter, .nd-counter{ margin-top:6px !important; }
+/* 複習各頁（固定式）同樣往下留白 */
+#pinyin-quiz-screen, #listen-num-screen, #oral-quiz-screen{ padding-top:34px !important; }
+#vocab-marquee-screen #vm-menu{ padding-top:40px !important; }
+
+/* 字卡 */
+.fc-card{ height:min(58vh,500px) !important; }
+.fc-ruby-ch{ font-size:60px !important; }
+.fc-ruby-py{ font-size:24px !important; }
+.fc-ruby-punct{ font-size:50px !important; }
+.fc-char{ font-size:74px !important; }
+.fc-pinyin{ font-size:26px !important; }
+.fc-meaning{ font-size:24px !important; }
+.fc-example{ font-size:30px !important; }
+.fc-sound-btn{ width:72px !important; height:72px !important; font-size:34px !important; }
+.fc-btn{ font-size:20px !important; padding:16px 34px !important; }
+.fc-counter{ font-size:17px !important; }
+.cl-fc-meaning{ font-size:28px !important; }
+
+/* 配對遊戲（需整頁可見，故適度放大不溢出） */
+.mm-grid{ gap:18px !important; }
+.mm-tile-inner{ font-size:32px !important; }
+.mm-stats{ font-size:18px !important; }
+
+/* 聲調 */
+.tq-char{ font-size:88px !important; }
+.tq-btn{ font-size:30px !important; padding:34px 12px !important; }
+.tq-submit{ font-size:21px !important; padding:18px !important; }
+
+/* 數字聽寫卡（在聲調頁內） */
+.nd-question{ font-size:30px !important; }
+.nd-answer{ font-size:36px !important; }
+.nd-pinyin{ font-size:26px !important; }
+.nd-tab{ font-size:18px !important; padding:14px !important; }
+.nd-btn{ font-size:18px !important; padding:14px 22px !important; }
+
+/* 對話 */
+.df-prompt{ font-size:28px !important; }
+.df-choice{ font-size:28px !important; padding:28px 22px !important; }
+.df-feedback{ font-size:18px !important; }
+
+/* 造句 */
+.s2-prompt{ font-size:26px !important; }
+.s2-tile .tile-cn, .s2-bank-tile .tile-cn{ font-size:28px !important; }
+.s2-tile .tile-py, .s2-bank-tile .tile-py{ font-size:15px !important; }
+.s2-check, .s2-clear{ font-size:19px !important; padding:15px 28px !important; }
+.s2-feedback{ font-size:18px !important; }
+
+/* 結果頁 */
+.result-circle{ width:160px !important; height:160px !important; }
+.result-score{ font-size:50px !important; }
+.result-msg{ font-size:28px !important; }
+.result-sub{ font-size:18px !important; }
+.result-btns{ max-width:360px !important; }
+.result-retry, .result-home{ font-size:20px !important; padding:18px !important; }
+
+/* 口說練習 */
+#speaking-practice .game-body{ max-width:min(92vw,820px) !important; }
+.sp-mic-btn{ width:96px !important; height:96px !important; font-size:42px !important; }
+.sp-transcript-box{ font-size:22px !important; min-height:80px !important; }
+.sp-transcript-placeholder{ font-size:20px !important; }
+.sp-finish-btn{ font-size:20px !important; padding:14px 40px !important; }
+#sp-panel-free > p, #sp-panel-tts > p{ font-size:17px !important; }
+
+/* 複習頁卡片加寬（選拼音680 / 聽數字560） */
+[style*="max-width:680px"]{ max-width:min(92vw,900px) !important; padding:48px 4vw !important; }
+[style*="max-width:560px"]{ max-width:min(92vw,860px) !important; }
+#pinyin-quiz-screen h2, #listen-num-screen h2{ font-size:2.2rem !important; }
+#pq-options > div{ min-width:220px !important; }
+#pq-options > div > div{ font-size:1.9rem !important; }
+#pq-speaker-btn, #ln-speaker-btn{ font-size:1.7rem !important; padding:20px 48px !important; }
+#pq-feedback, #ln-feedback{ font-size:1.5rem !important; }
+#ln-input{ font-size:1.6rem !important; }
+
+/* 快速問答卡加大 */
+#oral-quiz-screen [style*="min(420px,92vw)"]{ width:min(620px,94vw) !important; }
+#oq-q-text{ font-size:44px !important; }
+#oq-q-number{ font-size:28px !important; }
+#oq-counter{ font-size:24px !important; }
+
+/* 詞語跑馬燈計數/標籤 */
+#vm-counter, #vm-lesson-tag{ font-size:20px !important; }
 
 </style>
 
@@ -573,7 +708,7 @@ button.btns2:hover{background:#0f3460}
           <div id="cl-ruby-front"></div>
         </div>
         <div class="fc-back">
-          <div class="cl-fc-char" id="cl-fc-char-back" style="font-size:30px;color:var(--blue-light)"></div>
+          <div class="cl-fc-char" id="cl-fc-char-back" style="font-size:56px;color:var(--blue-light)"></div>
           <div class="cl-fc-meaning" id="cl-fc-meaning"></div>
         </div>
       </div>
@@ -638,6 +773,9 @@ button.btns2:hover{background:#0f3460}
       <div style="text-align:center;margin-bottom:8px">
         <button class="sp-finish-btn" id="sp-finish-btn" onclick="spFinish()">✅ 我說完了</button>
       </div>
+      <div style="text-align:center;margin-bottom:14px">
+        <button id="sp-play-mine" onclick="spPlayMine()" style="display:none;background:var(--gold-glow);border:1px solid var(--gold);color:var(--gold);border-radius:24px;padding:12px 30px;font-size:18px;font-weight:700;cursor:pointer">▶️ 播放我的錄音</button>
+      </div>
       <div style="text-align:center;margin-bottom:16px">
         <button class="sp-clear-btn" id="sp-clear-btn" onclick="spClear()">🗑 清除，重新錄音</button>
       </div>
@@ -698,7 +836,7 @@ button.btns2:hover{background:#0f3460}
       <div class="lesson-badge" onclick="showPortal()">← 所有課次</div>
       <h1 class="lesson-title">課堂用語</h1>
     </div>
-    <div class="lesson-info">課堂常用詞語 24 句　｜　詞語卡・配對遊戲（3頁）</div>
+    <div class="lesson-info">課堂常用詞語 35 句　｜　詞語卡・配對遊戲（5頁）</div>
     <div class="modes-grid" style="max-width:460px;width:100%">
       <div class="mode-btn" onclick="startCLFlashcards()"><div class="mode-icon">🃏</div><div class="mode-name">詞語卡</div></div>
       <div class="mode-btn" onclick="startCLMemory()"><div class="mode-icon">🧩</div><div class="mode-name">配對遊戲</div></div>
@@ -3432,37 +3570,50 @@ document.addEventListener('click',e=>{
 // 課堂用語 DATA
 // ════════════════════════════════════════════════════════
 const CL_VOCAB = [
-  {char:'跟我念',          pinyin:'gēn wǒ niàn',              meaning:'私のあとに読んでください'},
-  {char:'有問題嗎？',      pinyin:'yǒu wèn tí ma？',          meaning:'質問はありますか？'},
-  {char:'我有問題',        pinyin:'wǒ yǒu wèn tí',            meaning:'質問があります'},
-  {char:'○○是什麼意思？', pinyin:'○○ shì shén me yì si？',   meaning:'○○はどういう意味ですか？'},
-  {char:'○○的中文是什麼？',pinyin:'○○ de zhōng wén shì shén me？',meaning:'○○の中国語は何ですか？'},
-  {char:'問我',            pinyin:'wèn wǒ',                   meaning:'私に聞いて'},
-  {char:'問同學',          pinyin:'wèn tóng xué',             meaning:'クラスメートに聞いて'},
-  {char:'請再說一次',      pinyin:'qǐng zài shuō yī cì',      meaning:'もう一度言ってください'},
-  {char:'請說大聲一點',    pinyin:'qǐng shuō dà shēng yī diǎn',meaning:'大きい声で話してください'},
-  {char:'請說慢一點',      pinyin:'qǐng shuō màn yī diǎn',    meaning:'ゆっくり話してください'},
-  {char:'答對了！好棒！',  pinyin:'dá duì le！hǎo bàng！',    meaning:'正解！すごい！'},
-  {char:'不對，可惜！',    pinyin:'bú duì，kě xī！',          meaning:'違います、残念！'},
-  {char:'請坐下',          pinyin:'qǐng zuò xià',             meaning:'座ってください'},
-  {char:'請站起來',        pinyin:'qǐng zhàn qǐ lái',         meaning:'立ってください'},
-  {char:'舉手',            pinyin:'jǔ shǒu',                  meaning:'手を挙げる'},
-  {char:'輪流',            pinyin:'lún liú',                  meaning:'順番に'},
-  {char:'請到前面來',      pinyin:'qǐng dào qián miàn lái',   meaning:'前に来てください'},
-  {char:'請回座位',        pinyin:'qǐng huí zuò wèi',         meaning:'席に戻ってください'},
-  {char:'兩人一組',        pinyin:'liǎng rén yī zǔ',          meaning:'二人一組'},
-  {char:'分成一半',        pinyin:'fēn chéng yī bàn',         meaning:'半分に分ける'},
-  {char:'打開課本第～頁',  pinyin:'dǎ kāi kè běn dì～yè',     meaning:'教科書の〜ページを開いて'},
-  {char:'課本收起來',      pinyin:'kè běn shōu qǐ lái',       meaning:'教科書をしまって'},
-  {char:'請念',            pinyin:'qǐng niàn',                meaning:'読んでください'},
-  {char:'看講義（プリント）',pinyin:'kàn jiǎng yì',           meaning:'プリントを見て'},
+  {char:'跟我念', pinyin:'gēn wǒ niàn', meaning:'私のあとに読んでください'},
+  {char:'有問題嗎？', pinyin:'yǒu wèn tí ma？', meaning:'質問はありますか？'},
+  {char:'我有問題', pinyin:'wǒ yǒu wèn tí', meaning:'質問があります'},
+  {char:'○○是什麼意思？', pinyin:'○○ shì shén me yì si？', meaning:'○○はどういう意味ですか？'},
+  {char:'○○的中文是什麼？', pinyin:'○○ de zhōng wén shì shén me？', meaning:'○○の中国語は何ですか？'},
+  {char:'問我', pinyin:'wèn wǒ', meaning:'私に聞いて'},
+  {char:'問同學', pinyin:'wèn tóng xué', meaning:'クラスメートに聞いて'},
+  {char:'請再說一次', pinyin:'qǐng zài shuō yī cì', meaning:'もう一度言ってください'},
+  {char:'請說大聲一點', pinyin:'qǐng shuō dà shēng yī diǎn', meaning:'大きい声で話してください'},
+  {char:'請說慢一點', pinyin:'qǐng shuō màn yī diǎn', meaning:'ゆっくり話してください'},
+  {char:'答對了！好棒！', pinyin:'dá duì le！hǎo bàng！', meaning:'正解！すごい！'},
+  {char:'不對，可惜！', pinyin:'bú duì，kě xī！', meaning:'違います、残念！'},
+  {char:'請坐下', pinyin:'qǐng zuò xià', meaning:'座ってください'},
+  {char:'請站起來', pinyin:'qǐng zhàn qǐ lái', meaning:'立ってください'},
+  {char:'舉手', pinyin:'jǔ shǒu', meaning:'手を挙げる'},
+  {char:'輪流', pinyin:'lún liú', meaning:'順番に'},
+  {char:'請到前面來', pinyin:'qǐng dào qián miàn lái', meaning:'前に来てください'},
+  {char:'請回座位', pinyin:'qǐng huí zuò wèi', meaning:'席に戻ってください'},
+  {char:'兩人一組', pinyin:'liǎng rén yī zǔ', meaning:'二人一組'},
+  {char:'分成一半', pinyin:'fēn chéng yī bàn', meaning:'半分に分ける'},
+  {char:'打開課本第～頁', pinyin:'dǎ kāi kè běn dì～yè', meaning:'教科書の〜ページを開いて'},
+  {char:'課本收起來', pinyin:'kè běn shōu qǐ lái', meaning:'教科書をしまって'},
+  {char:'請念', pinyin:'qǐng niàn', meaning:'読んでください'},
+  {char:'看講義（プリント）', pinyin:'kàn jiǎng yì', meaning:'プリントを見て'},
+  {char:'懂了嗎？', pinyin:'dǒng le ma？', meaning:'分かりましたか？'},
+  {char:'懂了。', pinyin:'dǒng le.', meaning:'分かりました。'},
+  {char:'不懂。', pinyin:'bù dǒng.', meaning:'分かりません。'},
+  {char:'第＿頁', pinyin:'dì yè', meaning:'〜ページ', speakText:'第頁'},
+  {char:'請看我。', pinyin:'qǐng kàn wǒ.', meaning:'私を見てください。'},
+  {char:'聽我說。', pinyin:'tīng wǒ shuō.', meaning:'私の話を聞いてください。'},
+  {char:'跟我說。', pinyin:'gēn wǒ shuō.', meaning:'私のあとに言ってください。'},
+  {char:'請你說。', pinyin:'qǐng nǐ shuō.', meaning:'言ってみてください。'},
+  {char:'好了嗎？', pinyin:'hǎo le ma？', meaning:'準備できましたか？'},
+  {char:'好了。', pinyin:'hǎo le.', meaning:'準備できました。'},
+  {char:'很好。', pinyin:'hěn hǎo.', meaning:'とても良いです。'},
 ];
 
-// Split into 3 rounds for memory game (8 pairs each)
+// Split into 5 rounds for memory game (7 pairs each)
 const CL_MM_ROUNDS = [
-  CL_VOCAB.slice(0, 8),
-  CL_VOCAB.slice(8, 16),
-  CL_VOCAB.slice(16, 24),
+  CL_VOCAB.slice(0, 7),
+  CL_VOCAB.slice(7, 14),
+  CL_VOCAB.slice(14, 21),
+  CL_VOCAB.slice(21, 28),
+  CL_VOCAB.slice(28, 35),
 ];
 
 // ════════════════════════════════════════════════════════
@@ -3497,7 +3648,8 @@ function renderCLFC(){
 function clSpeakWord(){
   const btn=document.getElementById('cl-fc-sound-btn');
   btn.classList.add('playing');
-  speak(clFcList[clFcIdx].char.replace('○○',''));
+  const _v=clFcList[clFcIdx];
+  speak((_v.speakText||_v.char).replace(/○○/g,''));
   setTimeout(()=>btn.classList.remove('playing'),1400);
 }
 function clFlipCard(){ document.getElementById('cl-fc-card').classList.toggle('flipped') }
@@ -3518,7 +3670,7 @@ function renderCLMMRound(){
   clearInterval(clMMInterval);
   document.getElementById('cl-mm-next-round').style.display='none';
   const round = CL_MM_ROUNDS[clMMRound];
-  document.getElementById('cl-mm-round-label').textContent=`第 ${clMMRound+1} 頁 / 共 3 頁`;
+  document.getElementById('cl-mm-round-label').textContent=`第 ${clMMRound+1} 頁 / 共 ${CL_MM_ROUNDS.length} 頁`;
   document.getElementById('cl-mm-pairs').textContent=`配對：0 / ${round.length}`;
   document.getElementById('cl-mm-moves').textContent='步數：0';
   document.getElementById('cl-mm-score-badge').textContent='0 配對';
@@ -3714,6 +3866,9 @@ let spTTSRecognition=null, spTTSIsRecording=false;
 let spWantStop=false;       // 使用者是否按了「說完了」/停止
 let spCommitted='';         // 跨段（暫停後重啟）已確定的文字
 let spSession=[];           // 本次聆聽中已確定的句段
+let spHasSR=false;          // 本次錄音是否啟用語音辨識（Chrome 才有）
+let spFreeMediaRec=null, spFreeChunks=[], spFreeAudioURL=null, spFreeStream=null;
+const SP_IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent||'') || ((navigator.platform==='MacIntel') && navigator.maxTouchPoints>1);
 
 function startSpeakingPractice(){
   spTranscript='';
@@ -3751,18 +3906,56 @@ function spToggleMic(){
 
 // 開始一段聆聽（會在說話停頓後自動重啟，不會打斷學生）
 function spStartRecording(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){ alert('Chrome ブラウザを使用してください（音声認識対応）'); return; }
   spWantStop=false;
   spCommitted='';
   spSession=[];
   spTranscript='';
-  spLaunchRecognition();
+  document.getElementById('sp-result-box').style.display='none';
+  var pm=document.getElementById('sp-play-mine'); if(pm) pm.style.display='none';
+  // 1) 一律用 MediaRecorder 錄下聲音（含 iPad），結束後可回放
+  spStartFreeAudio();
+  // 2) 只有支援語音辨識的瀏覽器（電腦版 Chrome）才做文字辨識；iPad/Safari 跳過
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR && !SP_IS_IOS){ spHasSR=true; try{ spLaunchRecognition(); }catch(e){ spHasSR=false; } }
+  else { spHasSR=false; }
   spIsRecording=true;
   const btn=document.getElementById('sp-mic-btn');
   btn.classList.add('recording'); btn.textContent='⏹️';
   const fin=document.getElementById('sp-finish-btn'); if(fin) fin.classList.add('visible');
-  document.getElementById('sp-result-box').style.display='none';
+  // 顯示提示
+  const tb=document.getElementById('sp-transcript-text');
+  const ph=document.getElementById('sp-transcript-placeholder');
+  if(spHasSR){ ph.textContent='請開始說中文⋯'; }
+  else { ph.textContent='🔴 錄音中⋯說完按「我說完了」'; }
+  ph.style.display='block'; if(tb){ tb.style.display='none'; }
+}
+
+// 用 MediaRecorder 錄音（所有平台都可回放）
+function spStartFreeAudio(){
+  if(!(navigator.mediaDevices && window.MediaRecorder)) return;
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+    spFreeStream=stream; spFreeChunks=[];
+    try{
+      spFreeMediaRec=new MediaRecorder(stream);
+      spFreeMediaRec.ondataavailable=function(ev){ if(ev.data && ev.data.size>0) spFreeChunks.push(ev.data); };
+      spFreeMediaRec.onstop=function(){
+        if(spFreeAudioURL){ URL.revokeObjectURL(spFreeAudioURL); spFreeAudioURL=null; }
+        if(spFreeChunks.length){
+          var blob=new Blob(spFreeChunks,{type:spFreeChunks[0].type||'audio/mp4'});
+          spFreeAudioURL=URL.createObjectURL(blob);
+          var pm=document.getElementById('sp-play-mine'); if(pm) pm.style.display='inline-block';
+        }
+        if(spFreeStream){ spFreeStream.getTracks().forEach(function(t){t.stop();}); spFreeStream=null; }
+      };
+      spFreeMediaRec.start();
+    }catch(err){ /* 不支援錄音就略過回放 */ }
+  }).catch(function(){ /* 使用者拒絕或不支援麥克風 */ });
+}
+function spStopFreeAudio(){
+  if(spFreeMediaRec && spFreeMediaRec.state!=='inactive'){ try{ spFreeMediaRec.stop(); }catch(e){} }
+}
+function spPlayMine(){
+  if(spFreeAudioURL){ var a=new Audio(spFreeAudioURL); a.play(); }
 }
 
 // 內部：建立並啟動一個辨識 session（暫停後可重啟接續）
@@ -3829,6 +4022,20 @@ function spFinish(){
   if(!spIsRecording) return;
   spWantStop=true;
   if(spRecognition){ try{ spRecognition.stop(); }catch(e){} }
+  spStopFreeAudio();
+  if(!spHasSR){
+    // iPad / Safari：沒有文字辨識，靠錄音回放收尾
+    spIsRecording=false;
+    const btn=document.getElementById('sp-mic-btn'); btn.classList.remove('recording'); btn.textContent='🎙️';
+    const fin=document.getElementById('sp-finish-btn'); if(fin) fin.classList.remove('visible');
+    document.getElementById('sp-clear-btn').classList.add('visible');
+    const ph=document.getElementById('sp-transcript-placeholder');
+    if(ph){ ph.textContent='錄好了！按 ▶️ 播放我的錄音聽聽看。'; ph.style.display='block'; }
+    const box=document.getElementById('sp-result-box');
+    document.getElementById('sp-heard').textContent='🎧 你的錄音已完成';
+    document.getElementById('sp-feedback-msg').textContent='按 ▶️ 播放我的錄音，聽聽自己的發音！（想要 AI 文字評語，請用電腦版 Chrome 開啟）😊';
+    box.style.display='block';
+  }
 }
 function spStopRecording(){ spFinish(); }
 
@@ -3858,12 +4065,16 @@ function spShowFeedback(text){
 
 function spClear(){
   if(spIsRecording){ spWantStop=true; if(spRecognition){ try{ spRecognition.stop(); }catch(e){} } }
+  spStopFreeAudio();
+  if(spFreeAudioURL){ URL.revokeObjectURL(spFreeAudioURL); spFreeAudioURL=null; }
+  var pm=document.getElementById('sp-play-mine'); if(pm) pm.style.display='none';
   spIsRecording=false; spWantStop=false; spCommitted=''; spSession=[];
   spTranscript='';
   const tb=document.getElementById('sp-transcript-text');
   const ph=document.getElementById('sp-transcript-placeholder');
   const box=document.getElementById('sp-transcript-box');
-  tb.textContent=''; tb.style.display='none'; ph.style.display='block';
+  tb.textContent=''; tb.style.display='none';
+  ph.textContent='按 🎙️ 開始說中文⋯'; ph.style.display='block';
   box.classList.remove('has-text');
   document.getElementById('sp-result-box').style.display='none';
   document.getElementById('sp-clear-btn').classList.remove('visible');
@@ -4375,6 +4586,18 @@ document.addEventListener('DOMContentLoaded', function(){
     };
     grid.appendChild(card);
   }
+
+  // 動態量測頂部標題列高度，避免複習各畫面被標題遮住
+  function syncHeaderH(){
+    var h=document.querySelector('.site-header');
+    if(h){document.documentElement.style.setProperty('--header-h',h.offsetHeight+'px');}
+  }
+  syncHeaderH();
+  setTimeout(syncHeaderH,200);
+  setTimeout(syncHeaderH,800);
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(syncHeaderH); }
+  window.addEventListener('resize',syncHeaderH);
+  window.addEventListener('load',syncHeaderH);
 });
 
 </script>
@@ -4431,6 +4654,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
 <!-- 中文打字練習 -->
 <div class="screen" id="typing-practice-screen" style="background:#1a1a2e;overflow:auto">
+
+<button class="back-btn" onclick="showPortal()" title="返回主頁" style="position:fixed;top:calc(var(--header-h,96px) + 10px);left:14px;z-index:30;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:22px;border-radius:10px;padding:6px 12px;line-height:1">← 主頁</button>
 
 <div id="app">
   <h1>中文打字練習 ✦</h1>
@@ -4821,7 +5046,7 @@ function showResult(){
 <!-- ══════════════════════════════════════════════════════
      總複習－選拼音 SCREEN
 ══════════════════════════════════════════════════════ -->
-<div class="screen" id="pinyin-quiz-screen" style="flex-direction:column;min-height:calc(100vh - 57px);width:100%;position:fixed;top:57px;left:0;z-index:10;overflow:auto">
+<div class="screen" id="pinyin-quiz-screen" style="flex-direction:column;min-height:calc(100vh - var(--header-h));width:100%;position:fixed;top:var(--header-h);left:0;z-index:10;overflow:auto">
   <div class="game-header">
     <button class="back-btn" onclick="showPortal()">←</button>
     <span class="game-title">🔤 總複習－選拼音</span>
@@ -4842,7 +5067,7 @@ function showResult(){
 <!-- ══════════════════════════════════════════════════════
      總複習－聽數字 SCREEN
 ══════════════════════════════════════════════════════ -->
-<div class="screen" id="listen-num-screen" style="flex-direction:column;min-height:calc(100vh - 57px);width:100%;position:fixed;top:57px;left:0;z-index:10;overflow:auto">
+<div class="screen" id="listen-num-screen" style="flex-direction:column;min-height:calc(100vh - var(--header-h));width:100%;position:fixed;top:var(--header-h);left:0;z-index:10;overflow:auto">
   <div class="game-header">
     <button class="back-btn" onclick="showPortal()">←</button>
     <span class="game-title">🔢 總複習－聽數字</span>
@@ -4865,7 +5090,7 @@ function showResult(){
 <!-- ══════════════════════════════════════════════════════
      總複習－詞語 SCREEN
 ══════════════════════════════════════════════════════ -->
-<div class="screen" id="vocab-marquee-screen" style="flex-direction:column;width:100%;position:fixed;top:57px;left:0;z-index:10;height:calc(100vh - 57px)">
+<div class="screen" id="vocab-marquee-screen" style="flex-direction:column;width:100%;position:fixed;top:var(--header-h);left:0;z-index:10;height:calc(100vh - var(--header-h))">
 
   <!-- MENU -->
   <div id="vm-menu" style="display:flex;flex-direction:column;align-items:center;gap:48px;padding:48px 20px;height:100%;background:radial-gradient(ellipse at 30% 20%,rgba(74,127,212,.12) 0%,transparent 60%),var(--bg)">
@@ -4917,7 +5142,8 @@ function showResult(){
 <!-- ══════════════════════════════════════════════════════
      總複習－快速問答 SCREEN
 ══════════════════════════════════════════════════════ -->
-<div class="screen" id="oral-quiz-screen" style="flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;min-height:calc(100vh - 57px);width:100%;position:fixed;top:57px;left:0;z-index:10;overflow:auto">
+<div class="screen" id="oral-quiz-screen" style="flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;min-height:calc(100vh - var(--header-h));width:100%;position:fixed;top:var(--header-h);left:0;z-index:10;overflow:auto">
+  <button class="back-btn" onclick="showPortal()" title="返回主頁" style="position:absolute;top:12px;left:14px;z-index:20;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:22px;border-radius:10px;padding:6px 12px;line-height:1">← 主頁</button>
   <p style="font-family:'Noto Serif TC',serif;font-size:20px;letter-spacing:4px;color:var(--text-mid);margin-bottom:16px">總複習－快速問答</p>
   <div style="width:min(420px,92vw);height:5px;background:rgba(0,0,0,0.08);border-radius:3px;margin-bottom:20px;overflow:hidden">
     <div id="oq-progress" style="height:100%;background:var(--red);border-radius:3px;transition:width .4s ease;width:0%"></div>
@@ -5004,17 +5230,19 @@ const PQ_BANK=[
   {hanzi:"蝌",option1:"kē",option2:"ké",correctIndex:0},
   {hanzi:"殼",option1:"kē",option2:"ké",correctIndex:1}
 ];
-let pqCurrent=null,pqAnswered=0,pqCorrect=0,pqCurrentCorrect=false;
+let pqCurrent=null,pqAnswered=0,pqCorrect=0,pqCurrentCorrect=false,pqSeqIdx=0;
 
 function pqLoad(){
   try{pqAnswered=parseInt(localStorage.getItem('pq2_ans')||0);pqCorrect=parseInt(localStorage.getItem('pq2_cor')||0);}catch(e){}
+  try{var _i=parseInt(localStorage.getItem('pq_seq_idx'));pqSeqIdx=(!isNaN(_i)&&_i>=0&&_i<PQ_BANK.length)?_i:0;}catch(e){pqSeqIdx=0;}
   document.getElementById('pq-answered').textContent=pqAnswered;
   document.getElementById('pq-correct').textContent=pqCorrect;
 }
 function pqSave(){try{localStorage.setItem('pq2_ans',pqAnswered);localStorage.setItem('pq2_cor',pqCorrect);}catch(e){}}
-function pqNewQ(){
-  pqCurrent={...PQ_BANK[Math.floor(Math.random()*PQ_BANK.length)]};
+function pqShowCurrent(){
+  pqCurrent={...PQ_BANK[pqSeqIdx]};
   pqCurrentCorrect=false;
+  try{localStorage.setItem('pq_seq_idx',pqSeqIdx);}catch(e){}
   const opts=document.getElementById('pq-options');
   opts.innerHTML='';
   [{txt:pqCurrent.option1,idx:0},{txt:pqCurrent.option2,idx:1}].forEach(o=>{
@@ -5027,8 +5255,12 @@ function pqNewQ(){
   document.getElementById('pq-feedback').innerHTML='';
   document.getElementById('pq-feedback').style.cssText='font-size:1.3rem;margin:0 0 16px;padding:14px 20px;border-radius:40px;font-weight:500;min-height:54px';
 }
+function pqNext(){
+  pqSeqIdx=(pqSeqIdx+1)%PQ_BANK.length;
+  pqShowCurrent();
+}
 function pqSpeak(){
-  if(!pqCurrent)pqNewQ();
+  if(!pqCurrent)pqShowCurrent();
   if('speechSynthesis' in window){window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(pqCurrent.hanzi);u.lang='zh-TW';u.rate=0.8;window.speechSynthesis.speak(u);}
 }
 function pqSelect(idx,el){
@@ -5049,9 +5281,9 @@ function pqSelect(idx,el){
   }
 }
 function initPinyinQuiz(){
-  pqLoad();pqNewQ();
+  pqLoad();pqShowCurrent();
   document.getElementById('pq-speaker-btn').onclick=pqSpeak;
-  document.getElementById('pq-next-btn').onclick=pqNewQ;
+  document.getElementById('pq-next-btn').onclick=pqNext;
 }
 
 // ════════════════════════════════════════════════════════
@@ -5336,15 +5568,15 @@ function oqNextCard(){
 }
 function oqPlayQuestion(){
   if(oqSpeaking){window.speechSynthesis.cancel();oqSpeaking=false;document.getElementById('oq-listen-icon').style.animation='';return;}
-  const text=OQ_QUESTIONS[oqIdx];
+  let text=OQ_QUESTIONS[oqIdx];
+  text=text.replace(/面/g,'麵').replace(/為什麼/g,'喂什麼').replace(/出身地/g,'出身帝').replace(/出生地/g,'出生帝').replace(/連假/g,'連價');
   const u=new SpeechSynthesisUtterance(text);
-  u.lang='zh-TW';
   const voices=window.speechSynthesis.getVoices();
-  const liMu=voices.find(v=>v.name==='Li-Mu')||voices.find(v=>v.lang==='zh-CN');
-  const meijia=voices.find(v=>v.name==='美佳'||v.name.includes('Meijia'))||voices.find(v=>v.lang==='zh-TW');
-  if(oqSpeed==='slow'){u.rate=0.25;u.pitch=0.85;u.voice=liMu||null;if(liMu)u.lang=liMu.lang;}
-  else if(oqSpeed==='normal'){u.rate=0.8;u.pitch=1.0;u.voice=liMu||null;if(liMu)u.lang=liMu.lang;}
-  else{u.rate=1.35;u.pitch=1.1;u.voice=meijia||null;if(meijia)u.lang=meijia.lang;}
+  const twVoice=voices.find(v=>v.lang==='zh-TW'&&/Taiwan|Meijia|Tingting|Yating/i.test(v.name))||voices.find(v=>v.lang==='zh-TW')||voices.find(v=>v.lang&&v.lang.startsWith('zh'));
+  if(twVoice){u.voice=twVoice;u.lang=twVoice.lang;}else{u.lang='zh-TW';}
+  if(oqSpeed==='slow'){u.rate=0.4;u.pitch=1.0;}
+  else if(oqSpeed==='normal'){u.rate=0.8;u.pitch=1.0;}
+  else{u.rate=1.3;u.pitch=1.05;}
   oqSpeaking=true;
   document.getElementById('oq-listen-icon').style.animation='oqPulse 1.2s ease-in-out infinite';
   u.onend=()=>{oqSpeaking=false;document.getElementById('oq-listen-icon').style.animation='';};
