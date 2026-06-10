@@ -773,7 +773,7 @@ button.btns2:hover{background:#0f3460}
 <!-- 口說練習 SPEAKING PRACTICE -->
 <div class="screen" id="speaking-practice">
   <div class="game-header">
-    <button class="back-btn" onclick="showPortal()">←</button>
+    <button class="back-btn" onclick="location.reload()">←</button>
     <span class="game-title">🎤 口說練習</span>
   </div>
   <div class="game-body" style="max-width:none;width:100%">
@@ -824,6 +824,16 @@ button.btns2:hover{background:#0f3460}
         style="width:100%;min-height:120px;background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:16px;font-size:18px;color:var(--text);font-family:'Noto Sans TC',sans-serif;resize:vertical;line-height:1.7;outline:none;transition:border-color .2s"
         oninput="this.style.borderColor='var(--blue)'"
       ></textarea>
+
+      <div style="margin-top:14px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-muted);margin-bottom:6px">
+          <span>慢速</span>
+          <span>自然速</span>
+        </div>
+        <input id="sp-tts-speed" type="range" min="0.55" max="1" step="0.05" value="0.75"
+        style="width:100%;cursor:pointer">
+      </div>
+
       <div style="display:flex;gap:10px;margin-top:12px;margin-bottom:20px">
         <button onclick="spTTSSpeak()" style="flex:1;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:14px;font-size:16px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-weight:700">🔊 念出來</button>
         <button onclick="spTTSStop()" style="background:var(--surface2);color:var(--text-mid);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-size:16px;cursor:pointer;font-family:'Noto Sans TC',sans-serif">⏹ 停</button>
@@ -3929,9 +3939,6 @@ function toTraditional(text){
 // 全域簡繁轉換（語音識別結果修正）— 統一使用完整對照表
 function s2t(text){ return toTraditional(text); }
 
-// ════════════════════════════════════════════════════════
-// 口說練習 SPEAKING PRACTICE  (no API key needed)
-// ════════════════════════════════════════════════════════
 let spRecognition=null, spIsRecording=false, spTranscript='';
 let spTTSRecognition=null, spTTSIsRecording=false;
 let spWantStop=false;       // 使用者是否按了「說完了」/停止
@@ -4160,10 +4167,36 @@ let spTTSMediaRec=null, spTTSChunks=[], spTTSAudioURL=null, spTTSStream=null, sp
 function spTTSSpeak(){
   const text=document.getElementById('sp-tts-input').value.trim();
   if(!text){ alert('請先輸入中文文字！'); return; }
+
   window.speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang='zh-TW'; u.rate=0.82; u.pitch=1;
-  window.speechSynthesis.speak(u);
+
+  const rate=parseFloat(document.getElementById('sp-tts-speed')?.value||0.75);
+
+  const chunks=text
+    .replace(/([。！？!?])/g,'$1|')
+    .split('|')
+    .map(s=>s.trim())
+    .filter(Boolean);
+
+  let i=0;
+
+  const speakNext=()=>{
+    if(i>=chunks.length) return;
+
+    const u=new SpeechSynthesisUtterance(chunks[i]);
+    u.lang='zh-TW';
+    u.rate=rate;
+    u.pitch=1;
+
+    u.onend=()=>{
+      i++;
+      setTimeout(speakNext,700);
+    };
+
+    window.speechSynthesis.speak(u);
+  };
+
+  speakNext();
 }
 function spTTSStop(){ window.speechSynthesis.cancel(); }
 
@@ -4302,7 +4335,6 @@ function spTTSClear(){
   document.getElementById('sp-tts-play-mine').style.display='none';
   document.getElementById('sp-tts-play-ai').style.display='none';
 }
-
 // ════════════════════════════════════════════════════════
 buildPortal();
 
