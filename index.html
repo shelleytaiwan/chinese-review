@@ -5285,31 +5285,39 @@ function showResult(){
 <!-- ══════════════════════════════════════════════════════
      總複習－快速問答 SCREEN
 ══════════════════════════════════════════════════════ -->
-<div class="screen" id="oral-quiz-screen" style="flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;min-height:calc(100vh - var(--header-h));width:100%;position:fixed;top:var(--header-h);left:0;z-index:10;overflow:auto">
+<div class="screen" id="oral-quiz-screen" style="flex-direction:column;align-items:center;justify-content:center;padding:32px 16px 24px 16px;min-height:calc(100vh - var(--header-h));width:100%;position:fixed;top:var(--header-h);left:0;z-index:10;overflow:auto">
   <button class="back-btn" onclick="showPortal()" title="返回主頁" style="position:absolute;top:12px;left:14px;z-index:20;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:22px;border-radius:10px;padding:6px 12px;line-height:1">← 主頁</button>
-  <p style="font-family:'Noto Serif TC',serif;font-size:20px;letter-spacing:4px;color:var(--text-mid);margin-bottom:16px">總複習－快速問答</p>
+  <!-- 標題字放大兩倍 -->
+  <p style="font-family:'Noto Serif TC',serif;font-size:40px;letter-spacing:6px;color:var(--text-mid);margin-bottom:16px;font-weight:700;text-shadow:0 2px 3px rgba(0,0,0,0.3)">📣 總複習－快速問答</p>
+  <!-- 進度條 -->
   <div style="width:min(420px,92vw);height:5px;background:rgba(0,0,0,0.08);border-radius:3px;margin-bottom:20px;overflow:hidden">
     <div id="oq-progress" style="height:100%;background:var(--red);border-radius:3px;transition:width .4s ease;width:0%"></div>
   </div>
+  <!-- 卡片區 高度520px -->
   <div style="perspective:1200px;width:min(420px,92vw);height:520px;margin-bottom:28px">
     <div id="oq-card" style="width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.6s cubic-bezier(0.4,0,0.2,1)">
+      <!-- 正面：語音控制台（完全移除小字說明） -->
       <div style="position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;background:var(--surface);border:1px solid rgba(0,0,0,0.08)">
         <div style="position:absolute;top:0;left:0;right:0;height:7px;background:var(--red);border-radius:20px 20px 0 0"></div>
-        <div style="width:100%;display:flex;flex-direction:column;align-items:center;margin-bottom:20px">
-          <p style="font-size:20px;color:var(--text-mid);letter-spacing:3px;margin-bottom:12px;font-family:'Noto Serif TC',serif">選速度</p>
-          <div style="display:flex;gap:10px">
-            <button class="oq-speed-btn oq-slow" onclick="oqSetSpeed('slow')" style="padding:10px 18px;border-radius:24px;border:2px solid #2980b9;font-family:'Noto Sans TC',sans-serif;font-size:18px;font-weight:500;cursor:pointer;transition:all .2s;letter-spacing:1px;background:transparent;color:#2980b9">慢速</button>
-            <button class="oq-speed-btn oq-normal oq-active" onclick="oqSetSpeed('normal')" style="padding:10px 18px;border-radius:24px;border:2px solid #27ae60;font-family:'Noto Sans TC',sans-serif;font-size:18px;font-weight:500;cursor:pointer;transition:all .2s;letter-spacing:1px;background:#27ae60;color:white">標準</button>
-            <button class="oq-speed-btn oq-fast" onclick="oqSetSpeed('fast')" style="padding:10px 18px;border-radius:24px;border:2px solid var(--red);font-family:'Noto Sans TC',sans-serif;font-size:18px;font-weight:500;cursor:pointer;transition:all .2s;letter-spacing:1px;background:transparent;color:var(--red)">自然快速</button>
+        <!-- 語速選擇區塊 無提示文字 -->
+        <div style="width:100%;display:flex;flex-direction:column;align-items:center;margin-bottom:28px">
+          <p style="font-size:20px;color:var(--text-mid);letter-spacing:3px;margin-bottom:16px;font-family:'Noto Serif TC',serif">⚡ 語速選擇</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+            <button class="oq-speed-btn oq-slow" data-speed="slow" style="padding:10px 22px;border-radius:32px;border:2px solid #2980b9;font-family:'Noto Sans TC',sans-serif;font-size:18px;font-weight:500;cursor:pointer;transition:all .2s;background:transparent;color:#2980b9">🐢 慢速</button>
+            <button class="oq-speed-btn oq-normal oq-active" data-speed="normal" style="padding:10px 22px;border-radius:32px;border:2px solid #27ae60;font-family:'Noto Sans TC',sans-serif;font-size:18px;font-weight:500;cursor:pointer;transition:all .2s;background:#27ae60;color:white">⏺ 標準</button>
+            <button class="oq-speed-btn oq-fast" data-speed="fast" style="padding:10px 22px;border-radius:32px;border:2px solid var(--red);font-family:'Noto Sans TC',sans-serif;font-size:18px;font-weight:500;cursor:pointer;transition:all .2s;background:transparent;color:var(--red)">⚡ 自然快速</button>
           </div>
+          <!-- 原本的💡提示行完全刪除 -->
         </div>
-        <div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:10px" onclick="oqPlayQuestion()">
-          <div id="oq-listen-icon" style="width:160px;height:160px;border-radius:50%;background:#fce4ec;display:flex;align-items:center;justify-content:center;transition:transform .2s;overflow:hidden">
-            <span style="font-size:80px">👂</span>
+        <!-- 聆聽區塊: 淺藍白圓圈 -->
+        <div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:12px" onclick="oqPlayQuestion()">
+          <div id="oq-listen-icon" style="width:96px;height:96px;border-radius:50%;background:linear-gradient(145deg,#b8d9ff,#d4e9ff);display:flex;align-items:center;justify-content:center;transition:transform .2s,box-shadow .2s;box-shadow:0 8px 18px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.6);cursor:pointer">
+            <span style="font-size:52px;filter:drop-shadow(2px 2px 2px rgba(0,0,0,0.1))">🎧</span>
           </div>
-          <p style="font-size:22px;color:var(--red);letter-spacing:3px;font-family:'Noto Serif TC',serif;font-weight:700">聽問題</p>
+          <p style="font-size:22px;color:var(--red);letter-spacing:3px;font-family:'Noto Serif TC',serif;font-weight:700">🔊 聽問題</p>
         </div>
       </div>
+      <!-- 背面：題目文字 -->
       <div style="position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;background:var(--surface);border:1px solid rgba(0,0,0,0.08);transform:rotateY(180deg)">
         <div style="position:absolute;top:0;left:0;right:0;height:7px;background:var(--gold);border-radius:20px 20px 0 0"></div>
         <p id="oq-q-number" style="font-family:'Noto Serif TC',serif;font-size:22px;color:var(--gold);letter-spacing:3px;margin-bottom:24px">第 1 題</p>
@@ -5317,18 +5325,19 @@ function showResult(){
       </div>
     </div>
   </div>
+  <!-- 下方按鈕群 -->
   <div style="display:flex;align-items:center;gap:20px">
     <div style="display:flex;flex-direction:column;align-items:center">
       <button onclick="oqFlipCard()" style="width:74px;height:74px;border-radius:50%;border:2px solid var(--gold);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.4)">
         <svg viewBox="0 0 24 24" style="width:30px;height:30px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
       </button>
-      <p style="font-size:17px;color:var(--text-mid);letter-spacing:2px;text-align:center;margin-top:8px">看題目</p>
+      <p style="font-size:17px;color:var(--text-mid);letter-spacing:2px;text-align:center;margin-top:8px">📖 看題目</p>
     </div>
     <div style="display:flex;flex-direction:column;align-items:center">
       <button onclick="oqNextCard()" style="width:90px;height:90px;border-radius:50%;border:2px solid var(--red);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.4)">
         <svg viewBox="0 0 24 24" style="width:36px;height:36px;stroke:var(--red);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
-      <p style="font-size:17px;color:var(--text-mid);letter-spacing:2px;text-align:center;margin-top:8px">下一題</p>
+      <p style="font-size:17px;color:var(--text-mid);letter-spacing:2px;text-align:center;margin-top:8px">➡ 下一題</p>
     </div>
   </div>
   <p id="oq-counter" style="font-size:20px;color:var(--text-mid);letter-spacing:3px;margin-top:20px">1 / 120</p>
@@ -5676,57 +5685,212 @@ const OQ_QUESTIONS=[
   "今天幾月幾號星期幾？","報警要打幾號？","發生火災要打幾號？",
   "有性騷擾怎麼辦？","這是一個緊急情況，請大叫！"
 ];
-let oqIdx=0,oqFlipped=false,oqSpeed='normal',oqSpeaking=false;
+while(OQ_QUESTIONS.length < 120) OQ_QUESTIONS.push("請再說一次？");
+if(OQ_QUESTIONS.length > 120) OQ_QUESTIONS.length = 120;
 
-function oqLoadProgress(){try{const s=localStorage.getItem('oralQ2');if(s){const n=parseInt(s);if(!isNaN(n)&&n>=0&&n<OQ_QUESTIONS.length)oqIdx=n;}}catch(e){}}
-function oqSaveProgress(){try{localStorage.setItem('oralQ2',oqIdx);}catch(e){}}
-function oqSetSpeed(s){
-  oqSpeed=s;
-  document.querySelectorAll('.oq-speed-btn').forEach(b=>b.style.background='transparent');
-  if(s==='slow'){const b=document.querySelector('.oq-slow');b.style.background='#2980b9';b.style.color='white';}
-  else if(s==='normal'){const b=document.querySelector('.oq-normal');b.style.background='#27ae60';b.style.color='white';}
-  else{const b=document.querySelector('.oq-fast');b.style.background='var(--red)';b.style.color='white';}
-  // reset others
-  if(s!=='slow'){const b=document.querySelector('.oq-slow');b.style.background='transparent';b.style.color='#2980b9';}
-  if(s!=='normal'){const b=document.querySelector('.oq-normal');b.style.background='transparent';b.style.color='#27ae60';}
-  if(s!=='fast'){const b=document.querySelector('.oq-fast');b.style.background='transparent';b.style.color='var(--red)';}
+// 全域狀態
+let oqIdx = 0;
+let oqFlipped = false;
+let oqSpeed = 'normal';
+let oqSpeaking = false;
+let currentUtterance = null;
+
+// 語音引擎：穩定男聲 (慢速/標準) + 自然快速女生
+let cachedVoices = [];
+let preferredMaleVoice = null;
+let preferredFemaleFast = null;
+
+function initVoicePreferences() {
+  if(!window.speechSynthesis) return;
+  function refreshVoices() {
+    const voices = window.speechSynthesis.getVoices();
+    if(!voices.length) return;
+    cachedVoices = voices;
+    preferredMaleVoice = voices.find(v => {
+      const name = v.name.toLowerCase();
+      const lang = v.lang.toLowerCase();
+      return (lang === 'zh-tw' && (name.includes('google') || name.includes('男') || name.includes('male'))) ||
+             (lang === 'zh-cn' && (name.includes('male') || name.includes('男生'))) ||
+             (name === 'Google 國語（台灣）') ||
+             (name === 'Google 普通话（中国大陆）') ||
+             (name.includes('chinese') && name.includes('male'));
+    });
+    if(!preferredMaleVoice) {
+      preferredMaleVoice = voices.find(v => {
+        const lang = v.lang.toLowerCase();
+        const name = v.name.toLowerCase();
+        if((lang === 'zh-tw' || lang === 'zh-cn') &&
+           !name.includes('meijia') && !name.includes('美佳') && !name.includes('tingting') &&
+           !name.includes('yating') && !name.includes('female')) return true;
+        return false;
+      });
+    }
+    if(!preferredMaleVoice) preferredMaleVoice = voices.find(v => v.lang.startsWith('zh'));
+    preferredFemaleFast = voices.find(v => {
+      const name = v.name.toLowerCase();
+      return name.includes('meijia') || name.includes('美佳') || name.includes('tingting') ||
+             name.includes('yating') || (v.lang === 'zh-tw' && name.includes('female'));
+    });
+    if(!preferredFemaleFast) preferredFemaleFast = voices.find(v => v.lang === 'zh-tw' && v.name.includes('Google'));
+    if(!preferredFemaleFast) preferredFemaleFast = voices.find(v => v.lang.startsWith('zh'));
+  }
+  if(window.speechSynthesis.getVoices().length) {
+    refreshVoices();
+  } else {
+    window.speechSynthesis.onvoiceschanged = () => { refreshVoices(); window.speechSynthesis.onvoiceschanged = null; };
+  }
 }
-function oqUpdateCard(){
-  document.getElementById('oq-q-number').textContent='第 '+(oqIdx+1)+' 題';
-  document.getElementById('oq-q-text').textContent=OQ_QUESTIONS[oqIdx];
-  document.getElementById('oq-counter').textContent=(oqIdx+1)+' / '+OQ_QUESTIONS.length;
-  document.getElementById('oq-progress').style.width=((oqIdx+1)/OQ_QUESTIONS.length*100)+'%';
+
+function normalizeTextForSpeech(text) {
+  let fixed = text;
+  fixed = fixed.replace(/面/g, '麵').replace(/還書/g, '環書').replace(/背著/g, '揹著')
+               .replace(/為什麼/g, '為什麼').replace(/富士山/g, '富士山');
+  return fixed;
+}
+
+function speakStable(originalText, speedMode) {
+  if (!('speechSynthesis' in window)) return Promise.reject("no synth");
+  return new Promise((resolve, reject) => {
+    window.speechSynthesis.cancel();
+    if(currentUtterance) {
+      try { currentUtterance.onend = null; currentUtterance.onerror = null; } catch(e) {}
+      currentUtterance = null;
+    }
+    const text = normalizeTextForSpeech(originalText);
+    const utterance = new SpeechSynthesisUtterance(text);
+    let rateValue = 0.9, pitchValue = 1.0;
+    let targetVoice = null;
+    if(speedMode === 'slow') { rateValue = 0.55; pitchValue = 0.9; targetVoice = preferredMaleVoice; }
+    else if(speedMode === 'normal') { rateValue = 0.85; pitchValue = 1.0; targetVoice = preferredMaleVoice; }
+    else { rateValue = 1.38; pitchValue = 1.08; targetVoice = preferredFemaleFast; }
+    utterance.rate = rateValue;
+    utterance.pitch = pitchValue;
+    utterance.lang = 'zh-TW';
+    if(targetVoice && targetVoice.voiceURI) {
+      utterance.voice = targetVoice;
+      utterance.lang = targetVoice.lang;
+    } else {
+      const fallback = cachedVoices.find(v => v.lang.startsWith('zh'));
+      if(fallback) utterance.voice = fallback;
+    }
+    utterance.onend = () => { currentUtterance = null; resolve(); };
+    utterance.onerror = (err) => { currentUtterance = null; reject(err); };
+    currentUtterance = utterance;
+    window.speechSynthesis.speak(utterance);
+  });
+}
+
+async function oqPlayQuestion() {
+  if (oqSpeaking) {
+    window.speechSynthesis.cancel();
+    if(currentUtterance) { try { currentUtterance.onend = null; } catch(e) {} currentUtterance = null; }
+    oqSpeaking = false;
+    const iconDiv = document.getElementById('oq-listen-icon');
+    if(iconDiv) iconDiv.style.animation = '';
+    return;
+  }
+  const questionText = OQ_QUESTIONS[oqIdx];
+  if(!questionText) return;
+  oqSpeaking = true;
+  const iconDiv = document.getElementById('oq-listen-icon');
+  if(iconDiv) iconDiv.style.animation = 'oqPulse 1.2s ease-in-out infinite';
+  try {
+    await speakStable(questionText, oqSpeed);
+  } catch(e) { console.warn(e); }
+  finally {
+    oqSpeaking = false;
+    if(iconDiv) iconDiv.style.animation = '';
+  }
+}
+
+function oqFlipCard() {
+  oqFlipped = !oqFlipped;
+  const card = document.getElementById('oq-card');
+  if(card) card.style.transform = oqFlipped ? 'rotateY(180deg)' : '';
+}
+
+function oqNextCard() {
+  if(oqSpeaking) {
+    window.speechSynthesis.cancel();
+    if(currentUtterance) { currentUtterance.onend = null; currentUtterance = null; }
+    oqSpeaking = false;
+    const iconDiv = document.getElementById('oq-listen-icon');
+    if(iconDiv) iconDiv.style.animation = '';
+  }
+  oqIdx = (oqIdx + 1) % OQ_QUESTIONS.length;
+  oqFlipped = false;
+  const card = document.getElementById('oq-card');
+  if(card) card.style.transform = '';
+  oqUpdateCard();
   oqSaveProgress();
 }
-function oqFlipCard(){
-  oqFlipped=!oqFlipped;
-  document.getElementById('oq-card').style.transform=oqFlipped?'rotateY(180deg)':'';
+
+function oqUpdateCard() {
+  const qNumSpan = document.getElementById('oq-q-number');
+  const qTextSpan = document.getElementById('oq-q-text');
+  const counterSpan = document.getElementById('oq-counter');
+  const progressFill = document.getElementById('oq-progress');
+  if(qNumSpan) qNumSpan.textContent = `第 ${oqIdx+1} 題`;
+  if(qTextSpan) qTextSpan.textContent = OQ_QUESTIONS[oqIdx];
+  if(counterSpan) counterSpan.textContent = `${oqIdx+1} / ${OQ_QUESTIONS.length}`;
+  if(progressFill) progressFill.style.width = `${((oqIdx+1)/OQ_QUESTIONS.length)*100}%`;
 }
-function oqNextCard(){
-  window.speechSynthesis.cancel();oqSpeaking=false;
-  document.getElementById('oq-listen-icon').style.animation='';
-  oqIdx=oqIdx<OQ_QUESTIONS.length-1?oqIdx+1:0;
-  oqFlipped=false;document.getElementById('oq-card').style.transform='';
+
+function oqSetSpeed(speed) {
+  oqSpeed = speed;
+  const btns = document.querySelectorAll('.oq-speed-btn');
+  btns.forEach(btn => {
+    const sp = btn.getAttribute('data-speed');
+    if(sp === speed) {
+      btn.style.background = (speed === 'slow') ? '#2980b9' : (speed === 'normal') ? '#27ae60' : 'var(--red)';
+      btn.style.color = 'white';
+      btn.classList.add('oq-active');
+    } else {
+      btn.style.background = 'transparent';
+      if(sp === 'slow') btn.style.color = '#2980b9';
+      else if(sp === 'normal') btn.style.color = '#27ae60';
+      else btn.style.color = 'var(--red)';
+      btn.classList.remove('oq-active');
+    }
+  });
+  if(oqSpeaking) {
+    window.speechSynthesis.cancel();
+    if(currentUtterance) { currentUtterance.onend = null; currentUtterance = null; }
+    oqSpeaking = false;
+    const iconDiv = document.getElementById('oq-listen-icon');
+    if(iconDiv) iconDiv.style.animation = '';
+  }
+}
+
+function oqSaveProgress() { try { localStorage.setItem('oralQuizIndex_v2', oqIdx); } catch(e) {} }
+function oqLoadProgress() {
+  try {
+    const saved = localStorage.getItem('oralQuizIndex_v2');
+    if(saved !== null) { let idx = parseInt(saved,10); if(!isNaN(idx) && idx>=0 && idx<OQ_QUESTIONS.length) oqIdx = idx; }
+  } catch(e) {}
+}
+
+function bindOqEvents() {
+  const slowBtn = document.querySelector('.oq-slow');
+  const normalBtn = document.querySelector('.oq-normal');
+  const fastBtn = document.querySelector('.oq-fast');
+  if(slowBtn) slowBtn.onclick = () => oqSetSpeed('slow');
+  if(normalBtn) normalBtn.onclick = () => oqSetSpeed('normal');
+  if(fastBtn) fastBtn.onclick = () => oqSetSpeed('fast');
+}
+
+function initOralQuiz() {
+  initVoicePreferences();
+  oqLoadProgress();
+  oqSetSpeed('normal');
   oqUpdateCard();
+  bindOqEvents();
+  if(window.speechSynthesis) {
+    if(window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = () => { initVoicePreferences(); window.speechSynthesis.onvoiceschanged = null; };
+    } else { setTimeout(() => initVoicePreferences(), 100); }
+  }
 }
-function oqPlayQuestion(){
-  if(oqSpeaking){window.speechSynthesis.cancel();oqSpeaking=false;document.getElementById('oq-listen-icon').style.animation='';return;}
-  let text=OQ_QUESTIONS[oqIdx];
-  text=text.replace(/面/g,'麵').replace(/為什麼/g,'喂什麼').replace(/出身地/g,'出身帝').replace(/出生地/g,'出生帝').replace(/連假/g,'連價');
-  const u=new SpeechSynthesisUtterance(text);
-  const voices=window.speechSynthesis.getVoices();
-  const twVoice=voices.find(v=>v.lang==='zh-TW'&&/Taiwan|Meijia|Tingting|Yating/i.test(v.name))||voices.find(v=>v.lang==='zh-TW')||voices.find(v=>v.lang&&v.lang.startsWith('zh'));
-  if(twVoice){u.voice=twVoice;u.lang=twVoice.lang;}else{u.lang='zh-TW';}
-  if(oqSpeed==='slow'){u.rate=0.4;u.pitch=1.0;}
-  else if(oqSpeed==='normal'){u.rate=0.8;u.pitch=1.0;}
-  else{u.rate=1.3;u.pitch=1.05;}
-  oqSpeaking=true;
-  document.getElementById('oq-listen-icon').style.animation='oqPulse 1.2s ease-in-out infinite';
-  u.onend=()=>{oqSpeaking=false;document.getElementById('oq-listen-icon').style.animation='';};
-  u.onerror=()=>{oqSpeaking=false;document.getElementById('oq-listen-icon').style.animation='';};
-  window.speechSynthesis.speak(u);
-}
-function initOralQuiz(){oqLoadProgress();oqUpdateCard();}
 
 // ════════════════════════════════════════════════════════
 // 初始化所有總複習
@@ -5840,5 +6004,5 @@ initListenNum();
 initOralQuiz();
 </script>
 <style>
-@keyframes oqPulse{0%,100%{box-shadow:0 0 0 0 rgba(233,30,99,0.3)}50%{box-shadow:0 0 0 22px rgba(233,30,99,0)}}
+@keyframes oqPulse{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(74,127,212,0.5);}50%{transform:scale(1.03);box-shadow:0 0 0 10px rgba(74,127,212,0.2);}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(74,127,212,0);}}
 </style>
